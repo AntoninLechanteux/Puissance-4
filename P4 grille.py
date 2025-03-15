@@ -27,6 +27,8 @@ tour = "jaune"
 rayon_jeton = 1.8 * rayon_trou / 2.17
 def placer_jeton(event):
     global tour
+    coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
+    (milieu_x,milieu_y) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
     if tour == "jaune":
         canva_jeu.create_oval((event.x-rayon_jeton,event.y-rayon_jeton), (event.x+rayon_jeton, event.y+rayon_jeton),  fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton)
         tour = "rouge"
