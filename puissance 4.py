@@ -7,6 +7,7 @@ root.geometry("720x480")
 root.title("Menu Puissance 4")
 root.attributes("-fullscreen", True)
 root.bind("<Escape>", lambda event: root.destroy())
+root.config(bg="#3394ff")
 #----------------------------------------------#
 #--organisation de la geometrie de la fenetre--#
 root.columnconfigure(0, weight=1)
@@ -31,18 +32,13 @@ root.rowconfigure(14, weight=1)
 root.rowconfigure(15, weight=1)
 #----------------------------------------------#
 #-------creation des fonctions à appeler-------#
-def affichage(self):
-    aff=tk.Label(root, text="Appuie sur le boutton ci-dessus pour connaitre les règles !",
-                 font=("haelvetica", 15), fg="green" )
-    aff.grid(row=11, column=1)
-    return
 tour="jaune"
 def Jeu_normal():
     def fermer():
         game.destroy()
         return
-    HEIGHT = 720 #Sera modifiable
-    WIDTH = 1300 #Sera modifiable
+    HEIGHT = 480 #Sera modifiable
+    WIDTH = 700 #Sera modifiable
     game=tk.Tk()
     game.title("Jeu mode normal")
     game.rowconfigure(0, weight=1)
@@ -72,8 +68,9 @@ def Jeu_normal():
             canva_jeu.create_oval(((i+0.5)*WIDTH//dim_grille[1]-rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]-rayon_trou), 
                                   ((i+0.5)*WIDTH//dim_grille[1]+rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]+rayon_trou), 
                                   fill = "#3394ff",  outline="#004fab", width= 0.1*rayon_trou)
-    #-------------creation des jetons--------------#
-    rayon_jeton = 1.8 * rayon_trou / 2.13
+#----------------------------------------------#
+#-------------creation des jetons--------------#
+    rayon_jeton = 1.8 * rayon_trou / 2.09  
     def placer_jeton(event):
         global tour
         coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
@@ -145,28 +142,39 @@ def rules():
 ##--------------------------------------------##
 #----------------------------------------------#
 #--------creation des widgets textuels---------#
-M1=tk.Label(root, text="Bienvenue sur Puissance 4 !", fg="red",
-                  font=("Broadway", 45))
+M1=tk.Label(root, text="Bienvenue sur Puissance 4 !", fg="white",  bg= "#3394ff",
+                  font=("System",45))
 
 M1.grid(column=1, row=2)
 #----------------------------------------------#
 #--------creation des widget boutons-----------#
-B1=tk.Button(root, text="Normal game", font=('haelvetica', 20), bg="lightgrey",
-             fg="grey", relief="ridge", padx=10, pady=5, command=Jeu_normal)
-B2=tk.Button(root, text="Sandbox", font=('haelvetica', 20), bg="lightgrey", 
-             fg="grey", relief="ridge", padx=37, pady=5, command=Jeu_sandbox)
-B3=tk.Button(root, text="Options", font=('haelvetica', 20), bg="lightgrey", 
-             fg="grey", relief="ridge", padx=42, pady=5, command=settings)
-B4=tk.Button(root, text="Rules", font=('haelvetica', 20), bg="lightgrey", 
-             fg="grey", relief="ridge", padx=54, pady=5, command=rules)
+B1=tk.Button(root, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
+             fg="white", relief="raised", padx=5, pady=15, command=Jeu_normal)
+B2=tk.Button(root, text="PARTIE CUSTOM", font=('system', 20), bg="#ff7262", 
+             fg="white", relief="raised", padx=14, pady=15, command=Jeu_sandbox)
+B3=tk.Button(root, text="SAUVEGARDE", font=('system', 20), bg="#ff7262", 
+             fg="white", relief="raised", padx=34, pady=15, command=settings)
+B4=tk.Button(root, text="REGLES", font=('system', 20), bg="#ff7262", 
+             fg="white", relief="raised", padx=69, pady=15, command=rules)
 
-B1.grid(row=7, column=1)
-B2.grid(row=8, column=1)
+B1.grid(row=5, column=1)
+B2.grid(row=7, column=1)
 B3.grid(row=9, column=1)
-B4.grid(row=10, column=1)
+B4.grid(row=11, column=1)
 #----------------------------------------------#
-#-------------creation des pop-up--------------#
-B4.bind("<Motion>", affichage)
+#-------------Effets graphiques fenêtre principale--------------#
+def bouton_touche(event, self):
+    self.config(bg="#ff8e81")
+def bouton_relache(event, self):
+    self.config(bg="#ff7262")
+B1.bind("<Enter>", lambda event : bouton_touche(event,B1))
+B1.bind("<Leave>", lambda event : bouton_relache(event,B1))
+B2.bind("<Enter>", lambda event : bouton_touche(event,B2))
+B2.bind("<Leave>", lambda event : bouton_relache(event,B2))
+B3.bind("<Enter>", lambda event : bouton_touche(event,B3))
+B3.bind("<Leave>", lambda event : bouton_relache(event,B3))
+B4.bind("<Enter>", lambda event : bouton_touche(event,B4))
+B4.bind("<Leave>", lambda event : bouton_relache(event,B4))
 #----------------------------------------------#
 root.mainloop()
 

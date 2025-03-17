@@ -7,6 +7,7 @@ root.geometry("720x480")
 root.title("Menu Puissance 4")
 root.attributes("-fullscreen", True)
 root.bind("<Escape>", lambda event: root.destroy())
+root.config(bg="#3394ff")
 #----------------------------------------------#
 #--organisation de la geometrie de la fenetre--#
 root.columnconfigure(0, weight=1)
