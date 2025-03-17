@@ -142,7 +142,7 @@ def rules():
     " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case dans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
     M2=tk.Label(canva_rules, text="Bienvenue sur Puissance 4! Voici les règles du jeu! ", font=("haelvetica", 48), fg="black", padx=50, pady= 20, bg="#3394ff")
     M3=tk.Label(canva_rules, text=regles, font=("haelvetica", 20), fg="black", bg="#3394ff", width=67, pady=305, padx=1000)
-    M4=tk.Label(canva_rules, text='A vous de Jouer !!', font=("haelvetica", 48), fg="black", bg="#3394ff", width=67)
+    M4=tk.Label(canva_rules, text='A VOUS DE JOUER !!', font=("haelvetica", 48), fg="black", bg="#3394ff", width=67)
     B5=tk.Button(canva_rules, text="fermer les règles", font=("haelvetica",15), fg="black", 
                  bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
     B5.pack(side=tk.BOTTOM, pady=20)
