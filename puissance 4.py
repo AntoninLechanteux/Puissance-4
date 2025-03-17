@@ -13,8 +13,6 @@ root.config(bg="#3394ff")
 root.columnconfigure(0, weight=1)
 root.columnconfigure(1, weight=1)
 root.columnconfigure(2, weight=1)
-root.columnconfigure(3, weight=1)
-root.columnconfigure(4, weight=1)
 
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
@@ -158,7 +156,7 @@ def rules():
 M1=tk.Label(root, text="Bienvenue sur Puissance 4 !", fg="white",  bg= "#3394ff",
                   font=("System",45))
 
-M1.grid(column=1, row=2, columnspan = 3)
+M1.grid(column=1, row=2)
 #----------------------------------------------#
 #--------creation des widget boutons-----------#
 B1=tk.Button(root, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
@@ -170,10 +168,10 @@ B3=tk.Button(root, text="SAUVEGARDE", font=('system', 20), bg="#ff7262",
 B4=tk.Button(root, text="REGLES", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=69, pady=15, command=rules)
 
-B1.grid(row=5, column=2)
-B2.grid(row=7, column=2)
-B3.grid(row=9, column=2)
-B4.grid(row=11, column=2)
+B1.grid(row=5, column=1)
+B2.grid(row=7, column=1)
+B3.grid(row=9, column=1)
+B4.grid(row=11, column=1)
 #----------------------------------------------#
 #-------------Effets graphiques fenêtre principale--------------#
 def bouton_touche(event, self):
@@ -188,19 +186,6 @@ B3.bind("<Enter>", lambda event : bouton_touche(event,B3))
 B3.bind("<Leave>", lambda event : bouton_relache(event,B3))
 B4.bind("<Enter>", lambda event : bouton_touche(event,B4))
 B4.bind("<Leave>", lambda event : bouton_relache(event,B4))
-canva_gauche = tk.Canvas(root, height=500, width=200, bg ='#3394ff', highlightthickness=0)
-canva_gauche.grid(row = 4, column=1, rowspan = 10)
-canva_gauche.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
-canva_gauche.create_oval((25,325),(175,475), fill='#ff3b30',outline= "#bb261f", width=25 )
-canva_droite = tk.Canvas(root, height=500, width=200, bg ='#3394ff', highlightthickness=0)
-canva_droite.grid(row = 4, column=3, rowspan = 10)
-canva_droite.create_oval((25,25),(175,175), fill='#ff3b30',outline= "#bb261f", width=25)
-canva_droite.create_oval((25,325),(175,475),fill="#ffd933", outline = "#e7ba00", width = 25 )
-gauche1=tk.Label(root, text="B", fg="#3394ff",  bg= "#3394ff",
-                  font=("System",1))
-gauche1.grid(row = 7, column=0, rowspan = 4)
-droite=tk.Label(root, text="B", fg="#3394ff",  bg= "#3394ff",font=("System",1))
-droite.grid(row = 7, column=4, rowspan = 4)
 #----------------------------------------------#
 root.mainloop()
 
