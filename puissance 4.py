@@ -136,7 +136,7 @@ def rules():
     rules.columnconfigure(1, weight=1)
     rules.columnconfigure(2, weight=1)
     rules.attributes("-fullscreen", True)
-    M2=tk.Label(rules, text="regles", font=("haelvetica", 20), fg="black")
+    M2=tk.Label(rules, text="Regles", font=("haelvetica", 20), fg="black")
     B5=tk.Button(rules, text="fermer les règles", font=("haelvetica",15), fg="black", 
                  bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
     B5.pack(side=tk.BOTTOM)
