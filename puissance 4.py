@@ -124,6 +124,8 @@ def rules():
     def fermer():
         rules.destroy()
         return
+    HEIGHT=2500
+    WIDTH=3800
     rules=tk.Tk()
     rules.title("Règles du jeu")
     rules.rowconfigure(0, weight=1)
@@ -135,11 +137,20 @@ def rules():
     rules.columnconfigure(1, weight=1)
     rules.columnconfigure(2, weight=1)
     rules.attributes("-fullscreen", True)
-    M2=tk.Label(rules, text="Regles", font=("haelvetica", 20), fg="black")
-    B5=tk.Button(rules, text="fermer les règles", font=("haelvetica",15), fg="black", 
+    canva_rules = tk.Canvas(rules, height=HEIGHT, width=WIDTH, bg="#3394ff", borderwidth=0)
+    canva_rules.pack(expand=True)
+    regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement, verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
+    " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case dans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
+    M2=tk.Label(canva_rules, text="Bienvenue sur Puissance 4! Voici les règles du jeu! ", font=("haelvetica", 48), fg="black", padx=50, pady= 80, bg="#3394ff")
+    M3=tk.Label(canva_rules, text=regles, font=("haelvetica", 20), fg="black", bg="#3394ff", width=67, pady=10, padx=10)
+    M4=tk.Label(canva_rules, text='A VOUS DE JOUER !!', font=("haelvetica", 48), fg="black", bg="#3394ff", width=67)
+    B5=tk.Button(canva_rules, text="fermer les règles", font=("haelvetica",15), fg="black", 
                  bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
-    B5.pack(side=tk.BOTTOM)
-    M2.grid(row=0, column=1)
+    B5.pack(side=tk.BOTTOM, pady=70)
+    M2.pack(side=tk.TOP)
+    M4.pack(side=tk.BOTTOM, pady=50)
+    M3.pack(expand=True)
+    canva_rules.create_rectangle((50,50),(1230,750), fill="#3394ff", outline="black", width=5)
     return
 ##--------------------------------------------##
 #----------------------------------------------#
