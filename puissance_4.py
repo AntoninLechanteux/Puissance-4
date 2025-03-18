@@ -1,21 +1,20 @@
 import tkinter as tk
 import random as rd
-import inspect 
-
+from tkinter.colorchooser import askcolor
+global longueur_perso
+global hauteur_perso
+global rayon_trou
 #-----------creation de la fenetre-------------#
 root=tk.Tk()
 root.geometry("720x480")
 root.title("Menu Puissance 4")
 root.attributes("-fullscreen", True)
 root.bind("<Escape>", lambda event: root.destroy())
-root.config(bg="#3394ff")
 #----------------------------------------------#
 #--organisation de la geometrie de la fenetre--#
 root.columnconfigure(0, weight=1)
 root.columnconfigure(1, weight=1)
 root.columnconfigure(2, weight=1)
-root.columnconfigure(3, weight=1)
-root.columnconfigure(4, weight=1)
 
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
@@ -35,13 +34,18 @@ root.rowconfigure(14, weight=1)
 root.rowconfigure(15, weight=1)
 #----------------------------------------------#
 #-------creation des fonctions à appeler-------#
+def affichage(self):
+    aff=tk.Label(root, text="Appuie sur le boutton ci-dessus pour connaitre les règles !",
+                 font=("haelvetica", 15), fg="green" )
+    aff.grid(row=11, column=1)
+    return
 tour="jaune"
 def Jeu_normal():
     def fermer():
         game.destroy()
         return
-    HEIGHT = 480 #Sera modifiable
-    WIDTH = 700 #Sera modifiable
+    HEIGHT = 720 #Sera modifiable
+    WIDTH = 1300 #Sera modifiable
     game=tk.Tk()
     game.title("Jeu mode normal")
     game.rowconfigure(0, weight=1)
@@ -71,9 +75,8 @@ def Jeu_normal():
             canva_jeu.create_oval(((i+0.5)*WIDTH//dim_grille[1]-rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]-rayon_trou), 
                                   ((i+0.5)*WIDTH//dim_grille[1]+rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]+rayon_trou), 
                                   fill = "#3394ff",  outline="#004fab", width= 0.1*rayon_trou)
-#----------------------------------------------#
-#-------------creation des jetons--------------#
-    rayon_jeton = 1.8 * rayon_trou / 2.09  
+    #-------------creation des jetons--------------#
+    rayon_jeton = 1.8 * rayon_trou / 2.13
     def placer_jeton(event):
         global tour
         coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
@@ -91,6 +94,7 @@ def Jeu_normal():
                                  fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
            tour = "jaune"
     game.bind("<Button-1>", placer_jeton)
+    #---------------------------------------------#
     game.mainloop()
     return
 
@@ -101,7 +105,7 @@ def Jeu_sandbox():
     sand.bind("<Escape>", lambda event: sand.destroy())
     sand.mainloop()
     return
-
+##-----------configuration des parmètres-------------##
 def settings():
     def fermer():
         option.destroy()
@@ -110,23 +114,70 @@ def settings():
     option.columnconfigure(0, weight=1)
     option.columnconfigure(1, weight=1)
     option.columnconfigure(2, weight=1)
+    option.columnconfigure(3, weight=1)
+    option.columnconfigure(4, weight=1)
     option.rowconfigure(0, weight=1)
     option.rowconfigure(1, weight=1)
     option.rowconfigure(2, weight=1)
     option.rowconfigure(3, weight=1)
     option.rowconfigure(4, weight=1)
+    option.rowconfigure(5, weight=1)
+    option.rowconfigure(6, weight=1)
+    option.rowconfigure(7, weight=1)
+    option.rowconfigure(8, weight=1)
+    option.rowconfigure(9, weight=1)
+    option.rowconfigure(10, weight=1)
+    option.rowconfigure(11, weight=1)
+    option.rowconfigure(12, weight=1)
+    option.rowconfigure(13, weight=1)
+    option.rowconfigure(14, weight=1)
+
     option.title("option du jeu")
     option.attributes("-fullscreen", True)
-    B6=tk.Button(option, text="Valider et quitter", font=("haelvetica",15),
-                 fg="black", bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
-    B6.pack(side=tk.BOTTOM)
+    option.config(bg="#3394ff")
+    B6=tk.Button(option, text="Valider et quitter", font=("System",15),
+                 fg="white", bg="#ff7262", relief="ridge", padx=10, command=fermer)
+    M3=tk.Label(option, text="Paramètres :", fg="white", font=("System", 30))
+    M4=tk.Label(option, text="Longueur de la grille du Puissance 4 :", fg="white", relief="ridge", bg="#ff7262", font=("System", 15))
+    M5=tk.Label(option, text="Hauteur de la grille du Puissance 4 :", fg="white", relief="ridge", bg="#ff7262", font=("System", 15))
+    dim_perso = []
+    longueur_perso = []
+    #couleur--------------
+    def choix_couleur():
+        color = askcolor(title="Choix de la couleur du joueur 1")
+    btn_color1 = tk.Button(option, text="Choisir la couleur du joueur 1",command=choix_couleur)
+
+    
+    def hauteur():
+        for i in range(hauteur_entry.get()):
+            dim_perso.append(longueur_perso)
+        return
+    
+    def longueur():
+        for i in range(longueur_entry.get()):
+            longueur_perso.append(0)
+            return
+
+
+    longueur_entry=tk.Entry(option)
+    hauteur_entry=tk.Entry(option)
+
+    B6.grid(column=0, row=14, columnspan=5)
+    M3.grid(column=0, row=0, columnspan=5)
+    M4.grid(column=0, row=3)
+    M5.grid(column=0, row=4)
+    longueur_entry.grid(column=0, row=3, columnspan=3)
+    hauteur_entry.grid(column=0, row=4, columnspan=3)
+
+    longueur_entry.bind("<Return>",longueur)
+    hauteur_entry.bind("<Return>", hauteur)
+
+##--------------------------------------------##
 ##-----------Affichage des règles-------------##
 def rules():
     def fermer():
         rules.destroy()
         return
-    HEIGHT=800
-    WIDTH=1280
     rules=tk.Tk()
     rules.title("Règles du jeu")
     rules.rowconfigure(0, weight=1)
@@ -138,82 +189,37 @@ def rules():
     rules.columnconfigure(1, weight=1)
     rules.columnconfigure(2, weight=1)
     rules.attributes("-fullscreen", True)
-    canva_rules = tk.Canvas(rules, height=HEIGHT, width=WIDTH, bg="#3394ff", borderwidth=0)
-    canva_rules.pack(expand=True)
-    regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement, verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
-    " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case dans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
-    M2=tk.Label(canva_rules, text="Bienvenue sur Puissance 4! Voici les règles du jeu! ", font=("haelvetica", 48), fg="black", bg="#3394ff", height=2)
-    M3=tk.Label(canva_rules, text=regles, font=("haelvetica", 20), fg="black", bg="#3394ff", width=60, pady=10, padx=10)
-    M4=tk.Label(canva_rules, text='A VOUS DE JOUER !!', font=("haelvetica", 48), fg="black", bg="#3394ff", width=60)
-    B5=tk.Button(canva_rules, text="fermer les règles", font=("haelvetica",15), fg="black", 
-                 bg="lightgrey", relief="ridge", command=fermer, padx=10, pady=5)
-    #B5.pack(side=tk.BOTTOM, pady=70)
-    #M2.pack(side=tk.TOP)
-    #M4.pack(side=tk.BOTTOM, pady=50)
-    #M3.pack(expand=True)
-    B5.grid(row= 4, column=1, pady=30)
-    M2.grid(row=0, column=1, pady=50)
-    M4.grid(row=3, column=1, padx=20)    
-    M3.grid(row=2, column=1, padx=20)
-
-    canva_rules.create_rectangle((50,50),(1230,750), fill="#3394ff", outline="black", width=5)
+    M2=tk.Label(rules, text="regles", font=("haelvetica", 20), fg="black")
+    B5=tk.Button(rules, text="fermer les règles", font=("haelvetica",15), fg="black", 
+                 bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
+    B5.grid(column= 1, row=14)
+    M2.grid(row=0, column=1)
     return
 ##--------------------------------------------##
 #----------------------------------------------#
 #--------creation des widgets textuels---------#
-M1=tk.Label(root, text="Bienvenue sur Puissance 4 !", fg="white",  bg= "#3394ff",
-                  font=("System",45))
+M1=tk.Label(root, text="Bienvenue sur Puissance 4 !", fg="red",
+                  font=("Broadway", 45))
 
-M1.grid(column=1, row=2, columnspan=3)
+M1.grid(column=1, row=2)
 #----------------------------------------------#
 #--------creation des widget boutons-----------#
-B1=tk.Button(root, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
-             fg="white", relief="raised", padx=5, pady=15, command=Jeu_normal)
-B2=tk.Button(root, text="PARTIE CUSTOM", font=('system', 20), bg="#ff7262", 
-             fg="white", relief="raised", padx=14, pady=15, command=Jeu_sandbox)
-B3=tk.Button(root, text="SAUVEGARDE", font=('system', 20), bg="#ff7262", 
-             fg="white", relief="raised", padx=34, pady=15, command=settings)
-B4=tk.Button(root, text="REGLES", font=('system', 20), bg="#ff7262", 
-             fg="white", relief="raised", padx=69, pady=15, command=rules)
+B1=tk.Button(root, text="Normal game", font=('haelvetica', 20), bg="lightgrey",
+             fg="grey", relief="ridge", padx=10, pady=5, command=Jeu_normal)
+B2=tk.Button(root, text="Sandbox", font=('haelvetica', 20), bg="lightgrey", 
+             fg="grey", relief="ridge", padx=37, pady=5, command=Jeu_sandbox)
+B3=tk.Button(root, text="Options", font=('haelvetica', 20), bg="lightgrey", 
+             fg="grey", relief="ridge", padx=42, pady=5, command=settings)
+B4=tk.Button(root, text="Rules", font=('haelvetica', 20), bg="lightgrey", 
+             fg="grey", relief="ridge", padx=54, pady=5, command=rules)
 
-B1.grid(row=5, column=2)
-B2.grid(row=7, column=2)
-B3.grid(row=9, column=2)
-B4.grid(row=11, column=2)
+B1.grid(row=7, column=1)
+B2.grid(row=8, column=1)
+B3.grid(row=9, column=1)
+B4.grid(row=10, column=1)
 #----------------------------------------------#
-#-------------Effets graphiques fenêtre principale--------------#
-def bouton_touche(event, self):
-    self.config(bg="#ff8e81")
-def bouton_relache(event, self):
-    self.config(bg="#ff7262")
-    B1.bind("<Enter>", lambda event : bouton_touche(event,B1))
-B1.bind("<Leave>", lambda event : bouton_relache(event,B1))
-B2.bind("<Enter>", lambda event : bouton_touche(event,B2))
-B2.bind("<Leave>", lambda event : bouton_relache(event,B2))
-B3.bind("<Enter>", lambda event : bouton_touche(event,B3))
-B3.bind("<Leave>", lambda event : bouton_relache(event,B3))
-B4.bind("<Enter>", lambda event : bouton_touche(event,B4))
-B4.bind("<Leave>", lambda event : bouton_relache(event,B4))
-
-jg1 = jeton_gauche_1 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-jeton_gauche_1_counter = 1
-jg2 = jeton_gauche_2 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-jeton_gauche_2_counter = 0
-jd1 = jeton_droite_1 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-jeton_droite_1_counter = 0
-jd2 = jeton_droite_2 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-jeton_droite_2_counter = 1
-
-jeton_gauche_1.grid(row = 3, column=1, rowspan = 5)
-jeton_gauche_2.grid(row = 9, column=1, rowspan = 5)
-jeton_gauche_1.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
-jeton_gauche_2.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25  )
-jeton_droite_1.grid(row = 3, column=3, rowspan = 5)
-jeton_droite_2.grid(row = 9, column=3, rowspan = 5)
-jeton_droite_1.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
-jeton_droite_2.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25  )
-
+#-------------creation des pop-up--------------#
+B4.bind("<Motion>", affichage)
 #----------------------------------------------#
 root.mainloop()
-
 
