@@ -191,6 +191,20 @@ B3.bind("<Enter>", lambda event : bouton_touche(event,B3))
 B3.bind("<Leave>", lambda event : bouton_relache(event,B3))
 B4.bind("<Enter>", lambda event : bouton_touche(event,B4))
 B4.bind("<Leave>", lambda event : bouton_relache(event,B4))
+
+canva_gauche = tk.Canvas(root, height=500, width=200, bg ='#3394ff', highlightthickness=0)
+canva_gauche.grid(row = 4, column=1, rowspan = 10)
+canva_gauche.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
+canva_gauche.create_oval((25,325),(175,475), fill='#ff3b30',outline= "#bb261f", width=25 )
+canva_droite = tk.Canvas(root, height=500, width=200, bg ='#3394ff', highlightthickness=0)
+canva_droite.grid(row = 4, column=3, rowspan = 10)
+canva_droite.create_oval((25,25),(175,175), fill='#ff3b30',outline= "#bb261f", width=25)
+canva_droite.create_oval((25,325),(175,475),fill="#ffd933", outline = "#e7ba00", width = 25 )
+gauche1=tk.Label(root, text="B", fg="#3394ff",  bg= "#3394ff",
+                  font=("System",1))
+gauche1.grid(row = 7, column=0, rowspan = 4)
+droite=tk.Label(root, text="B", fg="#3394ff",  bg= "#3394ff",font=("System",1))
+droite.grid(row = 7, column=4, rowspan = 4)
 #----------------------------------------------#
 root.mainloop()
 
