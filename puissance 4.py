@@ -17,6 +17,7 @@ root.columnconfigure(2, weight=1)
 root.columnconfigure(3, weight=1)
 root.columnconfigure(4, weight=1)
 
+
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
 root.rowconfigure(2, weight=1)
