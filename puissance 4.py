@@ -63,8 +63,8 @@ def Jeu_normal():
     dim_grille = [6,7] #Sera modifiable
     canva_jeu = tk.Canvas(game, height=HEIGHT, width=WIDTH,bg="#005bff", borderwidth=0)
     canva_jeu.pack(expand=True)
-    B7=tk.Button(game, text="quitter", font=("haelvetica",15), fg="black", 
-                 bg="lightgrey", relief="ridge", padx=10, command=fermer)
+    B7=tk.Button(game, text="quitter", font=("System",15), fg="white", 
+                 bg="#ff7262", relief="ridge", padx=10, command=fermer)
     B7.pack(side=tk.BOTTOM)
     rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
     for i in range(dim_grille[1]):
@@ -128,8 +128,12 @@ def rules():
         return
     HEIGHT=800
     WIDTH=1280
+    regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement, verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
+    " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case dans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
     rules=tk.Tk()
     rules.title("Règles du jeu")
+    rules.attributes("-fullscreen", True)
+    rules.config(bg="#3394ff")
     rules.rowconfigure(0, weight=1)
     rules.rowconfigure(1, weight=1)
     rules.rowconfigure(2, weight=1)
@@ -138,26 +142,20 @@ def rules():
     rules.columnconfigure(0, weight=1)
     rules.columnconfigure(1, weight=1)
     rules.columnconfigure(2, weight=1)
-    rules.attributes("-fullscreen", True)
-    canva_rules = tk.Canvas(rules, height=HEIGHT, width=WIDTH, bg="#3394ff", borderwidth=0)
-    canva_rules.pack(expand=True)
-    regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement, verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
-    " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case dans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
-    M2=tk.Label(canva_rules, text="Bienvenue sur Puissance 4! Voici les règles du jeu! ", font=("haelvetica", 48), fg="black", bg="#3394ff", height=2)
-    M3=tk.Label(canva_rules, text=regles, font=("haelvetica", 20), fg="black", bg="#3394ff", width=60, pady=10, padx=10)
-    M4=tk.Label(canva_rules, text='A VOUS DE JOUER !!', font=("haelvetica", 48), fg="black", bg="#3394ff", width=60)
-    B5=tk.Button(canva_rules, text="fermer les règles", font=("haelvetica",15), fg="black", 
-                 bg="lightgrey", relief="ridge", command=fermer, padx=10, pady=5)
-    #B5.pack(side=tk.BOTTOM, pady=70)
-    #M2.pack(side=tk.TOP)
-    #M4.pack(side=tk.BOTTOM, pady=50)
-    #M3.pack(expand=True)
-    B5.grid(row= 4, column=1, pady=30)
-    M2.grid(row=0, column=1, pady=50)
-    M4.grid(row=3, column=1, padx=20)    
-    M3.grid(row=2, column=1, padx=20)
-
-    canva_rules.create_rectangle((50,50),(1230,750), fill="#3394ff", outline="black", width=5)
+    rules.columnconfigure(3, weight=1)
+    rules.columnconfigure(4, weight=1)
+   
+    M2=tk.Label(rules, text="Voici les règles du jeu! ", font=("System", 35), fg="black", bg="#3394ff")
+    M3=tk.Label(rules, text=regles, font=("haelvetica", 15), fg="black", bg="#3394ff", width=90, pady=10, padx=10)
+    M4=tk.Label(rules, text='A VOUS DE JOUER !!', font=("haelvetica", 35), fg="black", bg="#3394ff", width=60)
+    B5=tk.Button(rules, text="fermer les règles", font=("System",15), fg="white", 
+                 bg="#ff7262", relief="ridge", command=fermer, padx=10, pady=5)
+    
+    B5.grid(row=4, column=0, columnspan=5)
+    M2.grid(row=0, column=0, columnspan=5)
+    M4.grid(row=3, column=2, padx=10)    
+    M3.grid(row=2, column=2, padx=10)
+    canva_rules.grid(row=1, column=2, rowspan=3)
     return
 ##--------------------------------------------##
 #----------------------------------------------#
