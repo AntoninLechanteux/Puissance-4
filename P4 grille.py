@@ -26,8 +26,55 @@ for i in range(dim_grille[1]):
 tour = "j"
 grille = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
 diff_milieux_y = [660,540,420,300,180,60]
-
 rayon_jeton = 1.8 * rayon_trou / 2.13
+
+
+def verif(): #fonction qui prend en variable les coordonnees du jeton juste placé
+    global win
+    win = False
+    ligne()
+    colonne()
+    diag_droit_gauche()
+    diag_gauche_droit()
+    if win == True:
+        print("omgomgomg")
+    return
+    
+def ligne(): #Fonction qui verifie si 4 jetons sont alignés en ligne
+    for i in grille:
+        for j in range(4):
+            if i[j] != 0:
+                if (i[j] == i[j+1] == i[j+2] == i[j+3]):
+                    win = True
+                    print("a")
+                    
+
+def colonne(): #Fonction qui verifie si 4 jetons sont alignés en colonne
+    for i in range(7):
+        for j in range(3):
+            if grille[j][i] != 0:    
+                if (grille[j][i] == grille[j+1][i] == grille[j+2][i] == grille[j+3][i]):
+                    win = True
+                    print("a")
+                    
+def diag_gauche_droit(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
+    for i in range(5,2,-1):
+        for j in range(4):
+            if grille[i][j] != 0:
+                if (grille[i][j] == grille[i-1][j+1] == grille[i-2][j+2] == grille[i-3][j+3]):
+                    win = True
+                    print("a")
+            
+def diag_droit_gauche(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
+    for i in range(6,2,-1):
+        for j in range(5,2,-1):
+            if grille[j][i]!= 0:
+                if (grille[j][i] == grille[j-1][i-1] == grille[j-2][i-2] == grille[j-3][i-3]):
+                    win = True
+                    print("a")
+        
+
+
 def placer_jeton(event):
     global tour
     global grille
@@ -51,7 +98,7 @@ def placer_jeton(event):
             grille[0][1] = tour
             milieu_y = diff_milieux_y[0]
         elif grille[5][1] != 0:
-            print("La premiere colonne est pleine") 
+            print("La deuxieme colonne est pleine") 
             return
         else:
             for i in range(4,-1,-1):
@@ -64,7 +111,7 @@ def placer_jeton(event):
             grille[0][2] = tour
             milieu_y = diff_milieux_y[0]
         elif grille[5][2] != 0:
-            print("La premiere colonne est pleine") 
+            print("La troisieme colonne est pleine") 
             return
         else:
             for i in range(4,-1,-1):
@@ -77,7 +124,7 @@ def placer_jeton(event):
             grille[0][3] = tour
             milieu_y = diff_milieux_y[0]
         elif grille[5][3] != 0:
-            print("La premiere colonne est pleine") 
+            print("La quatrieme colonne est pleine") 
             return
         else:
             for i in range(4,-1,-1):
@@ -90,7 +137,7 @@ def placer_jeton(event):
             grille[0][4] = tour
             milieu_y = diff_milieux_y[0]
         elif grille[5][4] != 0:
-            print("La premiere colonne est pleine") 
+            print("La cinquieme colonne est pleine") 
             return
         else:
             for i in range(4,-1,-1):
@@ -103,7 +150,7 @@ def placer_jeton(event):
             grille[0][5] = tour
             milieu_y = diff_milieux_y[0]
         elif grille[5][5] != 0:
-            print("La premiere colonne est pleine") 
+            print("La sizieme colonne est pleine") 
             return
         else:
             for i in range(4,-1,-1):
@@ -116,7 +163,7 @@ def placer_jeton(event):
             grille[0][6] = tour
             milieu_y = diff_milieux_y[0]
         elif grille[5][6] != 0:
-            print("La premiere colonne est pleine") 
+            print("La derniere colonne est pleine") 
             return
         else:
             for i in range(4,-1,-1):
@@ -124,14 +171,16 @@ def placer_jeton(event):
                     grille[i+1][6] = tour
                     milieu_y = diff_milieux_y[i+1]
                     break
-    print(grille)
     if tour == "j":
         canva_jeu.create_oval((milieu_x-rayon_jeton,milieu_y-rayon_jeton), (milieu_x+rayon_jeton, milieu_y+rayon_jeton),  fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton)
         tour = "r"
+        verif()
         return
     if tour == "r":
         canva_jeu.create_oval((milieu_x-rayon_jeton,milieu_y-rayon_jeton), (milieu_x+rayon_jeton, milieu_y+rayon_jeton),  fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
         tour = "j"
+        verif()
+        return
 root.bind("<Button-1>", placer_jeton)
 
 root.mainloop()
