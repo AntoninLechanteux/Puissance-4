@@ -37,41 +37,43 @@ def verif(): #fonction qui prend en variable les coordonnees du jeton juste plac
     diag_droit_gauche()
     diag_gauche_droit()
     if win == True:
-        print("omgomgomg")
+        if tour == "j":
+            print("omgomgomg jaune a gagné")
+        elif tour == "r":
+            print("omgomgomg rouge a gagné")
     return
     
 def ligne(): #Fonction qui verifie si 4 jetons sont alignés en ligne
+    global win
     for i in grille:
         for j in range(4):
             if i[j] != 0:
                 if (i[j] == i[j+1] == i[j+2] == i[j+3]):
                     win = True
-                    print("a")
                     
-
 def colonne(): #Fonction qui verifie si 4 jetons sont alignés en colonne
+    global win
     for i in range(7):
         for j in range(3):
             if grille[j][i] != 0:    
                 if (grille[j][i] == grille[j+1][i] == grille[j+2][i] == grille[j+3][i]):
                     win = True
-                    print("a")
                     
 def diag_gauche_droit(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
+    global win
     for i in range(5,2,-1):
         for j in range(4):
             if grille[i][j] != 0:
                 if (grille[i][j] == grille[i-1][j+1] == grille[i-2][j+2] == grille[i-3][j+3]):
                     win = True
-                    print("a")
             
 def diag_droit_gauche(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
+    global win
     for i in range(6,2,-1):
         for j in range(5,2,-1):
             if grille[j][i]!= 0:
                 if (grille[j][i] == grille[j-1][i-1] == grille[j-2][i-2] == grille[j-3][i-3]):
                     win = True
-                    print("a")
         
 
 
@@ -173,13 +175,13 @@ def placer_jeton(event):
                     break
     if tour == "j":
         canva_jeu.create_oval((milieu_x-rayon_jeton,milieu_y-rayon_jeton), (milieu_x+rayon_jeton, milieu_y+rayon_jeton),  fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton)
-        tour = "r"
         verif()
+        tour = "r"
         return
     if tour == "r":
         canva_jeu.create_oval((milieu_x-rayon_jeton,milieu_y-rayon_jeton), (milieu_x+rayon_jeton, milieu_y+rayon_jeton),  fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
-        tour = "j"
         verif()
+        tour = "j"
         return
 root.bind("<Button-1>", placer_jeton)
 
