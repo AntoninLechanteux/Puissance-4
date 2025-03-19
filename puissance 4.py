@@ -194,13 +194,49 @@ B3.bind("<Leave>", lambda event : bouton_relache(event,B3))
 B4.bind("<Enter>", lambda event : bouton_touche(event,B4))
 B4.bind("<Leave>", lambda event : bouton_relache(event,B4))
 
-jg1 = jeton_gauche_1 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
+def animation_clic(event, self, counter):
+    self.create_oval((25,25),(175,175), fill="#3394ff", outline = "#3394ff", width = 25)
+    if counter % 2 == 1 :
+        self.create_oval((40,40),(160,160), fill="#ffd933", outline = "#e7ba00", width = 18)
+    elif counter % 2 == 0 :
+        self.create_oval((40,40),(160,160), fill="#ff3b30", outline = "#bb261f", width = 18)
+        jeton_gauche_1_counter += 1
+def animation_relache_jg1(event, self, counter):
+    global jeton_gauche_1_counter
+    jeton_gauche_1_counter += 1
+    if counter % 2 == 0 :
+        self.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25)
+    elif counter % 2 == 1 :
+        self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
+def animation_relache_jg2(event, self, counter):
+    global jeton_gauche_2_counter
+    jeton_gauche_2_counter += 1
+    if counter % 2 == 0 :
+        self.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25)
+    elif counter % 2 == 1 :
+        self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
+def animation_relache_jd1(event, self, counter):
+    global jeton_droite_1_counter
+    jeton_droite_1_counter += 1
+    if counter % 2 == 0 :
+        self.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25)
+    elif counter % 2 == 1 :
+        self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
+def animation_relache_jd2(event, self, counter):
+    global jeton_droite_2_counter
+    jeton_droite_2_counter += 1
+    if counter % 2 == 0 :
+        self.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25)
+    elif counter % 2 == 1 :
+        self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
+
+jeton_gauche_1 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
 jeton_gauche_1_counter = 1
-jg2 = jeton_gauche_2 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
+jeton_gauche_2 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
 jeton_gauche_2_counter = 0
-jd1 = jeton_droite_1 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
+jeton_droite_1 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
 jeton_droite_1_counter = 0
-jd2 = jeton_droite_2 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
+jeton_droite_2 = tk.Canvas(root, height=200, width=200, bg ='#3394ff', highlightthickness=0)
 jeton_droite_2_counter = 1
 
 jeton_gauche_1.grid(row = 3, column=1, rowspan = 5)
@@ -211,6 +247,15 @@ jeton_droite_1.grid(row = 3, column=3, rowspan = 5)
 jeton_droite_2.grid(row = 9, column=3, rowspan = 5)
 jeton_droite_1.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
 jeton_droite_2.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25  )
+
+jeton_gauche_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_1, jeton_gauche_1_counter))
+jeton_gauche_1.bind('<ButtonRelease-1>', lambda event : animation_relache_jg1(event, jeton_gauche_1, jeton_gauche_1_counter))
+jeton_gauche_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_2, jeton_gauche_2_counter))
+jeton_gauche_2.bind('<ButtonRelease-1>', lambda event : animation_relache_jg2(event, jeton_gauche_2, jeton_gauche_2_counter))
+jeton_droite_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_1, jeton_droite_1_counter))
+jeton_droite_1.bind('<ButtonRelease-1>', lambda event : animation_relache_jd1(event, jeton_droite_1, jeton_droite_1_counter))
+jeton_droite_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_2, jeton_droite_2_counter))
+jeton_droite_2.bind('<ButtonRelease-1>', lambda event : animation_relache_jd2(event, jeton_droite_2, jeton_droite_2_counter))
 
 #----------------------------------------------#
 root.mainloop()
