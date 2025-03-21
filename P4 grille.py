@@ -75,7 +75,7 @@ def diag_droit_gauche(): #fonction qui verifie si 4 jetons sont alignés en diag
                 if (grille[j][i] == grille[j-1][i-1] == grille[j-2][i-2] == grille[j-3][i-3]):
                     win = True
         
-
+ 
 
 def placer_jeton(event):
     global tour

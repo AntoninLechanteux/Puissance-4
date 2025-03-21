@@ -38,7 +38,7 @@ diff_milieux_y_mod = [i*HEIGHT/(ligne*2) for i in range(1,ligne*2,2)]
 diff_milieux_y_mod.reverse()
 diff_milieux_x_mod = [i*WIDTH/(colonne) for i in range(0,colonne+1)]
 
-def verif(): #fonction qui prend en variable les coordonnees du jeton juste placé
+def verif(): #Fonction qui verif si 4 jetons sont alignés+ qui dit qui a win
     global win
     win = False
     ligne_fct()
@@ -89,19 +89,19 @@ def placer_jeton(event):
     global grille
     coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
     (milieu_x_mod,milieu_y_mod) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
-    for i in range(colonne):
-        if diff_milieux_x_mod[i] <= milieu_x_mod < diff_milieux_x_mod[i+1]:
+    for i in range(colonne):   #pour chaque colonne
+        if diff_milieux_x_mod[i] <= milieu_x_mod < diff_milieux_x_mod[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
             if all(j[i] == 0 for j in grille): #cas ou toutes les trous de la colonne sont nulles
-                grille[0][i] = tour
-                milieu_y_mod = diff_milieux_y_mod[0]
-                break
-            elif grille[ligne-1][i] != 0:
-                print(f"La {i} eme colonne est pleine") #Afficher quelque part sur l ecran que la colonne est pleine
+                grille[0][i] = tour #on place la couleur en bas de la grille virtuelle
+                milieu_y_mod = diff_milieux_y_mod[0] #on place le jeton tout en bas dans le canva
+                break #break pour eviter de faire tourner la boucle inutilement 
+            elif grille[ligne-1][i] != 0: #On verifie si 
+                print(f"La {i} eme colonne est pleine") #Afficher quelque part sur l écran que la colonne est pleine
                 return
             else:
                 for t in range(ligne-1,-1,-1): #on regarde du haut vers le bas
-                    if grille[t][i] != 0: #Et des qu'un trou est plein
-                        grille[t+1][i] = tour #On remplit celui d'au dessus
+                    if grille[t][i] != 0: #et des qu'un trou est plein
+                        grille[t+1][i] = tour #on remplit celui d'au dessus
                         milieu_y_mod = diff_milieux_y_mod[t+1]
                         break
     
