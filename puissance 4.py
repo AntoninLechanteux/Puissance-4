@@ -144,18 +144,31 @@ def rules():
     rules.columnconfigure(2, weight=1)
     rules.columnconfigure(3, weight=1)
     rules.columnconfigure(4, weight=1)
-   
+    
     M2=tk.Label(rules, text="Voici les règles du jeu! ", font=("System", 35), fg="black", bg="#3394ff")
     M3=tk.Label(rules, text=regles, font=("haelvetica", 15), fg="black", bg="#3394ff", width=90, pady=10, padx=10)
     M4=tk.Label(rules, text='A VOUS DE JOUER !!', font=("haelvetica", 35), fg="black", bg="#3394ff", width=60)
     B5=tk.Button(rules, text="fermer les règles", font=("System",15), fg="white", 
                  bg="#ff7262", relief="ridge", command=fermer, padx=10, pady=5)
     
-    B5.grid(row=4, column=0, columnspan=5)
-    M2.grid(row=0, column=0, columnspan=5)
-    M4.grid(row=3, column=2, padx=10)    
-    M3.grid(row=2, column=2, padx=10)
-    canva_rules.grid(row=1, column=2, rowspan=3)
+    B5.grid(row=4, column=1,) # columnspan=4)
+    M2.grid(row=0, column=1,) #columnspan=4)
+    M4.grid(row=3, column=1,) #padx=10)    
+    M3.grid(row=2, column=1,) #padx=10)
+    canva_rules = tk.Canvas(rules, height=HEIGHT, width=WIDTH/2,bg="#3394ff", borderwidth=0)
+    canva_rules2 = tk.Canvas(rules, height=HEIGHT, width=WIDTH/2,bg="#3394ff", borderwidth=0)
+    canva_rules.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
+    canva_rules.create_oval((25,625),(175,775), fill="#ff3b30", outline = "#bb261f", width = 25 )
+    canva_rules2.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
+    canva_rules2.create_oval((25,625),(175,775), fill="#ffd933", outline = "#e7ba00", width = 25 )
+    T1=tk.Label(canva_rules, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n\n4", font=("System", 30), fg="black", bg="#3394ff")
+    T2=tk.Label(canva_rules2, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n\n4", font=("System", 30), fg="black", bg="#3394ff")
+    T1.place(x=85, y=200)
+    T2.place(x=85, y=200)
+
+
+    canva_rules2.grid(row=0, column=4, rowspan=5, )
+    canva_rules.grid(row=0, column=0, rowspan=5, )
     return
 ##--------------------------------------------##
 #----------------------------------------------#
