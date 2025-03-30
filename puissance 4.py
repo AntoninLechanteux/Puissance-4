@@ -96,10 +96,162 @@ def Jeu_normal():
     return
 
 def Jeu_sandbox():
+    def fermer():
+        sand.destroy()
+        return
     sand=tk.Tk()
+    sand.columnconfigure(0, weight=1)
+    sand.columnconfigure(1, weight=1)
+    sand.columnconfigure(2, weight=1)
+    sand.columnconfigure(3, weight=1)
+    sand.columnconfigure(4, weight=1)
+    sand.columnconfigure(5, weight=1)
+    sand.columnconfigure(6, weight=1)
+    sand.rowconfigure(0, weight=1)
+    sand.rowconfigure(1, weight=1)
+    sand.rowconfigure(2, weight=1)
+    sand.rowconfigure(3, weight=1)
+    sand.rowconfigure(4, weight=1)
+    sand.rowconfigure(5, weight=1)
+    sand.rowconfigure(6, weight=1)
+    sand.rowconfigure(7, weight=1)
+    sand.rowconfigure(8, weight=1)
+    
     sand.title("Jeu mode sandbox")
     sand.attributes("-fullscreen", True)
-    sand.bind("<Escape>", lambda event: sand.destroy())
+    sand.config(bg="#3394ff")
+    
+    def jouer():
+        #-----------creation de la fenetre-------------#
+        mod=tk.Tk()
+        mod.geometry("720x480")
+        mod.title("Menu Puissance 4")
+        mod.attributes("-fullscreen", True)
+        mod.config(bg = "#3394ff")
+        #----------------------------------------------#
+
+        #-----------creation de la grille-------------#
+        HEIGHT = 720 
+        WIDTH = 1295 
+        dim_grille = [int(ligne.get()),int(colonne.get())] 
+        canva_jeu = tk.Canvas(mod, height=HEIGHT, width=WIDTH,bg="#005bff", borderwidth=0)
+        canva_jeu.pack(expand=True)
+        rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
+        for i in range(dim_grille[1]):
+            for j in range(dim_grille[0]):
+                canva_jeu.create_oval(((i+0.5)*WIDTH//dim_grille[1]-rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]-rayon_trou), ((i+0.5)*WIDTH//dim_grille[1]+rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]+rayon_trou), fill = "#3394ff",  outline="#004fab", width= 0.1*rayon_trou)
+        global tour_mod
+        tour_mod = "j"
+        rayon_jeton = 1.8 * rayon_trou / 2.13
+
+        #Creation de la grille en tant que liste
+        global grille_mod
+        grille_mod = []
+        for i in range(int(ligne.get())):
+            grille_mod.append([0] * int(colonne.get()))
+            
+        #Creation des milieux x et y
+        diff_milieux_y_mod = [i*HEIGHT/(int(ligne.get())*2) for i in range(1,int(ligne.get())*2,2)]
+        diff_milieux_y_mod.reverse()
+        diff_milieux_x_mod = [i*WIDTH/(int(colonne.get())) for i in range(0,int(colonne.get())+1)]
+        
+        def verif(): #Fonction qui verif si 4 jetons sont alignés+ qui dit qui a win
+            global win
+            win = False
+            ligne_fct()
+            colonne_fct()
+            diag_droit_gauche()
+            diag_gauche_droit()
+            if win == True:
+                if tour_mod == "j":
+                    print("omgomgomg jaune a gagné")
+                elif tour_mod == "r":
+                    print("omgomgomg rouge a gagné")
+            return
+        
+        def ligne_fct(): #Fonction qui verifie si 4 jetons sont alignés en ligne
+            global win
+            for i in grille_mod:
+                for j in range(int(colonne.get())-3):
+                    if i[j] != 0:
+                        if (i[j] == i[j+1] == i[j+2] == i[j+3]):
+                            win = True
+        def colonne_fct(): #Fonction qui verifie si 4 jetons sont alignés en colonne
+            global win
+            for i in range(int(colonne.get())):
+                for j in range(int(ligne.get())-3):
+                   if grille_mod[j][i] != 0:    
+                        if (grille_mod[j][i] == grille_mod[j+1][i] == grille_mod[j+2][i] == grille_mod[j+3][i]):
+                            win = True
+        def diag_gauche_droit(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
+            global win
+            for i in range(int(ligne.get())-1,2,-1):
+                for j in range(int(colonne.get())-3):
+                    if grille_mod[i][j] != 0:
+                        if (grille_mod[i][j] == grille_mod[i-1][j+1] == grille_mod[i-2][j+2] == grille_mod[i-3][j+3]):
+                            win = True
+        def diag_droit_gauche(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
+            global win
+            for i in range(int(colonne.get())-1,2,-1):
+                for j in range(int(ligne.get())-1,2,-1):
+                    if grille_mod[j][i]!= 0:
+                        if (grille_mod[j][i] == grille_mod[j-1][i-1] == grille_mod[j-2][i-2] == grille_mod[j-3][i-3]):
+                            win = True
+
+        def placer_jeton_mod(event):
+            global tour_mod
+            global grille_mod
+            coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
+            (milieu_x_mod,milieu_y_mod) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
+            for i in range(int(colonne.get())):   #pour chaque colonne
+                if diff_milieux_x_mod[i] <= milieu_x_mod < diff_milieux_x_mod[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
+                    if all(j[i] == 0 for j in grille_mod): #cas ou toutes les trous de la colonne sont nulles
+                        grille_mod[0][i] = tour_mod #on place la couleur en bas de la grille virtuelle
+                        milieu_y_mod = diff_milieux_y_mod[0] #on place le jeton tout en bas dans le canva
+                        break #break pour eviter de faire tourner la boucle inutilement 
+                    elif grille_mod[int(ligne.get())-1][i] != 0: #On verifie si 
+                        print(f"La {i+1} eme colonne est pleine") #Afficher quelque part sur l écran que la colonne est pleine
+                        return
+                    else:
+                        for t in range(int(ligne.get())-1,-1,-1): #on regarde du haut vers le bas
+                            if grille_mod[t][i] != 0: #et des qu'un trou est plein
+                                grille_mod[t+1][i] = tour_mod #on remplit celui d'au dessus
+                                milieu_y_mod = diff_milieux_y_mod[t+1]
+                                break
+    
+            if tour_mod == "j":
+                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton)
+                verif()
+                tour_mod = "r"
+                return
+            if tour_mod == "r":
+                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
+                verif()
+                tour_mod = "j"
+                return
+        mod.bind("<Button-1>", placer_jeton_mod)
+            
+    M1=tk.Label(sand, text="Configuations", fg="white",  bg= "#3394ff",
+                font=("System",45))
+    Bhome=tk.Button(sand, text="Retour au menu", font=("haelvetica",15),
+                 fg="black", bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
+    Bplay = tk.Button(sand, text="Jouer",font=("haelvetica",15),
+                 fg="black", bg="lightgrey", relief="ridge", padx=10, pady=5, command=jouer)
+    Mcol = tk.Label(sand, text="Colonne :", fg="white",  bg= "#3394ff",
+                font=("System",45))
+    colonne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="solid", font=("Arial", 45))
+    Mlig = tk.Label(sand, text="Ligne :", fg="white",  bg= "#3394ff",
+                font=("System",45))
+    ligne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="solid", font=("Arial", 45))
+    
+    Bhome.grid(column=2, row=8)
+    Bplay.grid(column=4, row= 8)
+    M1.grid(column=3, row=0)
+    Mcol.grid(column=1, row=2)
+    colonne.grid(column=2, row=2)
+    Mlig.grid(column=4, row=2)
+    ligne.grid(column=5, row=2)
+    
     sand.mainloop()
     return
 
