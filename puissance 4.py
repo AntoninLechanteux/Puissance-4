@@ -340,7 +340,7 @@ def rules():
             index += 1
             rules.after(50, animation1)
     M3.grid(row=2, column=1,)
-    rules.after(100, animation1)
+    rules.after(20, animation1)
     return
 
 ##--------------------------------------------##
