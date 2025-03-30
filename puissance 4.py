@@ -205,29 +205,32 @@ def Jeu_sandbox():
             (milieu_x_mod,milieu_y_mod) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
             for i in range(int(colonne.get())):   #pour chaque colonne
                 if diff_milieux_x_mod[i] <= milieu_x_mod < diff_milieux_x_mod[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
-                    if all(j[i] == 0 for j in grille_mod): #cas ou toutes les trous de la colonne sont nulles
+                    if all(j[i] == 0 for j in grille_mod): #cas ou toutes les trous de la colonne sont vides
                         grille_mod[0][i] = tour_mod #on place la couleur en bas de la grille virtuelle
                         milieu_y_mod = diff_milieux_y_mod[0] #on place le jeton tout en bas dans le canva
                         break #break pour eviter de faire tourner la boucle inutilement 
-                    elif grille_mod[int(ligne.get())-1][i] != 0: #On verifie si 
-                        print(f"La {i+1} eme colonne est pleine") #Afficher quelque part sur l écran que la colonne est pleine
+                    elif grille_mod[int(ligne.get())-1][i] != 0: #Si la colonne est pleine
+                        if i == 0:
+                            print(f"La {i+1} ere colonne est pleine") #Afficher quelque part sur l écran que la 1ere colonne est pleine
+                        else:
+                            print(f"La {i+1} eme colonne est pleine") #Afficher quelque part sur l écran que la i-eme colonne est pleine
                         return
                     else:
                         for t in range(int(ligne.get())-1,-1,-1): #on regarde du haut vers le bas
                             if grille_mod[t][i] != 0: #et des qu'un trou est plein
                                 grille_mod[t+1][i] = tour_mod #on remplit celui d'au dessus
-                                milieu_y_mod = diff_milieux_y_mod[t+1]
-                                break
+                                milieu_y_mod = diff_milieux_y_mod[t+1] #Placement visuel
+                                break #Break pour eviter de faire tourner la boucle inutilement
     
             if tour_mod == "j":
-                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton)
-                verif()
-                tour_mod = "r"
+                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton) #Placement visuel sur le canva
+                verif() #Verifie s'il a gagné
+                tour_mod = "r" #Tour suivant 
                 return
-            if tour_mod == "r":
+            elif tour_mod == "r":
                 canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
                 verif()
-                tour_mod = "j"
+                tour_mod = "j" #tour suivant 
                 return
         mod.bind("<Button-1>", placer_jeton_mod)
             
