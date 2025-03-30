@@ -277,14 +277,17 @@ def settings():
                  fg="black", bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
     B6.pack(side=tk.BOTTOM)
 ##-----------Affichage des règles-------------##
+index = 0
+text = ""
 def rules():
     def fermer():
         rules.destroy()
         return
+    global index,text
     HEIGHT=800
     WIDTH=1280
-    regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement, verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
-    " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case dans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
+    regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement,\n verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
+    " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case \ndans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
     rules=tk.Tk()
     rules.title("Règles du jeu")
     rules.attributes("-fullscreen", True)
@@ -300,9 +303,9 @@ def rules():
     rules.columnconfigure(3, weight=1)
     rules.columnconfigure(4, weight=1)
     
-    M2=tk.Label(rules, text="Voici les règles du jeu! ", font=("System", 35), fg="black", bg="#3394ff")
-    M3=tk.Label(rules, text=regles, font=("haelvetica", 15), fg="black", bg="#3394ff", width=90, pady=10, padx=10)
-    M4=tk.Label(rules, text='A VOUS DE JOUER !!', font=("haelvetica", 35), fg="black", bg="#3394ff", width=60)
+    M2=tk.Label(rules, text="Voici les règles du jeu! ", font=("System", 35), fg="White", bg="#3394ff")
+    M3=tk.Label(rules, text=regles, font=("System", 20), fg="white", bg="#3394ff", width=90, pady=10, padx=10)
+    M4=tk.Label(rules, text='A VOUS DE JOUER !!', font=("System", 35), fg="white", bg="#3394ff", width=60)
     B5=tk.Button(rules, text="fermer les règles", font=("System",15), fg="white", 
                  bg="#ff7262", relief="ridge", command=fermer, padx=10, pady=5)
     
@@ -316,15 +319,30 @@ def rules():
     canva_rules.create_oval((25,625),(175,775), fill="#ff3b30", outline = "#bb261f", width = 25 )
     canva_rules2.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
     canva_rules2.create_oval((25,625),(175,775), fill="#ffd933", outline = "#e7ba00", width = 25 )
-    T1=tk.Label(canva_rules, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n\n4", font=("System", 30), fg="black", bg="#3394ff")
-    T2=tk.Label(canva_rules2, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n\n4", font=("System", 30), fg="black", bg="#3394ff")
-    T1.place(x=85, y=200)
-    T2.place(x=85, y=200)
+    T1=tk.Label(canva_rules, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 25), fg="White", bg="#3394ff")
+    T2=tk.Label(canva_rules2, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 25), fg="White", bg="#3394ff")
+    T1.place(x=85, y=210)
+    T2.place(x=85, y=210)
 
 
     canva_rules2.grid(row=0, column=4, rowspan=5, )
     canva_rules.grid(row=0, column=0, rowspan=5, )
+
+    def animation1():
+        global index,text
+        if index >= len(regles):
+            index =- 1
+            text = ""
+            M3.config(text=regles)
+        else :
+            text = text+regles[index]
+            M3.config(text=text)
+            index += 1
+            rules.after(50, animation1)
+    M3.grid(row=2, column=1,)
+    rules.after(100, animation1)
     return
+
 ##--------------------------------------------##
 #----------------------------------------------#
 #--------creation des widgets textuels---------#
