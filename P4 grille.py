@@ -14,8 +14,8 @@ root.config(bg = "#3394ff")
 #-----------creation de la grille-------------#
 HEIGHT = 720 #Sera modifiable
 WIDTH = 1295 #Sera modifiable
-ligne = 15
-colonne = 15
+ligne = 11
+colonne = 7
 dim_grille = [ligne,colonne] #jeu de base donc non modifiable
 grille = []
 for i in range(ligne):
@@ -115,8 +115,8 @@ def placer_jeton(event):
     def animer_jeton(i):        
         jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_jeton,outline=contour,width=0.25 * rayon_jeton)
         if i <milieu_y:
-            root.after(180//ligne, lambda: canva_jeu.delete(jeton))  # supprime l'ancien cercle
-            root.after(180//ligne, lambda: animer_jeton(i + HEIGHT // ligne ))  # récursivité qui descend jusqu'à atteindre la limite²
+            root.after(200//ligne, lambda: canva_jeu.delete(jeton))  # supprime l'ancien cercle
+            root.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # récursivité qui descend jusqu'à atteindre la limite²
 
     animer_jeton(diff_milieux_y[-1])
     tour = "r" if tour == "j" else "j"
