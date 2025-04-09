@@ -29,7 +29,25 @@ root.mainloop()
 
 
 
+class popup(tk.Frame):
+    def __init__(self, parent, start_pos, end_pos):
+        super.__init__(master=parent)
 
+        self.start_pos = start_pos
+        self.end_pos = end_pos
+        self.width = abs(end_pos-start_pos)
+
+        self.pos = start_pos
+        self.in_start_pos = True
+
+        self.place(relx=self.start_pos, rely=0, relwidth=self.width, relheight=1)
+
+
+popup_animation = popup(root, 0, -0.3)
+
+
+B=tk.Button(root, anchor="center", bg="#ff7262", fg="white")
+B.place()
 
 
 
