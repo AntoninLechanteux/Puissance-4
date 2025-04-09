@@ -120,6 +120,13 @@ def Jeu_sandbox():
     sand.title("Jeu mode sandbox")
     sand.attributes("-fullscreen", True)
     sand.config(bg="#3394ff")
+    global couleur_bordure
+    global couleur_centre
+    global nom_couleur
+    couleur_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C"]
+    couleur_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F"]
+    nom_couleur = ["bleu","rouge","jaune", "vert"]
+    selec_couleur = [couleur_centre,couleur_bordure,nom_couleur]
     
     def jouer():
         #-----------creation de la fenetre-------------#
@@ -223,12 +230,14 @@ def Jeu_sandbox():
                                 break #Break pour eviter de faire tourner la boucle inutilement
     
             if tour_mod == "j":
-                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton) #Placement visuel sur le canva
+                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),
+                                      fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton) #Placement visuel sur le canva
                 verif() #Verifie s'il a gagné
                 tour_mod = "r" #Tour suivant 
                 return
             elif tour_mod == "r":
-                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
+                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),
+                                      fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
                 verif()
                 tour_mod = "j" #tour suivant 
                 return
@@ -246,6 +255,45 @@ def Jeu_sandbox():
     Mlig = tk.Label(sand, text="Ligne :", fg="white",  bg= "#3394ff",
                 font=("System",45))
     ligne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="solid", font=("Arial", 45))
+    LBcolor = tk.Listbox(sand, height=3, width=13, selectbackground= "blue", font=("System",30))
+    joueur1 = tk.Label(sand, text="",border=0, background="#3394ff", font=("System",45))
+    joueur2 = tk.Label(sand, text="",border=0, background="#3394ff", font=("System",45))
+   
+    # ------------------- Configuration des listebox ------------------ #
+    for item in nom_couleur: #Ajoute les couleurs disponibles a la listebox
+        LBcolor.insert(tk.END,item)
+    
+    def color():
+        for i in range(len(nom_couleur)):
+            LBcolor.itemconfigure(i, background=couleur_centre[i])
+    
+    color()
+    
+    def print_selec():  #Impression sur l'ecran de la couleur choisie  
+        if joueur1["text"] == "":
+            joueur1["text"]= LBcolor.get(LBcolor.curselection())
+            LBcolor.delete(LBcolor.curselection()) #suppression dans les choix pour pas se faire affronter les memes couleurs
+        else:
+            joueur2["text"] = LBcolor.get(LBcolor.curselection())
+            LBcolor.delete(LBcolor.curselection())
+        return   
+    
+    def annuler():  #réinsertion des couleurs choisies dans la liste des couleurs dispo et suppression des couleurs choisies
+        if (joueur1["text"] != "" and joueur2["text"] != ""):
+            LBcolor.insert(tk.END,joueur1["text"])
+            LBcolor.itemconfigure(len(nom_couleur)-2,background=couleur_centre[nom_couleur.index(joueur1["text"])])
+            joueur1["text"] = ""
+            LBcolor.insert(tk.END,joueur2["text"]) 
+            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(joueur2["text"])])
+            joueur2["text"] = ""
+        if joueur1["text"] != "":
+            LBcolor.insert(tk.END,joueur1["text"])
+            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(joueur1["text"])])
+            joueur1["text"] = "" 
+        return
+                
+    select = tk.Button(sand,text = "Selectionner", command=print_selec)
+    retour = tk.Button(sand, text= "Retour", command=annuler)
     
     Bhome.grid(column=2, row=8)
     Bplay.grid(column=4, row= 8)
@@ -254,6 +302,11 @@ def Jeu_sandbox():
     colonne.grid(column=2, row=2)
     Mlig.grid(column=4, row=2)
     ligne.grid(column=5, row=2)
+    LBcolor.grid(column=3, row=4)
+    joueur1.grid(column=1, row=4)
+    joueur2.grid(column=5, row=4)
+    select.grid(column=2,row=5)
+    retour.grid(column=4, row=5)
     
     sand.mainloop()
     return
