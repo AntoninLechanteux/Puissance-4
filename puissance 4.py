@@ -16,7 +16,7 @@ root=tk.Tk()
 root.title("Menu Puissance 4")
 root.attributes("-fullscreen", True)
 root.bind("<Escape>", lambda event: root.destroy())
-root.config(bg="white")
+root.config(bg="#3394ff")
 #----------------------------------------------#
 #--organisation de la geometrie de la fenetre--#
 support_root = tk.Frame(root, bg="#3394ff", width = width_screen, height= width_screen)
@@ -97,6 +97,13 @@ def Jeu_sandbox():
     sand.title("Jeu mode sandbox")
     sand.attributes("-fullscreen", True)
     sand.config(bg="#3394ff")
+    global couleur_bordure
+    global couleur_centre
+    global nom_couleur
+    couleur_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C"]
+    couleur_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F"]
+    nom_couleur = ["bleu","rouge","jaune", "vert"]
+    selec_couleur = [couleur_centre,couleur_bordure,nom_couleur]
     
     def jouer():
         #-----------creation de la fenetre-------------#
@@ -110,7 +117,12 @@ def Jeu_sandbox():
         #-----------creation de la grille-------------#
         HEIGHT = 720 
         WIDTH = 1295 
-        dim_grille = [int(ligne.get()),int(colonne.get())] 
+        ligne = 11
+        colonne = 7
+        dim_grille = [ligne,colonne] #jeu de base donc non modifiable
+        grille = []
+        for i in range(ligne):
+            grille.append([0] * colonne)
         canva_jeu = tk.Canvas(mod, height=HEIGHT, width=WIDTH,bg="#005bff", borderwidth=0)
         canva_jeu.pack(expand=True)
         rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
@@ -200,12 +212,14 @@ def Jeu_sandbox():
                                 break #Break pour eviter de faire tourner la boucle inutilement
     
             if tour_mod == "j":
-                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton) #Placement visuel sur le canva
+                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),
+                                      fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton) #Placement visuel sur le canva
                 verif() #Verifie s'il a gagné
                 tour_mod = "r" #Tour suivant 
                 return
             elif tour_mod == "r":
-                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),  fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
+                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),
+                                      fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
                 verif()
                 tour_mod = "j" #tour suivant 
                 return
@@ -223,6 +237,45 @@ def Jeu_sandbox():
     Mlig = tk.Label(sand, text="Ligne :", fg="white",  bg= "#3394ff",
                 font=("System",45))
     ligne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="solid", font=("Arial", 45))
+    LBcolor = tk.Listbox(sand, height=3, width=13, selectbackground= "blue", font=("System",30))
+    joueur1 = tk.Label(sand, text="",border=0, background="#3394ff", font=("System",45))
+    joueur2 = tk.Label(sand, text="",border=0, background="#3394ff", font=("System",45))
+   
+    # ------------------- Configuration des listebox ------------------ #
+    for item in nom_couleur: #Ajoute les couleurs disponibles a la listebox
+        LBcolor.insert(tk.END,item)
+    
+    def color():
+        for i in range(len(nom_couleur)):
+            LBcolor.itemconfigure(i, background=couleur_centre[i])
+    
+    color()
+    
+    def print_selec():  #Impression sur l'ecran de la couleur choisie  
+        if joueur1["text"] == "":
+            joueur1["text"]= LBcolor.get(LBcolor.curselection())
+            LBcolor.delete(LBcolor.curselection()) #suppression dans les choix pour pas se faire affronter les memes couleurs
+        else:
+            joueur2["text"] = LBcolor.get(LBcolor.curselection())
+            LBcolor.delete(LBcolor.curselection())
+        return   
+    
+    def annuler():  #réinsertion des couleurs choisies dans la liste des couleurs dispo et suppression des couleurs choisies
+        if (joueur1["text"] != "" and joueur2["text"] != ""):
+            LBcolor.insert(tk.END,joueur1["text"])
+            LBcolor.itemconfigure(len(nom_couleur)-2,background=couleur_centre[nom_couleur.index(joueur1["text"])])
+            joueur1["text"] = ""
+            LBcolor.insert(tk.END,joueur2["text"]) 
+            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(joueur2["text"])])
+            joueur2["text"] = ""
+        if joueur1["text"] != "":
+            LBcolor.insert(tk.END,joueur1["text"])
+            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(joueur1["text"])])
+            joueur1["text"] = "" 
+        return
+                
+    select = tk.Button(sand,text = "Selectionner", command=print_selec)
+    retour = tk.Button(sand, text= "Retour", command=annuler)
     
     Bhome.grid(column=2, row=8)
     Bplay.grid(column=4, row= 8)
@@ -231,6 +284,11 @@ def Jeu_sandbox():
     colonne.grid(column=2, row=2)
     Mlig.grid(column=4, row=2)
     ligne.grid(column=5, row=2)
+    LBcolor.grid(column=3, row=4)
+    joueur1.grid(column=1, row=4)
+    joueur2.grid(column=5, row=4)
+    select.grid(column=2,row=5)
+    retour.grid(column=4, row=5)
     
     sand.mainloop()
     return
@@ -261,41 +319,49 @@ def rules():
         rules.destroy()
         return
     global index,text
-    HEIGHT=750
-    WIDTH=400
+    HEIGHT=800
+    WIDTH=1280
     regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement,\n verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
     " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case \ndans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
     rules=tk.Tk()
     rules.title("Règles du jeu")
     rules.attributes("-fullscreen", True)
     rules.config(bg="#3394ff")
-    support_rules = tk.Frame(rules, bg="#3394ff", width = width_screen, height= width_screen)
-    support_rules.place(x=0, y=0)
+    rules.rowconfigure(0, weight=1)
+    rules.rowconfigure(1, weight=1)
+    rules.rowconfigure(2, weight=1)
+    rules.rowconfigure(3, weight=1)
+    rules.rowconfigure(4, weight=1)
+    rules.columnconfigure(0, weight=1)
+    rules.columnconfigure(1, weight=1)
+    rules.columnconfigure(2, weight=1)
+    rules.columnconfigure(3, weight=1)
+    rules.columnconfigure(4, weight=1)
     
-    M2=tk.Label(support_rules, text="Voici les règles du jeu! ", font=("System", 35), fg="White", bg="#3394ff")
-    M3=tk.Label(support_rules, text=regles, font=("System", 20), fg="white", bg="#3394ff", width=65)
-    M4=tk.Label(support_rules, text='A VOUS DE JOUER !!', font=("System", 35), fg="white", bg="#3394ff", width=20)
-    B5=tk.Button(support_rules, text="fermer les règles", font=("System",15), fg="white", 
+    M2=tk.Label(rules, text="Voici les règles du jeu! ", font=("System", 35), fg="White", bg="#3394ff")
+    M3=tk.Label(rules, text=regles, font=("System", 20), fg="white", bg="#3394ff", width=90, pady=10, padx=10)
+    M4=tk.Label(rules, text='A VOUS DE JOUER !!', font=("System", 35), fg="white", bg="#3394ff", width=60)
+    B5=tk.Button(rules, text="fermer les règles", font=("System",15), fg="white", 
                  bg="#ff7262", relief="ridge", command=fermer, padx=10, pady=5)
     
-    B5.place(x=width_screen/2-50, y=height_screen-50)
-    M2.place(x=width_screen/2-225, y=25) 
-    M4.place(x=width_screen/2-245, y=height_screen/1.25)    
-    M3.place(x=width_screen/4-125, y=height_screen/4) 
+    B5.grid(row=4, column=1,) # columnspan=4)
+    M2.grid(row=0, column=1,) #columnspan=4)
+    M4.grid(row=3, column=1,) #padx=10)    
+    M3.grid(row=2, column=1,) #padx=10)
     canva_rules = tk.Canvas(rules, height=HEIGHT, width=WIDTH/2,bg="#3394ff", borderwidth=0, highlightthickness=0)
     canva_rules2 = tk.Canvas(rules, height=HEIGHT, width=WIDTH/2,bg="#3394ff", borderwidth=0, highlightthickness=0)
     canva_rules.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
     canva_rules.create_oval((25,575),(175,725), fill="#ff3b30", outline = "#bb261f", width = 25 )
     canva_rules2.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
-    canva_rules2.create_oval((25,575),(175,725), fill="#ffd933", outline = "#e7ba00", width = 25 )
-    T1=tk.Label(canva_rules, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
-    T2=tk.Label(canva_rules2, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
-    T1.place(x=85, y=200)
-    T2.place(x=85, y=200)
+    canva_rules2.create_oval((25,625),(175,775), fill="#ffd933", outline = "#e7ba00", width = 25 )
+    T1=tk.Label(canva_rules, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 25), fg="White", bg="#3394ff")
+    T2=tk.Label(canva_rules2, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 25), fg="White", bg="#3394ff")
+    T1.place(x=85, y=210)
+    T2.place(x=85, y=210)
 
 
-    canva_rules2.place(x=0, y=(height_screen-HEIGHT)/2)
-    canva_rules.place(x=width_screen-WIDTH/2, y=(height_screen-HEIGHT)/2)
+    canva_rules2.grid(row=0, column=4, rowspan=5, )
+    canva_rules.grid(row=0, column=0, rowspan=5, )
 
     def animation1():
         global index,text
@@ -303,14 +369,17 @@ def rules():
             index =- 1
             text = ""
             M3.config(text=regles)
-        else :
-            text = text+regles[index]
+        else:
+            text = [text[i] for i in range(len(text)-2)]
+            text = ''.join(text)
+            text = text + regles[index] + " I"
             M3.config(text=text)
             index += 1
             rules.after(50, animation1)
-    M3.place(x=width_screen/4-170, y=height_screen/3)
+    M3.grid(row=2, column=1,)
     rules.after(20, animation1)
     return
+
 
 ##--------------------------------------------##
 #----------------------------------------------#
@@ -341,7 +410,7 @@ def bouton_touche(event, self):
     self.config(bg="#ff8e81")
 def bouton_relache(event, self):
     self.config(bg="#ff7262")
-    B1.bind("<Enter>", lambda event : bouton_touche(event,B1))
+B1.bind("<Enter>", lambda event : bouton_touche(event,B1))
 B1.bind("<Leave>", lambda event : bouton_relache(event,B1))
 B2.bind("<Enter>", lambda event : bouton_touche(event,B2))
 B2.bind("<Leave>", lambda event : bouton_relache(event,B2))
