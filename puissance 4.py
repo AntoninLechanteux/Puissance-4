@@ -203,7 +203,7 @@ def Jeu_sandbox():
     mod.title("Jeu mode sandbox")
 #----------------------------------------------#
     sand_height = height_screen
-    sand_width = width_screen/3
+    sand_width = width_screen/2
     sand = tk.LabelFrame(mod, height=sand_height, width=sand_width, bg="#6db3fe", relief="ridge")
     sand.place(x=0, y=0)
     global couleur_bordure
@@ -221,17 +221,20 @@ def Jeu_sandbox():
     dt = 3
     
     def animation_panel():
-        global dpos
-        sand.place(x=start_pos, y=0)
-        if dpos < abs(end_pos):
-            sand.place(x=start_pos-dpos, y=0)
-            dpos += 1
-            root.after(dt, animation_panel)
+        if (int(colonne.get()) != 0) and (int(ligne.get())!= 0) and (Choix_joueur1["text"]!="") and (Choix_joueur2["text"]!=""):
+            global dpos
+            sand.place(x=start_pos, y=0)
+            if dpos < abs(end_pos):
+                sand.place(x=start_pos-dpos, y=0)
+                dpos += 1
+                root.after(dt, animation_panel)
+            else:
+                sand.place(x=end_pos, y=0)
+                dpos=0
+                mod.after(1000, jouer)
+            return
         else:
-            sand.place(x=end_pos, y=0)
-            dpos=0
-            mod.after(1000, jouer)
-        return
+            print("les conditions ne sont pas respectées")
     def jouer():
         #-----------creation de la grille-------------#
         HEIGHT = 720 
@@ -241,7 +244,7 @@ def Jeu_sandbox():
         wBhome2 = Bhome2.winfo_reqwidth()
         hBhome2 = Bhome2.winfo_reqheight()
         Bhome2.place(x=width_screen/2-wBhome2/2, y=height_screen-1.5*hBhome2)
-        dim_grille=[7,11]
+        dim_grille=[int(ligne.get()),int(colonne.get())]
         canva_jeu = tk.Canvas(mod, height=HEIGHT, width=WIDTH,bg="#005bff", highlightthickness=0)
         canva_jeu.place(x=width_screen/2-WIDTH/2, y=0.1*HEIGHT)
         rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
@@ -354,32 +357,39 @@ def Jeu_sandbox():
     wBhome = Bhome.winfo_reqwidth()
     hBhome = Bhome.winfo_reqheight()
     Bhome.place(x=sand_width/6-wBhome/2, y=sand_height-1.5*hBhome)
-    Bplay = tk.Button(sand, text="Jouer",font=("System",15), fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=animation_panel)
+    Bplay = tk.Button(sand, text="Jouer",font=("System",15), fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, 
+                      command= animation_panel) #Bouton play
     wBplay = Bplay.winfo_reqwidth()
     hBplay = Bplay.winfo_reqheight()
     Bplay.place(x=sand_width/1.2-wBplay/2, y=sand_height-1.5*hBplay)
-    Mcol = tk.Label(sand, text=" nombre de colonnes :", fg="white",  bg= "#6db3fe", font=("System",15))
+    Mcol = tk.Label(sand, text=" Nombre de colonne :", fg="white",  bg= "#6db3fe", font=("System",22))
     wMcol = Mcol.winfo_reqwidth() 
     Mcol.place(x=sand_width/6-wMcol/2, y=sand_height/5-50)
     colonne = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wcolonne = colonne.winfo_reqwidth()
     colonne.place(x=sand_width/6-wcolonne/2, y=sand_height/5)
-    Mlig = tk.Label(sand, text="nombre de lignes :", fg="white",  bg= "#6db3fe", font=("System",15))
+    Mlig = tk.Label(sand, text="Nombre de ligne :", fg="white",  bg= "#6db3fe", font=("System",22))
     wMlig = Mlig.winfo_reqwidth()
     Mlig.place(x=sand_width/1.2-wMlig/2, y=sand_height/5-50)
     ligne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wligne = ligne.winfo_reqwidth()
-    ligne.place(x=sand_width/1.2-wligne/2, y=sand_height/5)
+    ligne.place(x=sand_width/1.2-wligne/2, y=sand_height/5)  
     LBcolor = tk.Listbox(sand, height=3, width=13, selectbackground= "blue", font=("System",15))
     wLBcolor = LBcolor.winfo_reqwidth()
     LBcolor.place(x=sand_width/2-wLBcolor/2, y=sand_height/2-50)
     joueur1 = tk.Label(sand, text="Joueur 1 :",border=0, background="#6db3fe", font=("System",15))
     wjoueur1 = joueur1.winfo_reqwidth()
     joueur1.place(x=sand_width/6-wjoueur1/2, y=sand_height/2)
+    Choix_joueur1 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",15))
+    wChoix_joueur1 = Choix_joueur1.winfo_reqwidth()
+    Choix_joueur1.place(x=sand_width/6-wChoix_joueur1/1.3, y=sand_height/1.89)
     joueur2 = tk.Label(sand, text="Joueur 2 :",border=0, background="#6db3fe", font=("System",15))
     wjoueur2 = joueur2.winfo_reqwidth()
     joueur2.place(x=sand_width/1.2-wjoueur2/2, y=sand_height/2)
-    
+    Choix_joueur2 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",15))
+    wChoix_joueur2 = Choix_joueur2.winfo_reqwidth()
+    Choix_joueur2.place(x=sand_width/1.2-wChoix_joueur2/2,y=sand_height/1.89)
+
     # ------------------- Configuration des listebox ------------------ #
     for item in nom_couleur: #Ajoute les couleurs disponibles a la listebox
         LBcolor.insert(tk.END,item)
@@ -391,32 +401,32 @@ def Jeu_sandbox():
     color()
     
     def print_selec():  #Impression sur l'ecran de la couleur choisie  
-        if joueur1["text"] == "":
-            joueur1["text"]= LBcolor.get(LBcolor.curselection())
+        if Choix_joueur1["text"] == "":
+            Choix_joueur1["text"]= LBcolor.get(LBcolor.curselection())
             LBcolor.delete(LBcolor.curselection()) #suppression dans les choix pour pas se faire affronter les memes couleurs
         else:
-            joueur2["text"] = LBcolor.get(LBcolor.curselection())
+            Choix_joueur2["text"] = LBcolor.get(LBcolor.curselection())
             LBcolor.delete(LBcolor.curselection())
         return   
     
     def annuler():  #réinsertion des couleurs choisies dans la liste des couleurs dispo et suppression des couleurs choisies
-        if (joueur1["text"] != "" and joueur2["text"] != ""):
-            LBcolor.insert(tk.END,joueur1["text"])
-            LBcolor.itemconfigure(len(nom_couleur)-2,background=couleur_centre[nom_couleur.index(joueur1["text"])])
-            joueur1["text"] = ""
-            LBcolor.insert(tk.END,joueur2["text"]) 
-            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(joueur2["text"])])
-            joueur2["text"] = ""
-        if joueur1["text"] != "":
-            LBcolor.insert(tk.END,joueur1["text"])
-            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(joueur1["text"])])
-            joueur1["text"] = "" 
+        if (Choix_joueur1["text"] != "" and Choix_joueur2["text"] != ""):
+            LBcolor.insert(tk.END,Choix_joueur1["text"])
+            LBcolor.itemconfigure(len(nom_couleur)-2,background=couleur_centre[nom_couleur.index(Choix_joueur1["text"])])
+            Choix_joueur1["text"] = ""
+            LBcolor.insert(tk.END,Choix_joueur2["text"]) 
+            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(Choix_joueur2["text"])])
+            Choix_joueur2["text"] = ""
+        elif Choix_joueur1["text"] != "":
+            LBcolor.insert(tk.END,Choix_joueur1["text"])
+            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(Choix_joueur1["text"])])
+            Choix_joueur1["text"] = "" 
         return
 
     select = tk.Button(sand,text = "Selectionner", command=print_selec, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
     wselect = select.winfo_reqwidth()
     select.place(x=sand_width/6-wselect/2, y=sand_height/1.75)
-    retour = tk.Button(sand, text= "Retour", command=annuler, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
+    retour = tk.Button(sand, text= "Annuler", command=annuler, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
     wretour = retour.winfo_reqwidth()
     retour.place(x=sand_width/1.2-wretour/2, y=sand_height/1.75)
 
