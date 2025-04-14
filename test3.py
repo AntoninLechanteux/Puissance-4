@@ -9,24 +9,26 @@ def close():
     root.destroy()
     return
 
-end_pos = 350
-start_pos = -350
+end_pos = -350
+start_pos = 0
 dpos=0
 dt=5
 dx=0
 panel = tk.LabelFrame(root, bg="#6db3fe", width=350, height=864, relief="ridge")
 B2 = tk.Button(panel, bg = "#ff7262", text = "terminer",fg = "white", relief="ridge", command=close )
-B2.place(x=125, y=432)
+wB2 = B2.winfo_reqwidth()
+print(wB2)
+B2.place(x=175-wB2, y=432)
 
 def animation():
     global dpos
     panel.place(x=start_pos, y=0)
-    if dpos < end_pos:
-        panel.place(x=start_pos+dpos, y=0)
+    if dpos < abs(end_pos):
+        panel.place(x=start_pos-dpos, y=0)
         dpos += 1
         root.after(dt, animation)
     else:
-        panel.place(x=0, y=0)
+        panel.place(x=end_pos, y=0)
         dpos=0
     return
 

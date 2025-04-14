@@ -8,9 +8,6 @@ from win32api import GetSystemMetrics
 width_screen = GetSystemMetrics(0)
 height_screen = GetSystemMetrics(1)
 
-print(width_screen)
-print(height_screen)
-
 #-----------creation de la fenetre-------------#
 root=tk.Tk()
 root.title("Menu Puissance 4")
@@ -22,8 +19,14 @@ root.config(bg="white")
 
 #----------------------------------------------#
 #-------creation des fonctions à appeler-------#
-tour="jaune"
+tour=""
 def Jeu_normal():
+    global tour
+    hasard = rd.choice([0, 1])
+    if hasard == 0:
+        tour = "jaune"
+    else:
+        tour = "rouge"
     def fermer():
         game.destroy()
         return
@@ -71,55 +74,61 @@ def Jeu_normal():
     game.mainloop()
     return
 
+
 def Jeu_sandbox():
     def fermer():
-        sand.destroy()
+        mod.destroy()
         return
-    sand=tk.Tk()
-    sand.columnconfigure(0, weight=1)
-    sand.columnconfigure(1, weight=1)
-    sand.columnconfigure(2, weight=1)
-    sand.columnconfigure(3, weight=1)
-    sand.columnconfigure(4, weight=1)
-    sand.columnconfigure(5, weight=1)
-    sand.columnconfigure(6, weight=1)
-    sand.rowconfigure(0, weight=1)
-    sand.rowconfigure(1, weight=1)
-    sand.rowconfigure(2, weight=1)
-    sand.rowconfigure(3, weight=1)
-    sand.rowconfigure(4, weight=1)
-    sand.rowconfigure(5, weight=1)
-    sand.rowconfigure(6, weight=1)
-    sand.rowconfigure(7, weight=1)
-    sand.rowconfigure(8, weight=1)
-    
-    sand.title("Jeu mode sandbox")
-    sand.attributes("-fullscreen", True)
-    sand.config(bg="#3394ff")
+#-----------creation de la fenetre-------------#
+    mod=tk.Tk()
+    mod.geometry("720x480")
+    mod.attributes("-fullscreen", True)
+    mod.config(bg = "#3394ff")
+    mod.title("Jeu mode sandbox")
+#----------------------------------------------#
+    sand_height = height_screen
+    sand_width = width_screen/3
+    sand = tk.LabelFrame(mod, height=sand_height, width=sand_width, bg="#6db3fe", relief="ridge")
+    sand.place(x=0, y=0)
     global couleur_bordure
     global couleur_centre
     global nom_couleur
+    global dpos
     couleur_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C"]
     couleur_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F"]
     nom_couleur = ["bleu","rouge","jaune", "vert"]
     selec_couleur = [couleur_centre,couleur_bordure,nom_couleur]
-    
-    def jouer():
-        #-----------creation de la fenetre-------------#
-        mod=tk.Tk()
-        mod.geometry("720x480")
-        mod.title("Menu Puissance 4")
-        mod.attributes("-fullscreen", True)
-        mod.config(bg = "#3394ff")
-        #----------------------------------------------#
 
+    end_pos = -sand_width
+    start_pos = 0
+    dpos = 0
+    dt = 3
+    
+    def animation_panel():
+        global dpos
+        sand.place(x=start_pos, y=0)
+        if dpos < abs(end_pos):
+            sand.place(x=start_pos-dpos, y=0)
+            dpos += 1
+            root.after(dt, animation_panel)
+        else:
+            sand.place(x=end_pos, y=0)
+            dpos=0
+            mod.after(1000, jouer)
+        return
+    def jouer():
         #-----------creation de la grille-------------#
         HEIGHT = 720 
         WIDTH = 1295
         ligne = 11
         colonne = 7
+        Bhome2=tk.Button(mod, text="Quitter", font=("System",15),
+                 fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=fermer)
+        wBhome2 = Bhome2.winfo_reqwidth()
+        hBhome2 = Bhome2.winfo_reqheight()
+        Bhome2.place(x=width_screen/2-wBhome2/2, y=height_screen-2*hBhome2)
         canva_jeu = tk.Canvas(mod, height=HEIGHT, width=WIDTH,bg="#005bff", borderwidth=0)
-        canva_jeu.pack(expand=True)
+        canva_jeu.place(x=width_screen/2-WIDTH/2, y=50)
         rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
         for i in range(dim_grille[1]):
             for j in range(dim_grille[0]):
@@ -219,23 +228,43 @@ def Jeu_sandbox():
                 tour_mod = "j" #tour suivant 
                 return
         mod.bind("<Button-1>", placer_jeton_mod)
-            
-    M1=tk.Label(sand, text="Configuations", fg="white",  bg= "#3394ff",
-                font=("System",45))
-    Bhome=tk.Button(sand, text="Retour au menu", font=("haelvetica",15),
-                 fg="black", bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
-    Bplay = tk.Button(sand, text="Jouer",font=("haelvetica",15),
-                 fg="black", bg="lightgrey", relief="ridge", padx=10, pady=5, command=jouer)
-    Mcol = tk.Label(sand, text="Colonne :", fg="white",  bg= "#3394ff",
-                font=("System",45))
-    colonne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="solid", font=("Arial", 45))
-    Mlig = tk.Label(sand, text="Ligne :", fg="white",  bg= "#3394ff",
-                font=("System",45))
-    ligne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="solid", font=("Arial", 45))
-    LBcolor = tk.Listbox(sand, height=3, width=13, selectbackground= "blue", font=("System",30))
-    joueur1 = tk.Label(sand, text="",border=0, background="#3394ff", font=("System",45))
-    joueur2 = tk.Label(sand, text="",border=0, background="#3394ff", font=("System",45))
-   
+
+    M1=tk.Label(sand, text="Configuations", fg="white",  bg= "#6db3fe", font=("System",30))
+    wM1 = M1.winfo_reqwidth()
+    hM1 = M1.winfo_reqheight()
+    
+    M1.place(x=sand_width/2-wM1/2, y=0.5*hM1)
+    Bhome=tk.Button(sand, text="Quitter", font=("System",15),
+                 fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=fermer)
+    wBhome = Bhome.winfo_reqwidth()
+    hBhome = Bhome.winfo_reqheight()
+    Bhome.place(x=sand_width/6-wBhome/2, y=sand_height-1.5*hBhome)
+    Bplay = tk.Button(sand, text="Jouer",font=("System",15), fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=animation_panel)
+    wBplay = Bplay.winfo_reqwidth()
+    hBplay = Bplay.winfo_reqheight()
+    Bplay.place(x=sand_width/1.2-wBplay/2, y=sand_height-1.5*hBplay)
+    Mcol = tk.Label(sand, text=" nombre de colonnes :", fg="white",  bg= "#6db3fe", font=("System",15))
+    wMcol = Mcol.winfo_reqwidth() 
+    Mcol.place(x=sand_width/6-wMcol/2, y=sand_height/5-50)
+    colonne = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    wcolonne = colonne.winfo_reqwidth()
+    colonne.place(x=sand_width/6-wcolonne/2, y=sand_height/5)
+    Mlig = tk.Label(sand, text="nombre de lignes :", fg="white",  bg= "#6db3fe", font=("System",15))
+    wMlig = Mlig.winfo_reqwidth()
+    Mlig.place(x=sand_width/1.2-wMlig/2, y=sand_height/5-50)
+    ligne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    wligne = ligne.winfo_reqwidth()
+    ligne.place(x=sand_width/1.2-wligne/2, y=sand_height/5)
+    LBcolor = tk.Listbox(sand, height=3, width=13, selectbackground= "blue", font=("System",15))
+    wLBcolor = LBcolor.winfo_reqwidth()
+    LBcolor.place(x=sand_width/2-wLBcolor/2, y=sand_height/2-50)
+    joueur1 = tk.Label(sand, text="Joueur 1 :",border=0, background="#6db3fe", font=("System",15))
+    wjoueur1 = joueur1.winfo_reqwidth()
+    joueur1.place(x=sand_width/6-wjoueur1/2, y=sand_height/2)
+    joueur2 = tk.Label(sand, text="Joueur 2 :",border=0, background="#6db3fe", font=("System",15))
+    wjoueur2 = joueur2.winfo_reqwidth()
+    joueur2.place(x=sand_width/1.2-wjoueur2/2, y=sand_height/2)
+    
     # ------------------- Configuration des listebox ------------------ #
     for item in nom_couleur: #Ajoute les couleurs disponibles a la listebox
         LBcolor.insert(tk.END,item)
@@ -268,24 +297,15 @@ def Jeu_sandbox():
             LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(joueur1["text"])])
             joueur1["text"] = "" 
         return
-                
-    select = tk.Button(sand,text = "Selectionner", command=print_selec)
-    retour = tk.Button(sand, text= "Retour", command=annuler)
-    
-    Bhome.grid(column=2, row=8)
-    Bplay.grid(column=4, row= 8)
-    M1.grid(column=3, row=0)
-    Mcol.grid(column=1, row=2)
-    colonne.grid(column=2, row=2)
-    Mlig.grid(column=4, row=2)
-    ligne.grid(column=5, row=2)
-    LBcolor.grid(column=3, row=4)
-    joueur1.grid(column=1, row=4)
-    joueur2.grid(column=5, row=4)
-    select.grid(column=2,row=5)
-    retour.grid(column=4, row=5)
-    
-    sand.mainloop()
+
+    select = tk.Button(sand,text = "Selectionner", command=print_selec, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
+    wselect = select.winfo_reqwidth()
+    select.place(x=sand_width/6-wselect/2, y=sand_height/1.75)
+    retour = tk.Button(sand, text= "Retour", command=annuler, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
+    wretour = retour.winfo_reqwidth()
+    retour.place(x=sand_width/1.2-wretour/2, y=sand_height/1.75)
+
+    mod.mainloop()
     return
 
 def settings():
