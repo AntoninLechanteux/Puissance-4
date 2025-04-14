@@ -21,19 +21,13 @@ root.config(bg="white")
 
 #----------------------------------------------#
 #-----Création de la fenêtre de jeu normal-----#
-couleur_jeton = "#ffd933" 
-contour = "#e7ba00" 
-tour = 'j'
-cooldown = 0
-cursor_grid = 0
+tour = 'Sera modifié dans le code'
+couleur_centre = 'Sera modifié dans le code'
+couleur_bordure = 'Sera modifié dans le code'
+cooldown = 0 #A garder pour l'antispam
+cursor_grid = 0#A garder pour savoir si on clique dans la grille
 
 def Jeu_normal():
-    global tour
-    hasard = rd.choice([0, 1])
-    if hasard == 0:
-        tour = "jaune"
-    else:
-        tour = "rouge"
     def fermer():
         game.destroy()
         return
@@ -58,7 +52,7 @@ def Jeu_normal():
 
     ligne = 6
     colonne = 7
-    dim_grille = [ligne,colonne] #Fixe pour jeu normal
+    dim_grille = [ligne,colonne] #MODIF SANBOX : Adapter la taille de la grille
     grille = []
     for i in range(ligne):
         grille.append([0] * colonne)
@@ -71,8 +65,14 @@ def Jeu_normal():
             
     #----------------------------------------------#
     #-------------Création des jetons--------------#
+    global tour
+    global couleur_centre
+    global couleur_bordure
+    tour = rd.choice(['j','r'])  #MODIF SANBOX : Faire choisir entre les 2 skins choisis
+    couleur_centre = '#ffd933' if tour == 'j' else '#ff3b30'   #MODIF SANBOX : Détermine leur couleurs associées aux skins
+    couleur_bordure = '#e7ba00' if tour == 'j' else '#bb261f' #MODIF SANBOX : Détermine leur couleurs associées aux skins
     rayon_jeton = 1.8 * rayon_trou / 2.09 
-    tour = 'j'
+
     diff_milieux_y = [i*HEIGHT//(ligne*2) for i in range(1,ligne*2,2)]
     diff_milieux_y.reverse()
     diff_milieux_x = [i*WIDTH//(colonne) for i in range(0,colonne+1)]
@@ -129,8 +129,8 @@ def Jeu_normal():
     #------------Animation des jetons--------------#
     def placer_jeton(event):
         global tour
-        global couleur_jeton
-        global contour
+        global couleur_centre
+        global couleur_bordure
         global cooldown
         coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
         (milieu_x,milieu_y) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
@@ -153,21 +153,24 @@ def Jeu_normal():
                                 break
             
             def animer_jeton(i):        
-                jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_jeton,outline=contour,width=0.25 * rayon_jeton)
+                jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_centre,outline=couleur_bordure,width=0.25 * rayon_jeton)
                 if i <milieu_y:
                     game.after(200//ligne, lambda: canva_jeu.delete(jeton))  # supprime l'ancien cercle
                     game.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # récursivité qui descend jusqu'à atteindre la limite
             
-            def cooldown_switch():
+            def player_switch():
+                global tour
+                global couleur_centre
+                global couleur_bordure
                 global cooldown
-                cooldown=0            
+                cooldown=0   
+                tour = "r" if tour == "j" else "j" #MODIF SANBOX : Changer le nom des tours en fonction des skins
+                couleur_centre = "#ffd933" if tour == "j" else "#ff3b30" #MODIF SANBOX : Adapter la couleur en fonction du skin
+                couleur_bordure = "#e7ba00" if tour == "j" else "#bb261f"  #MODIF SANBOX : Adapter la couleur en fonction du skin  
 
             animer_jeton(diff_milieux_y[-1])
-            root.after(300, cooldown_switch)
+            root.after(300, player_switch)
             verif()
-            tour = "r" if tour == "j" else "j"
-            couleur_jeton = "#ffd933" if tour == "j" else "#ff3b30"
-            contour = "#e7ba00" if tour == "j" else "#bb261f"
             
         elif cooldown == 1 :
             return
