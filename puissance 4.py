@@ -446,8 +446,8 @@ def rules():
         rules.destroy()
         return
     global index,text
-    HEIGHT=775
-    WIDTH=400
+    HEIGHT=0.9*height_screen
+    WIDTH=200
     regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement,\n verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
     " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case \ndans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
     rules=tk.Tk()
@@ -458,17 +458,24 @@ def rules():
     support_rules.place(x=0, y=0)
     
     M2=tk.Label(support_rules, text="Voici les règles du jeu! ", font=("System", 35), fg="White", bg="#3394ff")
-    M2.place(x=width_screen/2-225, y=25)
+    wM2 = M2.winfo_reqwidth()
+    hM2 = M2.winfo_reqheight()
+    M2.place(x=width_screen/2-wM2/2, y=0.2*hM2)
     M3=tk.Label(support_rules, text=regles, font=("System", 20), fg="white", bg="#3394ff", width=65)
-    M3.place(x=width_screen/4-125, y=height_screen/4) 
-    M4=tk.Label(support_rules, text='A VOUS DE JOUER !!', font=("System", 35), fg="white", bg="#3394ff", width=20)
-    M4.place(x=width_screen/2-245, y=height_screen/1.25)    
-    B5=tk.Button(support_rules, text="fermer les règles", font=("System",15), fg="white", 
+    wM3 = M3.winfo_reqwidth()
+    hM3 = M3.winfo_reqheight()
+    M3.place(x=width_screen/2-wM3/2, y=height_screen/4-hM3/2) 
+    B5=tk.Button(support_rules, text="Quitter", font=("System",15), fg="white", 
                  bg="#ff7262", relief="ridge", command=fermer, padx=10, pady=5)
-    B5.place(x=width_screen/2-50, y=height_screen-50)
+    wB5 = B5.winfo_reqwidth()
+    hB5 = B5.winfo_reqheight()
+    B5.place(x=width_screen/2-wB5/2, y=height_screen-1.5*hB5)
     
-    frame_gauche = tk.Frame(support_rules, height=HEIGHT, width=WIDTH/2, bg ="#3394ff")
-    frame_droite = tk.Frame(support_rules, height=HEIGHT, width=WIDTH/2, bg ="#3394ff")
+    frame_gauche = tk.Frame(support_rules, height=HEIGHT, width=WIDTH, bg ="#3394ff")
+    hframe_gauche = frame_gauche.winfo_reqheight()
+    frame_droite = tk.Frame(support_rules, height=HEIGHT, width=WIDTH, bg ="#3394ff")
+    wframe_droite = frame_droite.winfo_reqwidth()
+    hframe_droite = frame_droite.winfo_reqheight()
     jeton_gauche_1 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
     jeton_gauche_1_counter = 1
     jeton_gauche_2 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
@@ -478,20 +485,24 @@ def rules():
     jeton_droite_2 = tk.Canvas(frame_droite, height=200, width=200, bg ='#3394ff', highlightthickness=0)
     jeton_droite_2_counter = 1
 
-    jeton_gauche_1.place(x=0, y=0)
-    jeton_gauche_2.place(x=0, y=height_screen-289)
+    hjeton = jeton_gauche_1.winfo_reqheight()
+    wjeton = jeton_gauche_1.winfo_reqwidth()
+    jeton_gauche_1.place(x=WIDTH/2-wjeton/2, y=0)
+    jeton_gauche_2.place(x=WIDTH/2-wjeton/2, y=HEIGHT-hjeton)
     jeton_gauche_1.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
     jeton_gauche_2.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25  )
-    jeton_droite_1.place(x=0, y=0)
-    jeton_droite_2.place(x=0, y=height_screen-289)
+    jeton_droite_1.place(x=WIDTH/2-wjeton/2, y=0)
+    jeton_droite_2.place(x=WIDTH/2-wjeton/2, y=HEIGHT-hjeton)
     jeton_droite_1.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
     jeton_droite_2.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25  )
-    frame_gauche.place(x=0, y=(height_screen-HEIGHT)/2)
-    frame_droite.place(x=width_screen-WIDTH/2, y=(height_screen-HEIGHT)/2)
+    frame_gauche.place(x=0, y=height_screen/2-hframe_gauche/2)
+    frame_droite.place(x=width_screen-wframe_droite, y=height_screen/2-hframe_droite/2)
     Tg=tk.Label(frame_gauche, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
     Td=tk.Label(frame_droite, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
-    Tg.place(x=85, y=210)
-    Td.place(x=85, y=210)
+    hT = Tg.winfo_reqheight()
+    wT = Tg.winfo_reqwidth()
+    Tg.place(x=WIDTH/2-wT/2, y=HEIGHT/2-hT/2)
+    Td.place(x=WIDTH/2-wT/2, y=HEIGHT/2-hT/2)
 
     jeton_gauche_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_1, jeton_gauche_1_counter))
     jeton_gauche_1.bind('<ButtonRelease-1>', lambda event : animation_relache_jg1(event, jeton_gauche_1, jeton_gauche_1_counter))
@@ -502,6 +513,11 @@ def rules():
     jeton_droite_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_2, jeton_droite_2_counter))
     jeton_droite_2.bind('<ButtonRelease-1>', lambda event : animation_relache_jd2(event, jeton_droite_2, jeton_droite_2_counter))
         
+    def animation2():
+        M4=tk.Label(support_rules, text='A VOUS DE JOUER !!', font=("System", 35), fg="white", bg="#3394ff", width=20)
+        wM4 = M4.winfo_reqwidth()
+        M4.place(x=width_screen/2-wM4/2, y=height_screen/1.5)    
+        return
 
     def animation1():
         global index,text
@@ -516,31 +532,42 @@ def rules():
             M3.config(text=text)
             index += 1
             rules.after(50, animation1)
-    M3.place(x=width_screen/4-170, y=height_screen/3)
+    M3.place(x=width_screen/2-wM3/2, y=height_screen/2-hM3/1.5)
     rules.after(20, animation1)
+    rules.after(29000, animation2)
     return
 #----------------------------------------------------------#
 #---------------creation des widget menu-------------------#
-HEIGHT=775
-WIDTH=400
+HEIGHT=0.9*height_screen
+WIDTH=200
 support_root = tk.Frame(root, bg="#3394ff", width = width_screen, height= width_screen)
-support_root.place(x=0, y=0)
+support_button = tk.Frame(support_root, bg="#3394ff")
 
-B1=tk.Button(support_root, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
+B1=tk.Button(support_button, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
              fg="white", relief="raised", padx=5, pady=15, command=Jeu_normal)
-B1.place(x=width_screen/2-125, y=height_screen/3.75)
-B2=tk.Button(support_root, text="PARTIE CUSTOM", font=('system', 20), bg="#ff7262", 
+B2=tk.Button(support_button, text="PARTIE CUSTOM", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=14, pady=15, command=Jeu_sandbox)
-B2.place(x=width_screen/2-125, y=height_screen/3.75+100)
-B3=tk.Button(support_root, text="SAUVEGARDE", font=('system', 20), bg="#ff7262", 
-             fg="white", relief="raised", padx=34, pady=15, command=settings)
-B3.place(x=width_screen/2-125, y=height_screen/3.75+200)
-B4=tk.Button(support_root, text="REGLES", font=('system', 20), bg="#ff7262", 
+B3=tk.Button(support_button, text="SAUVEGARDE", font=('system', 20), bg="#ff7262", 
+             fg="white", relief="raised", padx=33, pady=15, command=settings)
+B4=tk.Button(support_button, text="REGLES", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=69, pady=15, command=rules)
-B4.place(x=width_screen/2-125, y=height_screen/3.75+300)
 M1=tk.Label(support_root, text="Bienvenue sur Puissance 4 !", fg="white",  bg= "#3394ff",
                   font=("System",45))
-M1.place(x=width_screen/4, y=25)
+wB1 = B1.winfo_reqwidth()
+hB1 = B1.winfo_reqheight()
+wM1 = M1.winfo_reqwidth()
+hM1 = M1.winfo_reqheight()
+support_button.config(width=wB1, height=360)
+dy = 8
+support_button.place(x=width_screen/2-wB1/2, y=height_screen/2-hB1*2)
+B1.place(x=0, y=0)
+B2.place(x=0, y=hB1+dy)
+B3.place(x=0, y=2*hB1+2*dy)
+B4.place(x=0, y=3*hB1+3*dy)
+M1.place(x=width_screen/2-wM1/2, y=0.2*hM1)
+support_root.place(x=0, y=0)
+
+
 #----------------------------------------------#
 #-------------Effets graphiques fenêtre principale--------------#
 ##-------------------surbrillance boutton----------------------##
@@ -606,8 +633,10 @@ def animation_relache_jd2(event, self, counter):
     elif counter % 2 == 1 :
         self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
 
-frame_gauche = tk.Frame(support_root,height=HEIGHT, width=WIDTH/2, bg ="#3394ff")
-frame_droite = tk.Frame(support_root,height=HEIGHT, width=WIDTH/2, bg ="#3394ff")
+frame_gauche = tk.Frame(support_root,height=HEIGHT, width=WIDTH, bg ="#3394ff")
+frame_droite = tk.Frame(support_root,height=HEIGHT, width=WIDTH, bg ="#3394ff")
+wframe = frame_gauche.winfo_reqwidth()
+hframe = frame_gauche.winfo_reqheight()
 jeton_gauche_1 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
 jeton_gauche_1_counter = 1
 jeton_gauche_2 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
@@ -617,20 +646,24 @@ jeton_droite_1_counter = 0
 jeton_droite_2 = tk.Canvas(frame_droite, height=200, width=200, bg ='#3394ff', highlightthickness=0)
 jeton_droite_2_counter = 1
 
-jeton_gauche_1.place(x=0, y=0)
-jeton_gauche_2.place(x=0, y=height_screen-289)
+wjeton = jeton_gauche_1.winfo_reqwidth()
+hjeton = jeton_gauche_1.winfo_reqheight()
+jeton_gauche_1.place(x=WIDTH/2-wjeton/2, y=0)
+jeton_gauche_2.place(x=WIDTH/2-wjeton/2, y=HEIGHT-hjeton)
 jeton_gauche_1.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
 jeton_gauche_2.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25  )
-jeton_droite_1.place(x=0, y=0)
-jeton_droite_2.place(x=0, y=height_screen-289)
+jeton_droite_1.place(x=WIDTH/2-wjeton/2, y=0)
+jeton_droite_2.place(x=WIDTH/2-wjeton/2, y=HEIGHT-hjeton)
 jeton_droite_1.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
 jeton_droite_2.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25  )
-frame_gauche.place(x=0, y=(height_screen-HEIGHT)/2)
-frame_droite.place(x=width_screen-WIDTH/2, y=(height_screen-HEIGHT)/2)
+frame_gauche.place(x=0, y=height_screen/2-hframe/2)
+frame_droite.place(x=width_screen-wframe, y=height_screen/2-hframe/2)
 Tg=tk.Label(frame_gauche, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
 Td=tk.Label(frame_droite, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
-Tg.place(x=85, y=210)
-Td.place(x=85, y=210)
+wT = Tg.winfo_reqwidth()
+hT= Tg.winfo_reqheight()
+Tg.place(x=WIDTH/2-wT/2, y=HEIGHT/2-hT/2)
+Td.place(x=WIDTH/2-wT/2, y=HEIGHT/2-hT/2)
 
 jeton_gauche_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_1, jeton_gauche_1_counter))
 jeton_gauche_1.bind('<ButtonRelease-1>', lambda event : animation_relache_jg1(event, jeton_gauche_1, jeton_gauche_1_counter))
