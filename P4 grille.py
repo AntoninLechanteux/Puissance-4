@@ -87,43 +87,53 @@ def diag_droit_gauche_fct(): #fonction qui verifie si 4 jetons sont alignés en 
 tour = "j"
 couleur_jeton = "#ffd933" 
 contour = "#e7ba00" 
+cooldown = 0
 
 def placer_jeton(event):
     global tour
     global grille
     global couleur_jeton
     global contour
+    global cooldown
     coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
     (milieu_x,milieu_y) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
     
-    for i in range(colonne):   #pour chaque colonne
-        if diff_milieux_x[i] <= milieu_x < diff_milieux_x[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
-            if all(j[i] == 0 for j in grille): #cas ou toutes les trous de la colonne sont nulles
-                grille[0][i] = tour #on place la couleur en bas de la grille virtuelle
-                milieu_y = diff_milieux_y[0] #on place le jeton tout en bas dans le canva
-                break #break pour eviter de faire tourner la boucle inutilement 
-            elif grille[ligne-1][i] != 0: #On verifie si 
-                print(f"La {i+1} ème colonne est pleine") #Afficher quelque part sur l écran que la colonne est pleine
-                return
-            else:
-                for t in range(ligne-1,-1,-1): #on regarde du haut vers le bas
-                    if grille[t][i] != 0: #et des qu'un trou est plein
-                        grille[t+1][i] = tour #on remplit celui d'au dessus
-                        milieu_y = diff_milieux_y[t+1]
-                        break
+    if cooldown == 0 :
+        cooldown = 1
+        for i in range(colonne):   #pour chaque colonne
+            if diff_milieux_x[i] <= milieu_x < diff_milieux_x[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
+                if all(j[i] == 0 for j in grille): #cas ou toutes les trous de la colonne sont nulles
+                    grille[0][i] = tour #on place la couleur en bas de la grille virtuelle
+                    milieu_y = diff_milieux_y[0] #on place le jeton tout en bas dans le canva
+                    break #break pour eviter de faire tourner la boucle inutilement 
+                elif grille[ligne-1][i] != 0: #On verifie si 
+                    print(f"La {i+1} ème colonne est pleine") #Afficher quelque part sur l écran que la colonne est pleine
+                    return
+                else:
+                    for t in range(ligne-1,-1,-1): #on regarde du haut vers le bas
+                        if grille[t][i] != 0: #et des qu'un trou est plein
+                            grille[t+1][i] = tour #on remplit celui d'au dessus
+                            milieu_y = diff_milieux_y[t+1]
+                            break
 
-    def animer_jeton(i):        
-        jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_jeton,outline=contour,width=0.25 * rayon_jeton)
-        if i <milieu_y:
-            root.after(200//ligne, lambda: canva_jeu.delete(jeton))  # supprime l'ancien cercle
-            root.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # récursivité qui descend jusqu'à atteindre la limite²
+        def animer_jeton(i):        
+            jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_jeton,outline=contour,width=0.25 * rayon_jeton)
+            if i <milieu_y:
+                root.after(200//ligne, lambda: canva_jeu.delete(jeton))  # supprime l'ancien cercle
+                root.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # récursivité qui descend jusqu'à atteindre la limite
+        def cooldown():
+            global cooldown
+            cooldown=0
 
-    animer_jeton(diff_milieux_y[-1])
-    tour = "r" if tour == "j" else "j"
-    couleur_jeton = "#ffd933" if tour == "j" else "#ff3b30"
-    contour = "#e7ba00" if tour == "j" else "#bb261f"
+        animer_jeton(diff_milieux_y[-1])
+        root.after(300, cooldown)
+        tour = "r" if tour == "j" else "j"
+        couleur_jeton = "#ffd933" if tour == "j" else "#ff3b30"
+        contour = "#e7ba00" if tour == "j" else "#bb261f"
+        
+    elif cooldown == 1 :
+        return
 
 root.bind("<Button-1>", placer_jeton)
-
 root.mainloop()
 

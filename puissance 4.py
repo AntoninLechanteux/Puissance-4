@@ -4,22 +4,29 @@ import inspect
 from win32api import GetSystemMetrics
 
 #---------Importe la resolution machine--------#
-
 width_screen = GetSystemMetrics(0)
 height_screen = GetSystemMetrics(1)
+#----------------------------------------------#
 
-#-----------creation de la fenetre-------------#
+
+#----------------------------------------------#
+#------Création de la fenêtre principale-------#
 root=tk.Tk()
 root.title("Menu Puissance 4")
 root.attributes("-fullscreen", True)
 root.bind("<Escape>", lambda event: root.destroy())
 root.config(bg="white")
 #----------------------------------------------#
-#--organisation de la geometrie de la fenetre--#
+
 
 #----------------------------------------------#
-#-------creation des fonctions à appeler-------#
-tour=""
+#-----Création de la fenêtre de jeu normal-----#
+couleur_jeton = "#ffd933" 
+contour = "#e7ba00" 
+tour = 'j'
+cooldown = 0
+cursor_grid = 0
+
 def Jeu_normal():
     global tour
     hasard = rd.choice([0, 1])
@@ -30,8 +37,7 @@ def Jeu_normal():
     def fermer():
         game.destroy()
         return
-    HEIGHT = 2*height_screen/3 #Sera modifiable
-    WIDTH = 2*width_screen/3 #Sera modifiable
+        
     game=tk.Tk()
     game.title("Jeu mode normal")
     support_game = tk.Frame(game, bg="#3394ff", width = width_screen, height= width_screen)
@@ -39,42 +45,149 @@ def Jeu_normal():
     game.attributes("-fullscreen", True)
     game.bind("<Escape>", lambda event: game.destroy())
     game.config(bg = "white")
-    dim_grille = [6,7] #Sera modifiable
+    
+    #----------------------------------------------#
+    #-------------Création de la grille------------#
+    HEIGHT = 2*height_screen/3
+    WIDTH = 2*width_screen/3
     canva_jeu = tk.Canvas(support_game, height=HEIGHT, width=WIDTH,bg="#005bff", borderwidth=0)
-    canva_jeu.place(x=width_screen/2-WIDTH/2, y=50)
+    canva_jeu.place(x=(width_screen-WIDTH)//2, y=(height_screen-HEIGHT)//2)
     B7=tk.Button(support_game, text="quitter", font=("System",15), fg="white", 
                  bg="#ff7262", relief="ridge", padx=20, command=fermer)
     B7.place(x=width_screen/2-45, y=height_screen-50)
+
+    ligne = 6
+    colonne = 7
+    dim_grille = [ligne,colonne] #Fixe pour jeu normal
+    grille = []
+    for i in range(ligne):
+        grille.append([0] * colonne)
     rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
     for i in range(dim_grille[1]):
         for j in range(dim_grille[0]):
             canva_jeu.create_oval(((i+0.5)*WIDTH//dim_grille[1]-rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]-rayon_trou), 
                                   ((i+0.5)*WIDTH//dim_grille[1]+rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]+rayon_trou), 
                                   fill = "#3394ff",  outline="#004fab", width= 0.1*rayon_trou)
-#----------------------------------------------#
-#-------------creation des jetons--------------#
-    rayon_jeton = 1.8 * rayon_trou / 2.09  
+            
+    #----------------------------------------------#
+    #-------------Création des jetons--------------#
+    rayon_jeton = 1.8 * rayon_trou / 2.09 
+    tour = 'j'
+    diff_milieux_y = [i*HEIGHT//(ligne*2) for i in range(1,ligne*2,2)]
+    diff_milieux_y.reverse()
+    diff_milieux_x = [i*WIDTH//(colonne) for i in range(0,colonne+1)]
+
+    #----------------------------------------------#
+    #----------Fonctions de vérification-----------#
+    def verif(): #fonction qui prend en variable les coordonnees du jeton juste placé
+        global win
+        win = False
+        ligne_fct()
+        colonne_fct()
+        diag_droit_gauche_fct()
+        diag_gauche_droit_fct()
+        if win == True:
+            if tour == "j":
+                print("omgomgomg jaune a gagné")
+            elif tour == "r":
+                print("omgomgomg rouge a gagné")
+        return
+    
+    def ligne_fct(): #Fonction qui verifie si 4 jetons sont alignés en ligne
+        global win
+        for i in grille:
+            for j in range(4):
+                if i[j] != 0:
+                    if (i[j] == i[j+1] == i[j+2] == i[j+3]):
+                        win = True
+                        
+    def colonne_fct(): #Fonction qui verifie si 4 jetons sont alignés en colonne
+        global win
+        for i in range(7):
+            for j in range(3):
+                if grille[j][i] != 0:    
+                    if (grille[j][i] == grille[j+1][i] == grille[j+2][i] == grille[j+3][i]):
+                        win = True
+                        
+    def diag_gauche_droit_fct(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
+            global win
+            for i in range(5,2,-1):
+                for j in range(4):
+                    if grille[i][j] != 0:
+                        if (grille[i][j] == grille[i-1][j+1] == grille[i-2][j+2] == grille[i-3][j+3]):
+                            win = True
+                    
+    def diag_droit_gauche_fct(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
+            global win
+            for i in range(6,2,-1):
+                for j in range(5,2,-1):
+                    if grille[j][i]!= 0:
+                        if (grille[j][i] == grille[j-1][i-1] == grille[j-2][i-2] == grille[j-3][i-3]):
+                            win = True
+
+    #----------------------------------------------#
+    #------------Animation des jetons--------------#
     def placer_jeton(event):
         global tour
+        global couleur_jeton
+        global contour
+        global cooldown
         coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
-        (milieu_x,milieu_y) = ((coords_trou[0]+coords_trou[2])//2, 
-                               (coords_trou[1]+coords_trou[3])//2)
-        if tour == "jaune":
-           canva_jeu.create_oval((milieu_x-rayon_jeton, milieu_y-rayon_jeton), 
-                                 (milieu_x+rayon_jeton, milieu_y+rayon_jeton),  
-                                 fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton)
-           tour = "rouge"
-           return
-        if tour == "rouge":
-           canva_jeu.create_oval((milieu_x-rayon_jeton, milieu_y-rayon_jeton), 
-                                 (milieu_x+rayon_jeton, milieu_y+rayon_jeton),  
-                                 fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
-           tour = "jaune"
-    game.bind("<Button-1>", placer_jeton)
+        (milieu_x,milieu_y) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
+        if cooldown ==0 and cursor_grid == 1:
+            cooldown = 1
+            for i in range(colonne):   #pour chaque colonne
+                if diff_milieux_x[i] <= milieu_x < diff_milieux_x[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
+                    if all(j[i] == 0 for j in grille): #cas ou toutes les trous de la colonne sont nulles
+                        grille[0][i] = tour #on place la couleur en bas de la grille virtuelle
+                        milieu_y = diff_milieux_y[0] #on place le jeton tout en bas dans le canva
+                        break #break pour eviter de faire tourner la boucle inutilement 
+                    elif grille[ligne-1][i] != 0: #On verifie si 
+                        print(f"La {i+1} ème colonne est pleine") #Afficher quelque part sur l écran que la colonne est pleine
+                        return
+                    else:
+                        for t in range(ligne-1,-1,-1): #on regarde du haut vers le bas
+                            if grille[t][i] != 0: #et des qu'un trou est plein
+                                grille[t+1][i] = tour #on remplit celui d'au dessus
+                                milieu_y = diff_milieux_y[t+1]
+                                break
+            
+            def animer_jeton(i):        
+                jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_jeton,outline=contour,width=0.25 * rayon_jeton)
+                if i <milieu_y:
+                    game.after(200//ligne, lambda: canva_jeu.delete(jeton))  # supprime l'ancien cercle
+                    game.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # récursivité qui descend jusqu'à atteindre la limite
+            
+            def cooldown_switch():
+                global cooldown
+                cooldown=0            
+
+            animer_jeton(diff_milieux_y[-1])
+            root.after(300, cooldown_switch)
+            verif()
+            tour = "r" if tour == "j" else "j"
+            couleur_jeton = "#ffd933" if tour == "j" else "#ff3b30"
+            contour = "#e7ba00" if tour == "j" else "#bb261f"
+            
+        elif cooldown == 1 :
+            return
+        
+    def cursor_in_grid(event):
+        global cursor_grid
+        cursor_grid = 1
+    def cursor_not_in_grid(event):
+        global cursor_grid
+        cursor_grid = 0
+    canva_jeu.bind('<Enter>', cursor_in_grid)#Vérifient si le curseur est dans la grille pour poser le jeton après un clic
+    canva_jeu.bind('<Leave>', cursor_not_in_grid)       
+    game.bind("<Button-1>", placer_jeton)#Pose un jeton si les conditions sont remplies
     game.mainloop()
     return
+#----------------------------------------------#
 
 
+#----------------------------------------------#
+#-----Création de la fenêtre de jeu Sandbox----#
 def Jeu_sandbox():
     def fermer():
         mod.destroy()
@@ -120,15 +233,9 @@ def Jeu_sandbox():
         #-----------creation de la grille-------------#
         HEIGHT = 720 
         WIDTH = 1295
-        ligne = 11
-        colonne = 7
-        Bhome2=tk.Button(mod, text="Quitter", font=("System",15),
-                 fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=fermer)
-        wBhome2 = Bhome2.winfo_reqwidth()
-        hBhome2 = Bhome2.winfo_reqheight()
-        Bhome2.place(x=width_screen/2-wBhome2/2, y=height_screen-2*hBhome2)
-        canva_jeu = tk.Canvas(mod, height=HEIGHT, width=WIDTH,bg="#005bff", borderwidth=0)
-        canva_jeu.place(x=width_screen/2-WIDTH/2, y=50)
+        dim_grille=[7,11]
+        canva_jeu = tk.Canvas(mod, height=HEIGHT, width=WIDTH,bg="#005bff", highlightthickness=0)
+        canva_jeu.pack(expand=True)
         rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
         for i in range(dim_grille[1]):
             for j in range(dim_grille[0]):
