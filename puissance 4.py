@@ -233,9 +233,14 @@ def Jeu_sandbox():
         #-----------creation de la grille-------------#
         HEIGHT = 720 
         WIDTH = 1295
+        Bhome2=tk.Button(mod, text="Quitter", font=("System",15),
+                 fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=fermer)
+        wBhome2 = Bhome2.winfo_reqwidth()
+        hBhome2 = Bhome2.winfo_reqheight()
+        Bhome2.place(x=width_screen/2-wBhome2/2, y=height_screen-1.5*hBhome2)
         dim_grille=[7,11]
         canva_jeu = tk.Canvas(mod, height=HEIGHT, width=WIDTH,bg="#005bff", highlightthickness=0)
-        canva_jeu.pack(expand=True)
+        canva_jeu.place(x=width_screen/2-WIDTH/2, y=0.1*HEIGHT)
         rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
         for i in range(dim_grille[1]):
             for j in range(dim_grille[0]):
