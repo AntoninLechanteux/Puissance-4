@@ -20,63 +20,100 @@ root.config(bg="white")
 
 
 #----------------------------------------------#
-#-----Création de la fenêtre de jeu normal-----#
-tour = 'Sera modifié dans le code'
-couleur_centre = 'Sera modifié dans le code'
-couleur_bordure = 'Sera modifié dans le code'
-cooldown = 0 #A garder pour l'antispam
-cursor_grid = 0#A garder pour savoir si on clique dans la grille
+#--------Création des variables globales-------#
+tour = ''
+couleur_centre = ''
+couleur_bordure = ''
+grille = []
+sauvegarde = {}
+cooldown = 0 #Cooldown antispam
+cursor_grid = 0 #Vérifie si le clic est réalisé dans la grille
+#----------------------------------------------#
 
-def Jeu_normal():
-    def fermer():
-        game.destroy()
-        return
-        
+
+#----------------------------------------------#
+#------Création de la fenêtre jeu normal-------#
+def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre, valeur_couleur_bordure, valeur_grille):
     game=tk.Tk()
     game.title("Jeu mode normal")
     support_game = tk.Frame(game, bg="#3394ff", width = width_screen, height= width_screen)
     support_game.place(x=0, y=0)
     game.attributes("-fullscreen", True)
-    game.bind("<Escape>", lambda event: game.destroy())
+    game.bind("<Escape>", lambda : game.destroy())
     game.config(bg = "white")
-    
-    #----------------------------------------------#
-    #-------------Création de la grille------------#
     HEIGHT = 2*height_screen/3
     WIDTH = 2*width_screen/3
-    canva_jeu = tk.Canvas(support_game, height=HEIGHT, width=WIDTH,bg="#005bff", borderwidth=0)
-    canva_jeu.place(x=(width_screen-WIDTH)//2, y=(height_screen-HEIGHT)//2)
-    B7=tk.Button(support_game, text="quitter", font=("System",15), fg="white", 
-                 bg="#ff7262", relief="ridge", padx=20, command=fermer)
-    B7.place(x=width_screen/2-45, y=height_screen-50)
-
-    ligne = 6
-    colonne = 7
+  
+    def quitter():
+        global grille
+        grille = []#Permettra de savoir si on a lancé une nouvelle partie
+        game.destroy()
+        return
+    def sauvegarder_partie():
+        global sauvegarde
+        global grille
+        sauvegarde['valeur_ligne'] = valeur_ligne
+        sauvegarde['valeur_colonne'] = valeur_colonne
+        sauvegarde['valeur_tour'] = valeur_tour
+        sauvegarde['valeur_couleur_centre'] = valeur_couleur_centre
+        sauvegarde['valeur_couleur_bordure'] = valeur_couleur_bordure
+        sauvegarde["valeur_grille"] = grille.copy()
+        return
+    
+    canva_jeu = tk.Canvas(support_game, height=HEIGHT, width=WIDTH,bg="#005bff")
+    canva_jeu.place(x=(width_screen-WIDTH)//4, y=(height_screen-HEIGHT)//2)
+    bouton_quitter=tk.Button(support_game, text="Quitter", font=("System",15), fg="white", 
+                 bg="#ff7262", relief="raised", padx=20, command=quitter)
+    bouton_quitter.place(x=2*width_screen/5, y=9*height_screen/10)
+    bouton_sauvegarder_quitter=tk.Button(support_game, text="Sauvegarder", font=("System",15), fg="white", 
+                 bg="#ff7262", relief="raised", padx=20, command=sauvegarder_partie)
+    bouton_sauvegarder_quitter.place(x=3*width_screen/5, y=9*height_screen/10)
+    #----------------------------------------------#
+    #-------------Création de la grille------------#
+    global sauvegarde
+    global grille
+     
+    ligne = valeur_ligne
+    colonne = valeur_colonne
     dim_grille = [ligne,colonne] #MODIF SANBOX : Adapter la taille de la grille
-    grille = []
-    for i in range(ligne):
-        grille.append([0] * colonne)
+    grille = valeur_grille
+    if grille == []: #Vérifie si il y a déjà une grille pour en créer une sinon
+        for i in range(ligne):
+            grille.append([0] * colonne)
     rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
-    for i in range(dim_grille[1]):
+
+    for i in range(dim_grille[1]): #Crée le fond de la grille
         for j in range(dim_grille[0]):
             canva_jeu.create_oval(((i+0.5)*WIDTH//dim_grille[1]-rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]-rayon_trou), 
                                   ((i+0.5)*WIDTH//dim_grille[1]+rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]+rayon_trou), 
                                   fill = "#3394ff",  outline="#004fab", width= 0.1*rayon_trou)
-            
+    
     #----------------------------------------------#
     #-------------Création des jetons--------------#
     global tour
     global couleur_centre
     global couleur_bordure
-    tour = rd.choice(['j','r'])  #MODIF SANBOX : Faire choisir entre les 2 skins choisis
-    couleur_centre = '#ffd933' if tour == 'j' else '#ff3b30'   #MODIF SANBOX : Détermine leur couleurs associées aux skins
-    couleur_bordure = '#e7ba00' if tour == 'j' else '#bb261f' #MODIF SANBOX : Détermine leur couleurs associées aux skins
+   
+    if grille[0] == [0]*colonne : #Vérifie si le tour est prédéfini par la sauvegarde pour restituer ou non l'ordre de jeu de la partie
+        tour = rd.choice(valeur_tour)  
+    couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]   #MODIF SANBOX : Détermine leur couleurs associées aux skins
+    couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] #MODIF SANBOX : Détermine leur couleurs associées aux skins
     rayon_jeton = 1.8 * rayon_trou / 2.09 
-
     diff_milieux_y = [i*HEIGHT//(ligne*2) for i in range(1,ligne*2,2)]
     diff_milieux_y.reverse()
-    diff_milieux_x = [i*WIDTH//(colonne) for i in range(0,colonne+1)]
+    diff_milieux_x = [i*WIDTH//(colonne*2) for i in range(1,(colonne+1)*2,2)]
 
+    if grille[0] != [0]*colonne : #Réaffiche les jetons si on a activé la sauvegarde
+            for i in range(ligne):
+                for j in range(colonne):
+                    if grille[i][j] == valeur_tour[0]:
+                        canva_jeu.create_oval((diff_milieux_x[j]-rayon_jeton, diff_milieux_y[i]-rayon_jeton),
+                                              (diff_milieux_x[j]+rayon_jeton, diff_milieux_y[i]+rayon_jeton),
+                                              fill=valeur_couleur_centre[0],outline=valeur_couleur_bordure[0],width=0.25 * rayon_jeton)
+                    if grille[i][j] == valeur_tour[1]:
+                        canva_jeu.create_oval((diff_milieux_x[j]-rayon_jeton, diff_milieux_y[i]-rayon_jeton),
+                                              (diff_milieux_x[j]+rayon_jeton, diff_milieux_y[i]+rayon_jeton),
+                                              fill=valeur_couleur_centre[1],outline=valeur_couleur_bordure[1],width=0.25 * rayon_jeton)
     #----------------------------------------------#
     #----------Fonctions de vérification-----------#
     def verif(): #fonction qui prend en variable les coordonnees du jeton juste placé
@@ -153,7 +190,8 @@ def Jeu_normal():
                                 break
             
             def animer_jeton(i):        
-                jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_centre,outline=couleur_bordure,width=0.25 * rayon_jeton)
+                jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_centre,
+                                              outline=couleur_bordure,width=0.25 * rayon_jeton)
                 if i <milieu_y:
                     game.after(200//ligne, lambda: canva_jeu.delete(jeton))  # supprime l'ancien cercle
                     game.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # récursivité qui descend jusqu'à atteindre la limite
@@ -164,9 +202,9 @@ def Jeu_normal():
                 global couleur_bordure
                 global cooldown
                 cooldown=0   
-                tour = "r" if tour == "j" else "j" #MODIF SANBOX : Changer le nom des tours en fonction des skins
-                couleur_centre = "#ffd933" if tour == "j" else "#ff3b30" #MODIF SANBOX : Adapter la couleur en fonction du skin
-                couleur_bordure = "#e7ba00" if tour == "j" else "#bb261f"  #MODIF SANBOX : Adapter la couleur en fonction du skin  
+                tour = valeur_tour[1] if tour == valeur_tour[0] else valeur_tour[0] #MODIF SANBOX : Changer le nom des tours en fonction des skins
+                couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1] #MODIF SANBOX : Adapter la couleur en fonction du skin
+                couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1]  #MODIF SANBOX : Adapter la couleur en fonction du skin  
 
             animer_jeton(diff_milieux_y[-1])
             root.after(300, player_switch)
@@ -557,11 +595,15 @@ support_root = tk.Frame(root, bg="#3394ff", width = width_screen, height= width_
 support_button = tk.Frame(support_root, bg="#3394ff")
 
 B1=tk.Button(support_button, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
-             fg="white", relief="raised", padx=5, pady=15, command=Jeu_normal)
+             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=6, valeur_colonne=7,valeur_tour=['j','r'],
+                                                                                        valeur_couleur_centre=['#ffd933', '#ff3b30'], valeur_couleur_bordure=['#e7ba00', '#bb261f'],
+                                                                                        valeur_grille=[])))
 B2=tk.Button(support_button, text="PARTIE CUSTOM", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=14, pady=15, command=Jeu_sandbox)
 B3=tk.Button(support_button, text="SAUVEGARDE", font=('system', 20), bg="#ff7262", 
-             fg="white", relief="raised", padx=33, pady=15, command=settings)
+             fg="white", relief="raised", padx=33, pady=15, command= (lambda : Jeu_normal(sauvegarde['valeur_ligne'], sauvegarde['valeur_colonne'],sauvegarde['valeur_tour'],
+                                                                                        sauvegarde['valeur_couleur_centre'], sauvegarde['valeur_couleur_bordure'],
+                                                                                        sauvegarde['valeur_grille'])))
 B4=tk.Button(support_button, text="REGLES", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=69, pady=15, command=rules)
 M1=tk.Label(support_root, text="Bienvenue sur Puissance 4 !", fg="white",  bg= "#3394ff",
@@ -581,34 +623,23 @@ M1.place(x=width_screen/2-wM1/2, y=0.2*hM1)
 support_root.place(x=0, y=0)
 
 
-#----------------------------------------------#
+#---------------------------------------------------------------#
 #-------------Effets graphiques fenêtre principale--------------#
 ##-------------------surbrillance boutton----------------------##
-def bouton_touche1(event, self):
-    B1.config(bg="#ff8e81")
-def bouton_relache1(event, self):
-    B1.config(bg="#ff7262")
-def bouton_touche2(event, self):
-    B2.config(bg="#ff8e81")
-def bouton_relache2(event, self):
-    B2.config(bg="#ff7262")
-def bouton_touche3(event, self):
-    B3.config(bg="#ff8e81")
-def bouton_relache3(event, self):
-    B3.config(bg="#ff7262")
-def bouton_touche4(event, self):
-    B4.config(bg="#ff8e81")
-def bouton_relache4(event, self):
-    B4.config(bg="#ff7262")
-B1.bind("<Enter>", lambda event : bouton_touche1(event,B1))
-B1.bind("<Leave>", lambda event : bouton_relache1(event,B1))
-B2.bind("<Enter>", lambda event : bouton_touche2(event,B2))
-B2.bind("<Leave>", lambda event : bouton_relache2(event,B2))
-B3.bind("<Enter>", lambda event : bouton_touche3(event,B3))
-B3.bind("<Leave>", lambda event : bouton_relache3(event,B3))
-B4.bind("<Enter>", lambda event : bouton_touche4(event,B4))
-B4.bind("<Leave>", lambda event : bouton_relache4(event,B4))
+def bouton_touche(event, self):
+    self.config(bg="#ff8e81")
+def bouton_relache(event, self):
+    self.config(bg="#ff7262")
+B1.bind("<Enter>", lambda event : bouton_touche(event,B1))
+B1.bind("<Leave>", lambda event : bouton_relache(event,B1))
+B2.bind("<Enter>", lambda event : bouton_touche(event,B2))
+B2.bind("<Leave>", lambda event : bouton_relache(event,B2))
+B3.bind("<Enter>", lambda event : bouton_touche(event,B3))
+B3.bind("<Leave>", lambda event : bouton_relache(event,B3))
+B4.bind("<Enter>", lambda event : bouton_touche(event,B4))
+B4.bind("<Leave>", lambda event : bouton_relache(event,B4))
 ##------------------------------------------------------------##
+
 ##-------------------animation jeton coté---------------------##
 def animation_clic(event, self, counter):
     self.create_oval((25,25),(175,175), fill="#3394ff", outline = "#3394ff", width = 25)
