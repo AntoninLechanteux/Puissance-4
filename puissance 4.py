@@ -20,20 +20,8 @@ root.config(bg="white")
 
 
 #----------------------------------------------#
-#--------Création des variables globales-------#
-tour = ''
-couleur_centre = ''
-couleur_bordure = ''
-grille = []
-sauvegarde = {}
-cooldown = 0 #Cooldown antispam
-cursor_grid = 0 #Vérifie si le clic est réalisé dans la grille
-#----------------------------------------------#
-
-
-#----------------------------------------------#
 #------Création de la fenêtre jeu normal-------#
-def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre, valeur_couleur_bordure, valeur_grille):
+def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, valeur_couleur_centre, valeur_couleur_bordure, valeur_grille):
     game=tk.Tk()
     game.title("Jeu mode normal")
     support_game = tk.Frame(game, bg="#3394ff", width = width_screen, height= width_screen)
@@ -45,22 +33,25 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre,
     WIDTH = 2*width_screen/3
   
     def quitter():
-        global grille
-        grille = []#Permettra de savoir si on a lancé une nouvelle partie
         game.destroy()
         return
     def sauvegarder_partie():
         global sauvegarde
         global grille
-        sauvegarde['valeur_ligne'] = valeur_ligne
-        sauvegarde['valeur_colonne'] = valeur_colonne
-        sauvegarde['valeur_tour'] = valeur_tour
-        sauvegarde['valeur_couleur_centre'] = valeur_couleur_centre
-        sauvegarde['valeur_couleur_bordure'] = valeur_couleur_bordure
-        sauvegarde["valeur_grille"] = grille.copy()
+        if win == False :
+            sauvegarde = {} #Crée un fichier sauvegarde pour lui affecter les valeurs suivantes :
+            sauvegarde['valeur_ligne'] = valeur_ligne
+            sauvegarde['valeur_colonne'] = valeur_colonne
+            sauvegarde['valeur_alignement'] = valeur_alignement
+            sauvegarde['valeur_tour'] = valeur_tour
+            sauvegarde['valeur_couleur_centre'] = valeur_couleur_centre
+            sauvegarde['valeur_couleur_bordure'] = valeur_couleur_bordure
+            sauvegarde["valeur_grille"] = grille.copy()
+        else :
+            print('La partie est déjà terminée')
         return
     
-    canva_jeu = tk.Canvas(support_game, height=HEIGHT, width=WIDTH,bg="#005bff")
+    canva_jeu = tk.Canvas(support_game, height=HEIGHT, width=WIDTH,bg="#005bff") 
     canva_jeu.place(x=(width_screen-WIDTH)//4, y=(height_screen-HEIGHT)//2)
     bouton_quitter=tk.Button(support_game, text="Quitter", font=("System",15), fg="white", 
                  bg="#ff7262", relief="raised", padx=20, command=quitter)
@@ -68,24 +59,26 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre,
     bouton_sauvegarder_quitter=tk.Button(support_game, text="Sauvegarder", font=("System",15), fg="white", 
                  bg="#ff7262", relief="raised", padx=20, command=sauvegarder_partie)
     bouton_sauvegarder_quitter.place(x=3*width_screen/5, y=9*height_screen/10)
+
     #----------------------------------------------#
     #-------------Création de la grille------------#
     global sauvegarde
     global grille
-     
+    global cooldown
+    
+    cooldown = 0 #Empêche de jouer pendant que le jeton précédent tombe ou en cas de victoire
     ligne = valeur_ligne
     colonne = valeur_colonne
-    dim_grille = [ligne,colonne] #MODIF SANBOX : Adapter la taille de la grille
     grille = valeur_grille
-    if grille == []: #Vérifie si il y a déjà une grille pour en créer une sinon
+    if grille == []: #Vérifie si il y a déjà une grille (si on utilise la sauvegarde) pour en créer une vide sinon
         for i in range(ligne):
             grille.append([0] * colonne)
-    rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
 
-    for i in range(dim_grille[1]): #Crée le fond de la grille
-        for j in range(dim_grille[0]):
-            canva_jeu.create_oval(((i+0.5)*WIDTH//dim_grille[1]-rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]-rayon_trou), 
-                                  ((i+0.5)*WIDTH//dim_grille[1]+rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]+rayon_trou), 
+    rayon_trou = (min((HEIGHT//ligne),(WIDTH//colonne)))//2.5
+    for i in range(colonne): #Crée l'affichage de la grille sans jetons
+        for j in range(ligne):
+            canva_jeu.create_oval(((i+0.5)*WIDTH//colonne-rayon_trou,(j+0.5)*HEIGHT//ligne-rayon_trou), 
+                                  ((i+0.5)*WIDTH//colonne+rayon_trou,(j+0.5)*HEIGHT//ligne+rayon_trou), 
                                   fill = "#3394ff",  outline="#004fab", width= 0.1*rayon_trou)
     
     #----------------------------------------------#
@@ -96,13 +89,13 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre,
    
     if grille[0] == [0]*colonne : #Vérifie si le tour est prédéfini par la sauvegarde pour restituer ou non l'ordre de jeu de la partie
         tour = rd.choice(valeur_tour)  
-    couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]   #MODIF SANBOX : Détermine leur couleurs associées aux skins
-    couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] #MODIF SANBOX : Détermine leur couleurs associées aux skins
+    couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1] #Détermine le skin associé au tour
+    couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] #Détermine le skin associé au tour
+
     rayon_jeton = 1.8 * rayon_trou / 2.09 
     diff_milieux_y = [i*HEIGHT//(ligne*2) for i in range(1,ligne*2,2)]
     diff_milieux_y.reverse()
     diff_milieux_x = [i*WIDTH//(colonne*2) for i in range(1,(colonne+1)*2,2)]
-
     if grille[0] != [0]*colonne : #Réaffiche les jetons si on a activé la sauvegarde
             for i in range(ligne):
                 for j in range(colonne):
@@ -114,53 +107,71 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre,
                         canva_jeu.create_oval((diff_milieux_x[j]-rayon_jeton, diff_milieux_y[i]-rayon_jeton),
                                               (diff_milieux_x[j]+rayon_jeton, diff_milieux_y[i]+rayon_jeton),
                                               fill=valeur_couleur_centre[1],outline=valeur_couleur_bordure[1],width=0.25 * rayon_jeton)
+                        
     #----------------------------------------------#
     #----------Fonctions de vérification-----------#
-    def verif(): #fonction qui prend en variable les coordonnees du jeton juste placé
+    def verif(): #Fonction qui vérifie si 4 jetons sont allignés
         global win
         win = False
-        ligne_fct()
-        colonne_fct()
-        diag_droit_gauche_fct()
-        diag_gauche_droit_fct()
+        verif_ligne()
+        verif_colonne()
+        verif_diag_gauche_droite()
+        verif_diag_droite_gauche()
         if win == True:
-            if tour == "j":
-                print("omgomgomg jaune a gagné")
-            elif tour == "r":
-                print("omgomgomg rouge a gagné")
+            if tour == valeur_tour[0]:
+                print(f"omgomgomg {valeur_tour[0]} a gagné")
+            elif tour == valeur_tour[1]:
+                print(f"omgomgomg {valeur_tour[1]} a gagné")
         return
     
-    def ligne_fct(): #Fonction qui verifie si 4 jetons sont alignés en ligne
+    def verif_ligne(): #Fonction qui verifie si 4 jetons sont alignés en ligne
         global win
         for i in grille:
-            for j in range(4):
+            for j in range(valeur_colonne - (valeur_alignement - 1)):#Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
+                jetons_alignés = 0
                 if i[j] != 0:
-                    if (i[j] == i[j+1] == i[j+2] == i[j+3]):
+                    for k in range(1,valeur_alignement):
+                        if (i[j+k] == i[j]):# Vérifie si les jetons d'après prennent la même valeur
+                            jetons_alignés += 1
+                    if jetons_alignés == (valeur_alignement - 1):#Si tous les jetons controllés ont la même valeur, fin de partie
                         win = True
+
                         
-    def colonne_fct(): #Fonction qui verifie si 4 jetons sont alignés en colonne
+    def verif_colonne(): #Fonction qui verifie si 4 jetons sont alignés en colonne
         global win
-        for i in range(7):
-            for j in range(3):
-                if grille[j][i] != 0:    
-                    if (grille[j][i] == grille[j+1][i] == grille[j+2][i] == grille[j+3][i]):
-                        win = True
+        for i in range(valeur_ligne - (valeur_alignement - 1)):
+            for j in range(valeur_colonne): #Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
+                jetons_alignés=0
+                if grille[i][j] != 0:    
+                    for k in range(1,valeur_alignement):
+                        if (grille[i][j] == grille[i+k][j]):# Vérifie si les jetons d'après prennent la même valeur
+                                jetons_alignés += 1
+                        if jetons_alignés == (valeur_alignement - 1):#Si tous les jetons controllés ont la même valeur, fin de partie
+                            win = True
                         
-    def diag_gauche_droit_fct(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
+    def verif_diag_gauche_droite(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
             global win
-            for i in range(5,2,-1):
-                for j in range(4):
-                    if grille[i][j] != 0:
-                        if (grille[i][j] == grille[i-1][j+1] == grille[i-2][j+2] == grille[i-3][j+3]):
-                            win = True
+            for i in range(valeur_alignement - 1, valeur_ligne):
+                for j in range(valeur_colonne - (valeur_alignement - 1)):#Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
+                    jetons_alignés=0
+                    if grille[i][j] != 0:    
+                        for k in range(1,valeur_alignement):
+                            if (grille[i][j] == grille[i-k][j+k]):# Vérifie si les jetons d'après prennent la même valeur
+                                    jetons_alignés += 1
+                            if jetons_alignés == (valeur_alignement - 1):#Si tous les jetons controllés ont la même valeur, fin de partie
+                                win = True
                     
-    def diag_droit_gauche_fct(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
+    def verif_diag_droite_gauche(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
             global win
-            for i in range(6,2,-1):
-                for j in range(5,2,-1):
-                    if grille[j][i]!= 0:
-                        if (grille[j][i] == grille[j-1][i-1] == grille[j-2][i-2] == grille[j-3][i-3]):
-                            win = True
+            for i in range(valeur_alignement - 1, valeur_ligne):
+                for j in range(valeur_alignement - 1, valeur_colonne):#Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
+                    jetons_alignés=0
+                    if grille[i][j] != 0:    
+                        for k in range(1,valeur_alignement):
+                            if (grille[i][j] == grille[i-k][j-k]):# Vérifie si les jetons d'après prennent la même valeur
+                                    jetons_alignés += 1
+                            if jetons_alignés == (valeur_alignement - 1):#Si tous les jetons controllés ont la même valeur, fin de partie
+                                win = True
 
     #----------------------------------------------#
     #------------Animation des jetons--------------#
@@ -169,11 +180,11 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre,
         global couleur_centre
         global couleur_bordure
         global cooldown
-        coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
-        (milieu_x,milieu_y) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
-        if cooldown ==0 and cursor_grid == 1:
+        coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y)) #Détermine la position du trou le plus proche
+        (milieu_x,milieu_y) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2) #Trouve le centre du trou le plus proche
+        if cooldown == 0 and cursor_grid == True:
             cooldown = 1
-            for i in range(colonne):   #pour chaque colonne
+            for i in range(colonne):   #Pour chaque colonne
                 if diff_milieux_x[i] <= milieu_x < diff_milieux_x[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
                     if all(j[i] == 0 for j in grille): #cas ou toutes les trous de la colonne sont nulles
                         grille[0][i] = tour #on place la couleur en bas de la grille virtuelle
@@ -189,12 +200,12 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre,
                                 milieu_y = diff_milieux_y[t+1]
                                 break
             
-            def animer_jeton(i):        
+            def animer_jeton(i): #Animation de chute    
                 jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_centre,
                                               outline=couleur_bordure,width=0.25 * rayon_jeton)
                 if i <milieu_y:
-                    game.after(200//ligne, lambda: canva_jeu.delete(jeton))  # supprime l'ancien cercle
-                    game.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # récursivité qui descend jusqu'à atteindre la limite
+                    game.after(200//ligne, lambda: canva_jeu.delete(jeton))  # Supprime l'ancien cercle
+                    game.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # Récursivité qui descend jusqu'à atteindre la limite
             
             def player_switch():
                 global tour
@@ -202,23 +213,22 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_tour, valeur_couleur_centre,
                 global couleur_bordure
                 global cooldown
                 cooldown=0   
-                tour = valeur_tour[1] if tour == valeur_tour[0] else valeur_tour[0] #MODIF SANBOX : Changer le nom des tours en fonction des skins
-                couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1] #MODIF SANBOX : Adapter la couleur en fonction du skin
-                couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1]  #MODIF SANBOX : Adapter la couleur en fonction du skin  
-
+                tour = valeur_tour[1] if tour == valeur_tour[0] else valeur_tour[0] 
+                couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]
+                couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] 
             animer_jeton(diff_milieux_y[-1])
-            root.after(300, player_switch)
             verif()
-            
-        elif cooldown == 1 :
+            if win == False :
+                root.after(300, player_switch)
+        elif cooldown == 1 or cursor_grid == False:
             return
         
     def cursor_in_grid(event):
         global cursor_grid
-        cursor_grid = 1
+        cursor_grid = True
     def cursor_not_in_grid(event):
         global cursor_grid
-        cursor_grid = 0
+        cursor_grid = False
     canva_jeu.bind('<Enter>', cursor_in_grid)#Vérifient si le curseur est dans la grille pour poser le jeton après un clic
     canva_jeu.bind('<Leave>', cursor_not_in_grid)       
     game.bind("<Button-1>", placer_jeton)#Pose un jeton si les conditions sont remplies
@@ -595,13 +605,15 @@ support_root = tk.Frame(root, bg="#3394ff", width = width_screen, height= width_
 support_button = tk.Frame(support_root, bg="#3394ff")
 
 B1=tk.Button(support_button, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
-             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=6, valeur_colonne=7,valeur_tour=['j','r'],
-                                                                                        valeur_couleur_centre=['#ffd933', '#ff3b30'], valeur_couleur_bordure=['#e7ba00', '#bb261f'],
+             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=6, valeur_colonne=7,valeur_tour=['jaune','rouge'],
+                                                                                        valeur_alignement = 4, valeur_couleur_centre=['#ffd933', '#ff3b30'],
+                                                                                        valeur_couleur_bordure=['#e7ba00', '#bb261f'],
                                                                                         valeur_grille=[])))
 B2=tk.Button(support_button, text="PARTIE CUSTOM", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=14, pady=15, command=Jeu_sandbox)
 B3=tk.Button(support_button, text="SAUVEGARDE", font=('system', 20), bg="#ff7262", 
-             fg="white", relief="raised", padx=33, pady=15, command= (lambda : Jeu_normal(sauvegarde['valeur_ligne'], sauvegarde['valeur_colonne'],sauvegarde['valeur_tour'],
+             fg="white", relief="raised", padx=33, pady=15, command= (lambda : Jeu_normal(sauvegarde['valeur_ligne'], sauvegarde['valeur_colonne'],
+                                                                                        sauvegarde['valeur_alignement'], sauvegarde['valeur_tour'],
                                                                                         sauvegarde['valeur_couleur_centre'], sauvegarde['valeur_couleur_bordure'],
                                                                                         sauvegarde['valeur_grille'])))
 B4=tk.Button(support_button, text="REGLES", font=('system', 20), bg="#ff7262", 
