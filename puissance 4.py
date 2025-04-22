@@ -2,7 +2,7 @@ import tkinter as tk
 import random as rd
 import inspect 
 from win32api import GetSystemMetrics
-
+import pygame
 #---------Importe la resolution machine--------#
 width_screen = GetSystemMetrics(0)
 height_screen = GetSystemMetrics(1)
@@ -16,6 +16,7 @@ root.title("Menu Puissance 4")
 root.attributes("-fullscreen", True)
 root.bind("<Escape>", lambda event: root.destroy())
 root.config(bg="white")
+pygame.mixer.init()
 #----------------------------------------------#
 
 
@@ -210,6 +211,8 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
                 couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] 
             
             animer_jeton(diff_milieux_y[-1])
+            pygame.mixer.music.load("Hit Marker sound effect.mp3")
+            pygame.mixer.music.play(loops=0)
             verif()
 
         elif cooldown == 1 or cursor_grid == False:
@@ -632,7 +635,7 @@ support_root = tk.Frame(root, bg="#3394ff", width = width_screen, height= width_
 support_button = tk.Frame(support_root, bg="#3394ff")
 
 B1=tk.Button(support_button, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
-             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=6, valeur_colonne=7,valeur_tour=['jaune','rouge'],
+             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=20, valeur_colonne=20,valeur_tour=['jaune','rouge'],
                                                                                         valeur_alignement = 4, valeur_couleur_centre=['#ffd933', '#ff3b30'],
                                                                                         valeur_couleur_bordure=['#e7ba00', '#bb261f'],
                                                                                         valeur_grille=[])))
