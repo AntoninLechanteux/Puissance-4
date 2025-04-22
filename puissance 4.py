@@ -128,50 +128,35 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
         global win
         for i in grille:
             for j in range(valeur_colonne - (valeur_alignement - 1)):#Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
-                jetons_alignés = 0
                 if i[j] != 0:
-                    for k in range(1,valeur_alignement):
-                        if (i[j+k] == i[j]):# Vérifie si les jetons d'après prennent la même valeur
-                            jetons_alignés += 1
-                    if jetons_alignés == (valeur_alignement - 1):#Si tous les jetons controllés ont la même valeur, fin de partie
+                    if all(i[j+k] == i[j] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
                         win = True
+        
 
                         
     def verif_colonne(): #Fonction qui verifie si 4 jetons sont alignés en colonne
         global win
         for i in range(valeur_ligne - (valeur_alignement - 1)):
             for j in range(valeur_colonne): #Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
-                jetons_alignés=0
                 if grille[i][j] != 0:    
-                    for k in range(1,valeur_alignement):
-                        if (grille[i][j] == grille[i+k][j]):# Vérifie si les jetons d'après prennent la même valeur
-                                jetons_alignés += 1
-                        if jetons_alignés == (valeur_alignement - 1):#Si tous les jetons controllés ont la même valeur, fin de partie
+                    if all(grille[i][j] == grille[i+k][j] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
                             win = True
                         
     def verif_diag_gauche_droite(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
             global win
             for i in range(valeur_alignement - 1, valeur_ligne):
                 for j in range(valeur_colonne - (valeur_alignement - 1)):#Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
-                    jetons_alignés=0
                     if grille[i][j] != 0:    
-                        for k in range(1,valeur_alignement):
-                            if (grille[i][j] == grille[i-k][j+k]):# Vérifie si les jetons d'après prennent la même valeur
-                                    jetons_alignés += 1
-                            if jetons_alignés == (valeur_alignement - 1):#Si tous les jetons controllés ont la même valeur, fin de partie
-                                win = True
+                            if all(grille[i][j] == grille[i-k][j+k] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
+                                    win = True
                     
     def verif_diag_droite_gauche(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
             global win
             for i in range(valeur_alignement - 1, valeur_ligne):
                 for j in range(valeur_alignement - 1, valeur_colonne):#Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
-                    jetons_alignés=0
                     if grille[i][j] != 0:    
-                        for k in range(1,valeur_alignement):
-                            if (grille[i][j] == grille[i-k][j-k]):# Vérifie si les jetons d'après prennent la même valeur
-                                    jetons_alignés += 1
-                            if jetons_alignés == (valeur_alignement - 1):#Si tous les jetons controllés ont la même valeur, fin de partie
-                                win = True
+                            if all(grille[i][j] == grille[i-k][j-k] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
+                                    win = True
 
     #----------------------------------------------#
     #------------Animation des jetons--------------#
@@ -200,14 +185,21 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
                                 milieu_y = diff_milieux_y[t+1]
                                 break
             
-            def animer_jeton(i): #Animation de chute    
+            def animer_jeton(i): #Animation de chute   
+                if i == milieu_y:#Repasse le contour en bleu si il était en surbrillance avant de poser le jeton
+                    jeton_2 = jeton = canva_jeu.find_closest(milieu_x, milieu_y)
+                    canva_jeu.itemconfigure(jeton_2, outline = '#004fab')
+                    if win == False :
+                        root.after(100,player_switch)
+
                 jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_centre,
                                               outline=couleur_bordure,width=0.25 * rayon_jeton)
                 if i <milieu_y:
                     game.after(200//ligne, lambda: canva_jeu.delete(jeton))  # Supprime l'ancien cercle
                     game.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # Récursivité qui descend jusqu'à atteindre la limite
+                
             
-            def player_switch():
+            def player_switch(): #Après la chute du jeton, l'autre joueur peut jouer
                 global tour
                 global couleur_centre
                 global couleur_bordure
@@ -216,13 +208,48 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
                 tour = valeur_tour[1] if tour == valeur_tour[0] else valeur_tour[0] 
                 couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]
                 couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] 
+            
             animer_jeton(diff_milieux_y[-1])
             verif()
-            if win == False :
-                root.after(300, player_switch)
+
         elif cooldown == 1 or cursor_grid == False:
             return
+    
+    game.bind("<Button-1>", placer_jeton)#Pose un jeton si les conditions sont remplies    
+
+    #----------------------------------------------#
+    #----------Effets graphiques grille------------#
+    def  surbrillance_contour(event):
         
+        global grille_bleue #Evite de superposer des cercles à l'infini
+        grille_bleue = False
+
+        x = event.x
+        y = event.y
+        overlapping = canva_jeu.find_overlapping(x-1, y-(HEIGHT//(2*ligne)), x+1, y+(HEIGHT//(2*ligne)))
+        if len(overlapping) != 0:
+            coords_overlapping = canva_jeu.coords(overlapping[-1])
+
+        #Si on ne touche aucun jeton, tout repasse en bleu
+        if len(overlapping) == 0 and grille_bleue == False:
+            for i in range(colonne):  
+                for j in range(ligne) :
+                    if grille[j][i] == 0 :
+                        jeton = canva_jeu.find_closest(diff_milieux_x[i], diff_milieux_y[j])
+                        canva_jeu.itemconfigure(jeton, outline='#004fab')
+            grille_bleue = True
+        
+        if len(overlapping) != 0 :
+            coords_trou_x = (coords_overlapping[0] + coords_overlapping[2]) // 2
+            for i in range(colonne):  
+                if diff_milieux_x[i] <= coords_trou_x < diff_milieux_x[i+1]:#On vérifie si le jeton survolé est dans celle-ci
+                    for j in range(ligne) : #Et pour chaque jeton de la colonne
+                        if grille[j][i] == 0 :#On passe le contour des trous en blanc
+                            jeton = canva_jeu.find_closest(diff_milieux_x[i], diff_milieux_y[j])
+                            canva_jeu.itemconfigure(jeton, outline="white")
+            grille_bleue = False  
+    canva_jeu.bind("<Motion>", surbrillance_contour)
+
     def cursor_in_grid(event):
         global cursor_grid
         cursor_grid = True
@@ -231,7 +258,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
         cursor_grid = False
     canva_jeu.bind('<Enter>', cursor_in_grid)#Vérifient si le curseur est dans la grille pour poser le jeton après un clic
     canva_jeu.bind('<Leave>', cursor_not_in_grid)       
-    game.bind("<Button-1>", placer_jeton)#Pose un jeton si les conditions sont remplies
+    
     game.mainloop()
     return
 #----------------------------------------------#
