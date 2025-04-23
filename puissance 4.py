@@ -22,109 +22,230 @@ pygame.mixer.init()
 
 #----------------------------------------------#
 #------Création de la fenêtre jeu normal-------#
-def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, valeur_couleur_centre, valeur_couleur_bordure, valeur_grille):
-    game=tk.Tk()
+def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche, 
+               valeur_compteur_manche_J1, valeur_compteur_manche_J2, valeur_premier_joueur,
+               valeur_tour, valeur_couleur_centre, valeur_couleur_bordure, valeur_grille):
+    
+    game = tk.Tk()
     game.title("Jeu mode normal")
-    support_game = tk.Frame(game, bg="#3394ff", width = width_screen, height= width_screen)
+    support_game = tk.Frame(game, bg="#3394ff", width=width_screen, height=width_screen)
     support_game.place(x=0, y=0)
     game.attributes("-fullscreen", True)
-    game.bind("<Escape>", lambda : game.destroy())
-    game.config(bg = "white")
-    HEIGHT = 2*height_screen/3
-    WIDTH = 2*width_screen/3
-  
+    game.bind("<Escape>", lambda: game.destroy())
+    game.config(bg="white")
+
+    HEIGHT = 2 * height_screen / 3
+    WIDTH = 2 * width_screen / 3
+
+    canva_jeu = tk.Canvas(support_game, height=HEIGHT, width=WIDTH, bg="#005bff")
+    canva_jeu.place(x=(width_screen - WIDTH) // 8, y=(height_screen - HEIGHT) // 2)
+
     def quitter():
+        global compteur_manche_J1
+        global compteur_manche_J2
+        compteur_manche_J1 = 0
+        compteur_manche_J2 = 0
         game.destroy()
         return
+
     def sauvegarder_partie():
         global sauvegarde
-        global grille
-        if win == False :
-            sauvegarde = {} #Crée un fichier sauvegarde pour lui affecter les valeurs suivantes :
+        if (compteur_manche_J1 < valeur_manche and compteur_manche_J2 < valeur_manche):
+            sauvegarde = {}
             sauvegarde['valeur_ligne'] = valeur_ligne
             sauvegarde['valeur_colonne'] = valeur_colonne
             sauvegarde['valeur_alignement'] = valeur_alignement
+            sauvegarde['valeur_manche'] = valeur_manche
+            sauvegarde['valeur_compteur_manche_J1'] = compteur_manche_J1
+            sauvegarde['valeur_compteur_manche_J2'] = compteur_manche_J2
+            sauvegarde['valeur_premier_joueur'] = premier_joueur
             sauvegarde['valeur_tour'] = valeur_tour
             sauvegarde['valeur_couleur_centre'] = valeur_couleur_centre
             sauvegarde['valeur_couleur_bordure'] = valeur_couleur_bordure
             sauvegarde["valeur_grille"] = grille.copy()
-        else :
+        else:
             print('La partie est déjà terminée')
+
+    def sauvegarde_manche_fct():
+        global sauvegarde_manche
+        if (compteur_manche_J1 < valeur_manche and compteur_manche_J2 < valeur_manche):
+            sauvegarde_manche = {}
+            sauvegarde_manche['valeur_ligne'] = valeur_ligne
+            sauvegarde_manche['valeur_colonne'] = valeur_colonne
+            sauvegarde_manche['valeur_alignement'] = valeur_alignement
+            sauvegarde_manche['valeur_manche'] = valeur_manche
+            sauvegarde_manche['valeur_compteur_manche_J1'] = compteur_manche_J1
+            sauvegarde_manche['valeur_compteur_manche_J2'] = compteur_manche_J2
+            sauvegarde_manche['valeur_premier_joueur'] = premier_joueur
+            sauvegarde_manche['valeur_tour'] = valeur_tour
+            sauvegarde_manche['valeur_couleur_centre'] = valeur_couleur_centre
+            sauvegarde_manche['valeur_couleur_bordure'] = valeur_couleur_bordure
+            sauvegarde_manche["valeur_grille"] = []
+
+    def relancer_partie():
+        sauvegarde_manche_fct()
+        game.destroy()
         return
-    
-    canva_jeu = tk.Canvas(support_game, height=HEIGHT, width=WIDTH,bg="#005bff") 
-    canva_jeu.place(x=(width_screen-WIDTH)//4, y=(height_screen-HEIGHT)//2)
-    bouton_quitter=tk.Button(support_game, text="Quitter", font=("System",15), fg="white", 
-                 bg="#ff7262", relief="raised", padx=20, command=quitter)
-    bouton_quitter.place(x=2*width_screen/5, y=9*height_screen/10)
-    bouton_sauvegarder_quitter=tk.Button(support_game, text="Sauvegarder", font=("System",15), fg="white", 
-                 bg="#ff7262", relief="raised", padx=20, command=sauvegarder_partie)
-    bouton_sauvegarder_quitter.place(x=3*width_screen/5, y=9*height_screen/10)
+
+    global compteur_manche_J1
+    global compteur_manche_J2
+
+    compteur_manche_J1 = valeur_compteur_manche_J1
+    compteur_manche_J2 = valeur_compteur_manche_J2
+
+    titre_jeu = tk.Label(support_game, text="Bienvenue sur Puissance 4 !", fg="white", 
+                        bg="#3394ff",font=("System", 45), padx=0)
+    titre_jeu.place(x=(width_screen - titre_jeu.winfo_reqwidth()) // 2, y=10)
+
+    affichage_score = tk.Canvas(support_game, height=HEIGHT // 2, width=width_screen // 5,
+                                bg="black", highlightbackground='#b10000')
+    affichage_score.place(x=(41 * width_screen // 48) - affichage_score.winfo_reqwidth() // 2,
+                          y=(height_screen - HEIGHT) // 2)
+
+    affichage_score.create_line((0, affichage_score.winfo_reqheight() // 3.4),
+                                (affichage_score.winfo_reqwidth(), affichage_score.winfo_reqheight() // 3.4),
+                                fill='#b10000', width=2)
+    affichage_score.create_line((0, affichage_score.winfo_reqheight() // 2),
+                                (affichage_score.winfo_reqwidth(), affichage_score.winfo_reqheight() // 2),
+                                fill='#b10000', width=2)
+    affichage_score.create_line((affichage_score.winfo_reqwidth() // 2, affichage_score.winfo_reqheight() // 3.4),
+                                (affichage_score.winfo_reqwidth() // 2, affichage_score.winfo_reqheight()),
+                                fill='#b10000', width=2)
+
+    score = tk.Label(support_game, text='SCORE', font=("System", 35),
+                     fg='#b10000', bg='black')
+    score.place(x=(41 * width_screen // 48) - affichage_score.winfo_reqwidth() // 2 +(affichage_score.winfo_reqwidth() - score.winfo_reqwidth()) // 2,
+                y=((height_screen - HEIGHT) // 2) + 2)
+
+    J1 = tk.Label(support_game, text='J1', font=("System", 20),
+                  fg='#b10000', bg='black')
+    J1.place(x=(41 * width_screen // 48) - affichage_score.winfo_reqwidth() // 2 +(affichage_score.winfo_reqwidth() // 2 - J1.winfo_reqwidth()) // 2,
+             y=(height_screen - HEIGHT) // 2 + affichage_score.winfo_reqheight() // 3)
+
+    J2 = tk.Label(support_game, text='J2', font=("System", 20),
+                  fg='#b10000', bg='black')
+    J2.place(x=(41 * width_screen // 48) - affichage_score.winfo_reqwidth() // 2 +(3 * affichage_score.winfo_reqwidth() // 2 - J2.winfo_reqwidth()) // 2,
+             y=(height_screen - HEIGHT) // 2 + affichage_score.winfo_reqheight() // 3)
+
+    score_J1 = tk.Label(support_game, text=compteur_manche_J1, font=("System", 45),
+                        fg='#b10000', bg='black')
+    score_J1.place(x=(41 * width_screen // 48) - affichage_score.winfo_reqwidth() // 2 +(affichage_score.winfo_reqwidth() // 2 - score_J1.winfo_reqwidth()) // 2,
+                   y=(height_screen - HEIGHT) // 2 + affichage_score.winfo_reqheight() // 1.65)
+
+    score_J2 = tk.Label(support_game, text=compteur_manche_J2, font=("System", 45),
+                        fg='#b10000', bg='black')
+    score_J2.place(x=(41 * width_screen // 48) - affichage_score.winfo_reqwidth() // 2 +(3 * affichage_score.winfo_reqwidth() // 2 - score_J2.winfo_reqwidth()) // 2,
+                   y=(height_screen - HEIGHT) // 2 + affichage_score.winfo_reqheight() // 1.65)
+
+    bouton_quitter = tk.Button(support_game, text="Quitter", font=("System", 15), fg="white",
+                               bg="#ff7262", relief="raised", padx=20, command=quitter)
+    bouton_quitter.place(x=2 * width_screen / 5, y=9 * height_screen / 10)
+
+    bouton_sauvegarder_quitter = tk.Button(support_game, text="Sauvegarder", font=("System", 15), fg="white",
+                                           bg="#ff7262", relief="raised", padx=20, command=sauvegarder_partie)
+    bouton_sauvegarder_quitter.place(x=3 * width_screen / 5, y=9 * height_screen / 10)
 
     #----------------------------------------------#
     #-------------Création de la grille------------#
     global sauvegarde
-    global grille
     global cooldown
-    
-    cooldown = 0 #Empêche de jouer pendant que le jeton précédent tombe ou en cas de victoire
+
+    cooldown = 0  # Empêche de jouer pendant que le jeton précédent tombe ou en cas de victoire
     ligne = valeur_ligne
     colonne = valeur_colonne
     grille = valeur_grille
-    if grille == []: #Vérifie si il y a déjà une grille (si on utilise la sauvegarde) pour en créer une vide sinon
+
+    if grille == []:  # Vérifie si il y a déjà une grille (si on utilise la sauvegarde) pour en créer une vide sinon
         for i in range(ligne):
             grille.append([0] * colonne)
 
-    rayon_trou = (min((HEIGHT//ligne),(WIDTH//colonne)))//2.5
-    for i in range(colonne): #Crée l'affichage de la grille sans jetons
+    rayon_trou = (min((HEIGHT // ligne), (WIDTH // colonne))) // 2.5
+
+    for i in range(colonne):  # Crée l'affichage de la grille sans jetons
         for j in range(ligne):
-            canva_jeu.create_oval(((i+0.5)*WIDTH//colonne-rayon_trou,(j+0.5)*HEIGHT//ligne-rayon_trou), 
-                                  ((i+0.5)*WIDTH//colonne+rayon_trou,(j+0.5)*HEIGHT//ligne+rayon_trou), 
-                                  fill = "#3394ff",  outline="#004fab", width= 0.1*rayon_trou)
+            canva_jeu.create_oval(((i + 0.5) * WIDTH // colonne - rayon_trou,
+                                   (j + 0.5) * HEIGHT // ligne - rayon_trou),
+                                   ((i + 0.5) * WIDTH // colonne + rayon_trou,
+                                    (j + 0.5) * HEIGHT // ligne + rayon_trou),
+                                    fill = "#3394ff",outline = "#004fab",
+                                    width = 0.1 * rayon_trou)
+
     
     #----------------------------------------------#
     #-------------Création des jetons--------------#
     global tour
     global couleur_centre
     global couleur_bordure
-   
-    if grille[0] == [0]*colonne : #Vérifie si le tour est prédéfini par la sauvegarde pour restituer ou non l'ordre de jeu de la partie
-        tour = rd.choice(valeur_tour)  
-    couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1] #Détermine le skin associé au tour
-    couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] #Détermine le skin associé au tour
+    global premier_joueur
 
-    rayon_jeton = 1.8 * rayon_trou / 2.09 
-    diff_milieux_y = [i*HEIGHT//(ligne*2) for i in range(1,ligne*2,2)]
+    if valeur_compteur_manche_J1 == 0 and valeur_compteur_manche_J2 == 0:  # Vérifie si le tour est prédéfini par la sauvegarde pour restituer ou non l'ordre de jeu de la partie
+        tour = rd.choice(valeur_tour)
+        premier_joueur = tour  # Pour la gestion des scores
+    else :
+        premier_joueur = valeur_premier_joueur
+
+    couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]  # Détermine le skin associé au tour
+    couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1]  # Détermine le skin associé au tour
+
+    rayon_jeton = 1.8 * rayon_trou / 2.09
+    diff_milieux_y = [i * HEIGHT // (ligne * 2) for i in range(1, ligne * 2, 2)]
     diff_milieux_y.reverse()
-    diff_milieux_x = [i*WIDTH//(colonne*2) for i in range(1,(colonne+1)*2,2)]
-    if grille[0] != [0]*colonne : #Réaffiche les jetons si on a activé la sauvegarde
-            for i in range(ligne):
-                for j in range(colonne):
-                    if grille[i][j] == valeur_tour[0]:
-                        canva_jeu.create_oval((diff_milieux_x[j]-rayon_jeton, diff_milieux_y[i]-rayon_jeton),
-                                              (diff_milieux_x[j]+rayon_jeton, diff_milieux_y[i]+rayon_jeton),
-                                              fill=valeur_couleur_centre[0],outline=valeur_couleur_bordure[0],width=0.25 * rayon_jeton)
-                    if grille[i][j] == valeur_tour[1]:
-                        canva_jeu.create_oval((diff_milieux_x[j]-rayon_jeton, diff_milieux_y[i]-rayon_jeton),
-                                              (diff_milieux_x[j]+rayon_jeton, diff_milieux_y[i]+rayon_jeton),
-                                              fill=valeur_couleur_centre[1],outline=valeur_couleur_bordure[1],width=0.25 * rayon_jeton)
+    diff_milieux_x = [i * WIDTH // (colonne * 2) for i in range(1, (colonne + 1) * 2, 2)]
+
+    if grille[0] != [0] * colonne:  # Réaffiche les jetons si on a activé la sauvegarde
+        for i in range(ligne):
+            for j in range(colonne):
+                if grille[i][j] == valeur_tour[0]:
+                    canva_jeu.create_oval((diff_milieux_x[j]-rayon_jeton, diff_milieux_y[i]-rayon_jeton),
+                                            (diff_milieux_x[j]+rayon_jeton, diff_milieux_y[i]+rayon_jeton),
+                                            fill=valeur_couleur_centre[0],outline=valeur_couleur_bordure[0],width=0.25 * rayon_jeton)
+                if grille[i][j] == valeur_tour[1]:
+                    canva_jeu.create_oval((diff_milieux_x[j]-rayon_jeton, diff_milieux_y[i]-rayon_jeton),
+                                            (diff_milieux_x[j]+rayon_jeton, diff_milieux_y[i]+rayon_jeton),
+                                            fill=valeur_couleur_centre[1],outline=valeur_couleur_bordure[1],width=0.25 * rayon_jeton)
                         
     #----------------------------------------------#
     #----------Fonctions de vérification-----------#
     def verif(): #Fonction qui vérifie si 4 jetons sont allignés
         global win
+        global compteur_manche_J1
+        global compteur_manche_J2
+        global sauvegarde
+        global cooldown
+
         win = False
         verif_ligne()
         verif_colonne()
         verif_diag_gauche_droite()
         verif_diag_droite_gauche()
+
         if win == True:
-            if tour == valeur_tour[0]:
-                print(f"omgomgomg {valeur_tour[0]} a gagné")
-            elif tour == valeur_tour[1]:
-                print(f"omgomgomg {valeur_tour[1]} a gagné")
-        return
-    
+            if tour == premier_joueur :
+                compteur_manche_J1 += 1  
+            else :
+                compteur_manche_J2 += 1 
+
+            if (compteur_manche_J1 < valeur_manche and compteur_manche_J2 < valeur_manche) :
+                if tour == valeur_tour[0]:
+                    print(f"{valeur_tour[0]} marque 1 point")
+                elif tour == valeur_tour[1]:
+                    print(f"{valeur_tour[1]} marque 1 point")
+                root.after(2000,relancer_partie)
+                root.after(2000, lambda : Jeu_normal(sauvegarde_manche['valeur_ligne'], sauvegarde_manche['valeur_colonne'],
+                                                    sauvegarde_manche['valeur_alignement'], sauvegarde_manche['valeur_manche'],
+                                                    sauvegarde_manche['valeur_compteur_manche_J1'],sauvegarde_manche['valeur_compteur_manche_J2'], sauvegarde_manche['valeur_premier_joueur'],
+                                                    sauvegarde_manche['valeur_tour'],sauvegarde_manche['valeur_couleur_centre'], 
+                                                    sauvegarde_manche['valeur_couleur_bordure'],sauvegarde_manche['valeur_grille']))
+                
+            elif (compteur_manche_J1 == valeur_manche or compteur_manche_J2 == valeur_manche)  :
+                score_J1 = tk.Label(support_game, text=compteur_manche_J1, font=("System",45), fg = '#b10000', bg ='black')
+                score_J1.place(x = (41*width_screen//48) - affichage_score.winfo_reqwidth()//2 + (affichage_score.winfo_reqwidth()//2-score_J1.winfo_reqwidth())//2,
+                               y =(height_screen-HEIGHT)//2 + affichage_score.winfo_reqheight()//1.65)
+                
+                score_J2 = tk.Label(support_game, text=compteur_manche_J2, font=("System",45), fg = '#b10000', bg ='black')
+                score_J2.place(x = (41*width_screen//48) - affichage_score.winfo_reqwidth()//2 + (3*affichage_score.winfo_reqwidth()//2-score_J2.winfo_reqwidth())//2,
+                               y =(height_screen-HEIGHT)//2 + affichage_score.winfo_reqheight()//1.65)
+                
     def verif_ligne(): #Fonction qui verifie si 4 jetons sont alignés en ligne
         global win
         for i in grille:
@@ -132,9 +253,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
                 if i[j] != 0:
                     if all(i[j+k] == i[j] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
                         win = True
-        
-
-                        
+                          
     def verif_colonne(): #Fonction qui verifie si 4 jetons sont alignés en colonne
         global win
         for i in range(valeur_ligne - (valeur_alignement - 1)):
@@ -159,6 +278,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
                             if all(grille[i][j] == grille[i-k][j-k] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
                                     win = True
 
+    
     #----------------------------------------------#
     #------------Animation des jetons--------------#
     def placer_jeton(event):
@@ -166,31 +286,36 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
         global couleur_centre
         global couleur_bordure
         global cooldown
-        coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y)) #Détermine la position du trou le plus proche
-        (milieu_x,milieu_y) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2) #Trouve le centre du trou le plus proche
+
+        coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))  # Détermine la position du trou le plus proche
+
+        (milieu_x, milieu_y) = ((coords_trou[0] + coords_trou[2]) // 2,
+                                (coords_trou[1] + coords_trou[3]) // 2)  # Trouve le centre du trou le plus proche
+
         if cooldown == 0 and cursor_grid == True:
             cooldown = 1
-            for i in range(colonne):   #Pour chaque colonne
-                if diff_milieux_x[i] <= milieu_x < diff_milieux_x[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
-                    if all(j[i] == 0 for j in grille): #cas ou toutes les trous de la colonne sont nulles
-                        grille[0][i] = tour #on place la couleur en bas de la grille virtuelle
-                        milieu_y = diff_milieux_y[0] #on place le jeton tout en bas dans le canva
-                        break #break pour eviter de faire tourner la boucle inutilement 
-                    elif grille[ligne-1][i] != 0: #On verifie si 
-                        print(f"La {i+1} ème colonne est pleine") #Afficher quelque part sur l écran que la colonne est pleine
+            for i in range(colonne):  # Pour chaque colonne
+                if diff_milieux_x[i] <= milieu_x < diff_milieux_x[i + 1]:  # Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
+                    if all(j[i] == 0 for j in grille):  # cas ou toutes les trous de la colonne sont nulles
+                        grille[0][i] = tour  # on place la couleur en bas de la grille virtuelle
+                        milieu_y = diff_milieux_y[0]  # on place le jeton tout en bas dans le canva
+                        break  # break pour eviter de faire tourner la boucle inutilement
+                    elif grille[ligne - 1][i] != 0:  # On verifie si
+                        print(f"La {i+1} ème colonne est pleine")  # Afficher quelque part sur l écran que la colonne est pleine
                         return
                     else:
-                        for t in range(ligne-1,-1,-1): #on regarde du haut vers le bas
-                            if grille[t][i] != 0: #et des qu'un trou est plein
-                                grille[t+1][i] = tour #on remplit celui d'au dessus
-                                milieu_y = diff_milieux_y[t+1]
+                        for t in range(ligne - 1, -1, -1):  # on regarde du haut vers le bas
+                            if grille[t][i] != 0:  # et des qu'un trou est plein
+                                grille[t + 1][i] = tour  # on remplit celui d'au dessus
+                                milieu_y = diff_milieux_y[t + 1]
                                 break
+
             
             def animer_jeton(i): #Animation de chute   
                 if i == milieu_y:#Repasse le contour en bleu si il était en surbrillance avant de poser le jeton
                     jeton_2 = jeton = canva_jeu.find_closest(milieu_x, milieu_y)
                     canva_jeu.itemconfigure(jeton_2, outline = '#004fab')
-                    if win == False :
+                    if (compteur_manche_J1 < valeur_manche) and (compteur_manche_J2 < valeur_manche):
                         root.after(100,player_switch)
 
                 jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_centre,
@@ -205,7 +330,8 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
                 global couleur_centre
                 global couleur_bordure
                 global cooldown
-                cooldown=0   
+                if win == False:
+                    cooldown=0   
                 tour = valeur_tour[1] if tour == valeur_tour[0] else valeur_tour[0] 
                 couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]
                 couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] 
@@ -222,7 +348,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_tour, val
 
     #----------------------------------------------#
     #----------Effets graphiques grille------------#
-    def  surbrillance_contour(event):
+    def surbrillance_contour(event):
         
         global grille_bleue #Evite de superposer des cercles à l'infini
         grille_bleue = False
@@ -635,17 +761,18 @@ support_root = tk.Frame(root, bg="#3394ff", width = width_screen, height= width_
 support_button = tk.Frame(support_root, bg="#3394ff")
 
 B1=tk.Button(support_button, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
-             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=20, valeur_colonne=20,valeur_tour=['jaune','rouge'],
-                                                                                        valeur_alignement = 4, valeur_couleur_centre=['#ffd933', '#ff3b30'],
-                                                                                        valeur_couleur_bordure=['#e7ba00', '#bb261f'],
-                                                                                        valeur_grille=[])))
+             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=6, valeur_colonne=7,valeur_alignement = 4, valeur_manche = 2, 
+                                                                                        valeur_compteur_manche_J1 = 0,valeur_compteur_manche_J2 = 0,valeur_premier_joueur = '',
+                                                                                        valeur_tour=['jaune','rouge'], valeur_couleur_centre=['#ffd933', '#ff3b30'],
+                                                                                        valeur_couleur_bordure=['#e7ba00', '#bb261f'],valeur_grille=[])))
 B2=tk.Button(support_button, text="PARTIE CUSTOM", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=14, pady=15, command=Jeu_sandbox)
 B3=tk.Button(support_button, text="SAUVEGARDE", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=33, pady=15, command= (lambda : Jeu_normal(sauvegarde['valeur_ligne'], sauvegarde['valeur_colonne'],
-                                                                                        sauvegarde['valeur_alignement'], sauvegarde['valeur_tour'],
-                                                                                        sauvegarde['valeur_couleur_centre'], sauvegarde['valeur_couleur_bordure'],
-                                                                                        sauvegarde['valeur_grille'])))
+                                                                                        sauvegarde['valeur_alignement'], sauvegarde['valeur_manche'],
+                                                                                        sauvegarde['valeur_compteur_manche_J1'],sauvegarde['valeur_compteur_manche_J2'], sauvegarde['valeur_premier_joueur'],
+                                                                                        sauvegarde['valeur_tour'],sauvegarde['valeur_couleur_centre'], 
+                                                                                        sauvegarde['valeur_couleur_bordure'],sauvegarde['valeur_grille'])))
 B4=tk.Button(support_button, text="REGLES", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=69, pady=15, command=rules)
 M1=tk.Label(support_root, text="Bienvenue sur Puissance 4 !", fg="white",  bg= "#3394ff",
