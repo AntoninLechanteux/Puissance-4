@@ -64,7 +64,10 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
             sauvegarde['valeur_couleur_bordure'] = valeur_couleur_bordure
             sauvegarde["valeur_grille"] = grille.copy()
         else:
-            print('La partie est déjà terminée')
+            texte_fin_de_partie = tk.Label(support_game, text= 'La partie est déjà terminée', font=("System", 35),
+                                                    fg='white', bg='#3394ff')
+            texte_fin_de_partie.place(x=(width_screen - texte_fin_de_partie.winfo_reqwidth())//2,
+                                      y=8.7*height_screen//10)
 
     def sauvegarde_manche_fct():
         global sauvegarde_manche
@@ -93,9 +96,6 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
     compteur_manche_J1 = valeur_compteur_manche_J1
     compteur_manche_J2 = valeur_compteur_manche_J2
 
-    titre_jeu = tk.Label(support_game, text="Bienvenue sur Puissance 4 !", fg="white", 
-                        bg="#3394ff",font=("System", 45), padx=0)
-    titre_jeu.place(x=(width_screen - titre_jeu.winfo_reqwidth()) // 2, y=10)
 
     affichage_score = tk.Canvas(support_game, height=HEIGHT // 2, width=width_screen // 5,
                                 bg="black", highlightbackground='#b10000')
@@ -138,12 +138,25 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                    y=(height_screen - HEIGHT) // 2 + affichage_score.winfo_reqheight() // 1.65)
 
     bouton_quitter = tk.Button(support_game, text="Quitter", font=("System", 15), fg="white",
-                               bg="#ff7262", relief="raised", padx=20, command=quitter)
-    bouton_quitter.place(x=2 * width_screen / 5, y=9 * height_screen / 10)
+                               bg="#ff7262", relief="raised", padx=32, command=quitter)
+    bouton_quitter.place(x=(41 * width_screen // 48) - bouton_quitter.winfo_reqwidth() // 2,
+                         y=7.5 * height_screen / 10)
+    bouton_quitter.bind("<Enter>", lambda event : bouton_touche(event,bouton_quitter))
+    bouton_quitter.bind("<Leave>", lambda event : bouton_relache(event,bouton_quitter))
 
-    bouton_sauvegarder_quitter = tk.Button(support_game, text="Sauvegarder", font=("System", 15), fg="white",
-                                           bg="#ff7262", relief="raised", padx=20, command=sauvegarder_partie)
-    bouton_sauvegarder_quitter.place(x=3 * width_screen / 5, y=9 * height_screen / 10)
+    bouton_sauvegarder = tk.Button(support_game, text="Sauvegarder", font=("System", 15), fg="white",
+                                           bg="#ff7262", relief="raised", padx=8, command=sauvegarder_partie)
+    bouton_sauvegarder.place(x=(41 * width_screen // 48) - bouton_sauvegarder.winfo_reqwidth() // 2,
+                             y=6.5 * height_screen / 10)
+    bouton_sauvegarder.bind("<Enter>", lambda event : bouton_touche(event,bouton_sauvegarder))
+    bouton_sauvegarder.bind("<Leave>", lambda event : bouton_relache(event,bouton_sauvegarder))
+    
+    bouton_annuler = tk.Button(support_game, text="Annuler", font=("System", 15), fg="white",
+                                           bg="#ff7262", relief="raised", padx=29)
+    bouton_annuler.place(x=(41 * width_screen // 48) - bouton_annuler.winfo_reqwidth() // 2,
+                             y=5.5 * height_screen / 10)
+    bouton_annuler.bind("<Enter>", lambda event : bouton_touche(event,bouton_annuler))
+    bouton_annuler.bind("<Leave>", lambda event : bouton_relache(event,bouton_annuler))
 
     #----------------------------------------------#
     #-------------Création de la grille------------#
@@ -226,10 +239,11 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                 compteur_manche_J2 += 1 
 
             if (compteur_manche_J1 < valeur_manche and compteur_manche_J2 < valeur_manche) :
-                if tour == valeur_tour[0]:
-                    print(f"{valeur_tour[0]} marque 1 point")
-                elif tour == valeur_tour[1]:
-                    print(f"{valeur_tour[1]} marque 1 point")
+                texte_fin_de_partie = tk.Label(support_game, text= f"{tour} marque 1 point", font=("System", 35),
+                                                fg='white', bg='#3394ff')
+                texte_fin_de_partie.place(x=(width_screen - texte_fin_de_partie.winfo_reqwidth())//2,
+                                            y=8.7*height_screen//10)
+                
                 root.after(2000,relancer_partie)
                 root.after(2000, lambda : Jeu_normal(sauvegarde_manche['valeur_ligne'], sauvegarde_manche['valeur_colonne'],
                                                     sauvegarde_manche['valeur_alignement'], sauvegarde_manche['valeur_manche'],
@@ -246,6 +260,11 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                 score_J2.place(x = (41*width_screen//48) - affichage_score.winfo_reqwidth()//2 + (3*affichage_score.winfo_reqwidth()//2-score_J2.winfo_reqwidth())//2,
                                y =(height_screen-HEIGHT)//2 + affichage_score.winfo_reqheight()//1.65)
                 
+                texte_fin_de_partie = tk.Label(support_game, text= f"{tour} remporte la partie", font=("System", 35),
+                                                fg='white', bg='#3394ff')
+                texte_fin_de_partie.place(x=(width_screen - texte_fin_de_partie.winfo_reqwidth())//2,
+                                            y=8.7*height_screen//10)
+
     def verif_ligne(): #Fonction qui verifie si 4 jetons sont alignés en ligne
         global win
         for i in grille:
@@ -335,6 +354,9 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                 tour = valeur_tour[1] if tour == valeur_tour[0] else valeur_tour[0] 
                 couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]
                 couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] 
+                titre_jeu = tk.Label(support_game, text="Bienvenue sur Puissance 4 !", fg=valeur_couleur_centre[valeur_tour.index(tour)], 
+                                     bg="#3394ff",font=("System", 45), padx=0)
+                titre_jeu.place(x=(width_screen - titre_jeu.winfo_reqwidth()) // 2, y=10)
             
             animer_jeton(diff_milieux_y[-1])
             pygame.mixer.music.load("Hit Marker sound effect.mp3")
@@ -348,48 +370,59 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
 
     #----------------------------------------------#
     #----------Effets graphiques grille------------#
-    def surbrillance_contour(event):
-        
-        global grille_bleue #Evite de superposer des cercles à l'infini
+    def surbrillance_contour(event):  # Cercles blancs pour indiquer dans quelle colonne on va jouer
+        global grille_bleue  # Evite de superposer des cercles bleus à l'infini
+        global grille_blanche # Evite de superposer des cercles blancs à l'infini
         grille_bleue = False
+        grille_blanche = False
 
         x = event.x
         y = event.y
-        overlapping = canva_jeu.find_overlapping(x-1, y-(HEIGHT//(2*ligne)), x+1, y+(HEIGHT//(2*ligne)))
+        overlapping = canva_jeu.find_overlapping(x - 1, y - (HEIGHT // (2 * ligne)), x + 1, y + (HEIGHT // (2 * ligne)))
+
         if len(overlapping) != 0:
             coords_overlapping = canva_jeu.coords(overlapping[-1])
 
-        #Si on ne touche aucun jeton, tout repasse en bleu
+        # Si on ne touche aucun jeton, tout repasse en bleu
         if len(overlapping) == 0 and grille_bleue == False:
             for i in range(colonne):  
-                for j in range(ligne) :
-                    if grille[j][i] == 0 :
+                for j in range(ligne):
+                    if grille[j][i] == 0:
                         jeton = canva_jeu.find_closest(diff_milieux_x[i], diff_milieux_y[j])
-                        canva_jeu.itemconfigure(jeton, outline='#004fab')
+                        canva_jeu.itemconfigure(jeton, outline = '#004fab')
             grille_bleue = True
-        
-        if len(overlapping) != 0 :
+            grille_blanche = False
+
+        if len(overlapping) != 0 and grille_blanche == False:
             coords_trou_x = (coords_overlapping[0] + coords_overlapping[2]) // 2
             for i in range(colonne):  
-                if diff_milieux_x[i] <= coords_trou_x < diff_milieux_x[i+1]:#On vérifie si le jeton survolé est dans celle-ci
-                    for j in range(ligne) : #Et pour chaque jeton de la colonne
-                        if grille[j][i] == 0 :#On passe le contour des trous en blanc
+                if diff_milieux_x[i] <= coords_trou_x < diff_milieux_x[i + 1]:  # On vérifie si le jeton survolé est dans celle-ci
+                    for j in range(ligne):  # Et pour chaque jeton de la colonne
+                        if grille[j][i] == 0:  # On passe le contour des trous en blanc
                             jeton = canva_jeu.find_closest(diff_milieux_x[i], diff_milieux_y[j])
-                            canva_jeu.itemconfigure(jeton, outline="white")
-            grille_bleue = False  
-    canva_jeu.bind("<Motion>", surbrillance_contour)
+                            canva_jeu.itemconfigure(jeton, outline = "white")
+            grille_bleue = False
+            grille_blanche = True
 
+    titre_jeu = tk.Label(support_game, text="Bienvenue sur Puissance 4 !", fg=valeur_couleur_centre[valeur_tour.index(tour)], 
+                        bg="#3394ff",font=("System", 45), padx=0)
+    titre_jeu.place(x=(width_screen - titre_jeu.winfo_reqwidth()) // 2, y=10)
+    
     def cursor_in_grid(event):
         global cursor_grid
         cursor_grid = True
+
     def cursor_not_in_grid(event):
         global cursor_grid
         cursor_grid = False
-    canva_jeu.bind('<Enter>', cursor_in_grid)#Vérifient si le curseur est dans la grille pour poser le jeton après un clic
+
+    canva_jeu.bind("<Motion>", surbrillance_contour)
+    canva_jeu.bind('<Enter>', cursor_in_grid)  # Vérifient si le curseur est dans la grille pour poser le jeton après un clic
     canva_jeu.bind('<Leave>', cursor_not_in_grid)       
-    
+
     game.mainloop()
     return
+
 #----------------------------------------------#
 
 
@@ -763,7 +796,7 @@ support_button = tk.Frame(support_root, bg="#3394ff")
 B1=tk.Button(support_button, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
              fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=6, valeur_colonne=7,valeur_alignement = 4, valeur_manche = 2, 
                                                                                         valeur_compteur_manche_J1 = 0,valeur_compteur_manche_J2 = 0,valeur_premier_joueur = '',
-                                                                                        valeur_tour=['jaune','rouge'], valeur_couleur_centre=['#ffd933', '#ff3b30'],
+                                                                                        valeur_tour=['Jaune','Rouge'], valeur_couleur_centre=['#ffd933', '#ff3b30'],
                                                                                         valeur_couleur_bordure=['#e7ba00', '#bb261f'],valeur_grille=[])))
 B2=tk.Button(support_button, text="PARTIE CUSTOM", font=('system', 20), bg="#ff7262", 
              fg="white", relief="raised", padx=14, pady=15, command=Jeu_sandbox)
