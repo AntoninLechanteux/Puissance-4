@@ -252,6 +252,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                                                     sauvegarde_manche['valeur_couleur_bordure'],sauvegarde_manche['valeur_grille']))
                 
             elif (compteur_manche_J1 == valeur_manche or compteur_manche_J2 == valeur_manche)  :
+                sauvegarde = {}
                 score_J1 = tk.Label(support_game, text=compteur_manche_J1, font=("System",45), fg = '#b10000', bg ='black')
                 score_J1.place(x = (41*width_screen//48) - affichage_score.winfo_reqwidth()//2 + (affichage_score.winfo_reqwidth()//2-score_J1.winfo_reqwidth())//2,
                                y =(height_screen-HEIGHT)//2 + affichage_score.winfo_reqheight()//1.65)
