@@ -3,6 +3,7 @@ import random as rd
 import inspect 
 from win32api import GetSystemMetrics
 import pygame
+from tkinter import ttk
 #---------Importe la resolution machine--------#
 width_screen = GetSystemMetrics(0)
 height_screen = GetSystemMetrics(1)
@@ -441,17 +442,17 @@ def Jeu_sandbox():
     mod.title("Jeu mode sandbox")
 #----------------------------------------------#
     sand_height = height_screen
-    sand_width = width_screen/2
+    sand_width = width_screen
     sand = tk.LabelFrame(mod, height=sand_height, width=sand_width, bg="#6db3fe", relief="ridge")
     sand.place(x=0, y=0)
     global couleur_bordure
     global couleur_centre
     global nom_couleur
     global dpos
-    couleur_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C"]
-    couleur_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F"]
-    nom_couleur = ["bleu","rouge","jaune", "vert"]
-    selec_couleur = [couleur_centre,couleur_bordure,nom_couleur]
+    couleur_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C","#ABA0F9","#A76844","#038A91","#FFEBD8","#676B4A","#FFB8CE","#CE8F8A"]
+    couleur_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F","#7C80FC","#9F5540","#06708E","#FFD5BA","#585944","#FE94B4","#805050"]
+    nom_couleur = ["BLEU","ROUGE","JAUNE","VERT","LAVANDE","MARRON","CANARD","BEIGE","OLIVE","ROSE","TERRACOTTA"]
+    
 
     end_pos = -sand_width
     start_pos = 0
@@ -459,132 +460,48 @@ def Jeu_sandbox():
     dt = 3
     
     def animation_panel():
-        if (int(colonne.get()) != 0) and (int(ligne.get())!= 0) and (Choix_joueur1["text"]!="") and (Choix_joueur2["text"]!=""):
-            global dpos
-            sand.place(x=start_pos, y=0)
-            if dpos < abs(end_pos):
-                sand.place(x=start_pos-dpos, y=0)
-                dpos += 1
-                root.after(dt, animation_panel)
+        if (int(SBalignement.get()) <= int(colonne.get())) or (int(SBalignement.get()) <= int(ligne.get())):
+            if (int(colonne.get()) != 0) and (int(ligne.get())!= 0) and (Choix_joueur1["text"]!="") and (Choix_joueur2["text"]!="") and (int(SBalignement.get())!= 0) and (int(SBmanche.get())!= 0):
+                global dpos
+                sand.place(x=start_pos, y=0)
+                if dpos < abs(end_pos):
+                    sand.place(x=start_pos-dpos, y=0)
+                    dpos += 1
+                    root.after(dt, animation_panel)
+                else:
+                    sand.place(x=end_pos, y=0)
+                    dpos = 0
+
+                    def lancer_jeu():
+                        # Récupération des données avant destruction de mod
+                        lignes = int(ligne.get())
+                        colonnes = int(colonne.get())
+                        alignement = int(SBalignement.get())
+                        manches = int(SBmanche.get())
+                        joueur1 = Choix_joueur1["text"]
+                        joueur2 = Choix_joueur2["text"]
+                        couleur_centre_j1 = couleur_centre[nom_couleur.index(joueur1)]
+                        couleur_centre_j2 = couleur_centre[nom_couleur.index(joueur2)]
+                        couleur_bordure_j1 = couleur_bordure[nom_couleur.index(joueur1)]
+                        couleur_bordure_j2 = couleur_bordure[nom_couleur.index(joueur2)]
+
+                        mod.destroy()
+
+                        # Maintenant qu'on a toutes les infos, on peut lancer Jeu_normal
+                        Jeu_normal(
+                            lignes, colonnes, alignement, manches, 0, 0, "",
+                            [joueur1, joueur2],
+                            [couleur_centre_j1, couleur_centre_j2],
+                            [couleur_bordure_j1, couleur_bordure_j2],
+                            [])
+                        
+
+                    mod.after(1000, lancer_jeu)
             else:
-                sand.place(x=end_pos, y=0)
-                dpos=0
-                mod.after(1000, jouer)
-            return
+                print("les conditions ne sont pas respectées")
         else:
-            print("les conditions ne sont pas respectées")
-    def jouer():
-        #-----------creation de la grille-------------#
-        HEIGHT = 720 
-        WIDTH = 1295
-        Bhome2=tk.Button(mod, text="Quitter", font=("System",15),
-                 fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=fermer)
-        wBhome2 = Bhome2.winfo_reqwidth()
-        hBhome2 = Bhome2.winfo_reqheight()
-        Bhome2.place(x=width_screen/2-wBhome2/2, y=height_screen-1.5*hBhome2)
-        dim_grille=[int(ligne.get()),int(colonne.get())]
-        canva_jeu = tk.Canvas(mod, height=HEIGHT, width=WIDTH,bg="#005bff", highlightthickness=0)
-        canva_jeu.place(x=width_screen/2-WIDTH/2, y=0.1*HEIGHT)
-        rayon_trou = (min((HEIGHT//dim_grille[0]),(WIDTH//dim_grille[1])))//2.5
-        for i in range(dim_grille[1]):
-            for j in range(dim_grille[0]):
-                canva_jeu.create_oval(((i+0.5)*WIDTH//dim_grille[1]-rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]-rayon_trou), ((i+0.5)*WIDTH//dim_grille[1]+rayon_trou,(j+0.5)*HEIGHT//dim_grille[0]+rayon_trou), fill = "#3394ff",  outline="#004fab", width= 0.1*rayon_trou)
-        global tour_mod
-        tour_mod = "j"
-        rayon_jeton = 1.8 * rayon_trou / 2.13
-
-        #Creation de la grille en tant que liste
-        global grille_mod
-        grille_mod = []
-        for i in range(int(ligne.get())):
-            grille_mod.append([0] * int(colonne.get()))
+            print("Vous ne pouvez pas aligner autant de jetons dans une grille si petite???")
             
-        #Creation des milieux x et y
-        diff_milieux_y_mod = [i*HEIGHT/(int(ligne.get())*2) for i in range(1,int(ligne.get())*2,2)]
-        diff_milieux_y_mod.reverse()
-        diff_milieux_x_mod = [i*WIDTH/(int(colonne.get())) for i in range(0,int(colonne.get())+1)]
-        
-        def verif(): #Fonction qui verif si 4 jetons sont alignés+ qui dit qui a win
-            global win
-            win = False
-            ligne_fct()
-            colonne_fct()
-            diag_droit_gauche()
-            diag_gauche_droit()
-            if win == True:
-                if tour_mod == "j":
-                    print("omgomgomg jaune a gagné")
-                elif tour_mod == "r":
-                    print("omgomgomg rouge a gagné")
-            return
-        
-        def ligne_fct(): #Fonction qui verifie si 4 jetons sont alignés en ligne
-            global win
-            for i in grille_mod:
-                for j in range(int(colonne.get())-3):
-                    if i[j] != 0:
-                        if (i[j] == i[j+1] == i[j+2] == i[j+3]):
-                            win = True
-        def colonne_fct(): #Fonction qui verifie si 4 jetons sont alignés en colonne
-            global win
-            for i in range(int(colonne.get())):
-                for j in range(int(ligne.get())-3):
-                   if grille_mod[j][i] != 0:    
-                        if (grille_mod[j][i] == grille_mod[j+1][i] == grille_mod[j+2][i] == grille_mod[j+3][i]):
-                            win = True
-        def diag_gauche_droit(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
-            global win
-            for i in range(int(ligne.get())-1,2,-1):
-                for j in range(int(colonne.get())-3):
-                    if grille_mod[i][j] != 0:
-                        if (grille_mod[i][j] == grille_mod[i-1][j+1] == grille_mod[i-2][j+2] == grille_mod[i-3][j+3]):
-                            win = True
-        def diag_droit_gauche(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
-            global win
-            for i in range(int(colonne.get())-1,2,-1):
-                for j in range(int(ligne.get())-1,2,-1):
-                    if grille_mod[j][i]!= 0:
-                        if (grille_mod[j][i] == grille_mod[j-1][i-1] == grille_mod[j-2][i-2] == grille_mod[j-3][i-3]):
-                            win = True
-
-        def placer_jeton_mod(event):
-            global tour_mod
-            global grille_mod
-            coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))
-            (milieu_x_mod,milieu_y_mod) = ((coords_trou[0]+coords_trou[2])//2, (coords_trou[1]+coords_trou[3])//2)
-            for i in range(int(colonne.get())):   #pour chaque colonne
-                if diff_milieux_x_mod[i] <= milieu_x_mod < diff_milieux_x_mod[i+1]: #Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
-                    if all(j[i] == 0 for j in grille_mod): #cas ou toutes les trous de la colonne sont vides
-                        grille_mod[0][i] = tour_mod #on place la couleur en bas de la grille virtuelle
-                        milieu_y_mod = diff_milieux_y_mod[0] #on place le jeton tout en bas dans le canva
-                        break #break pour eviter de faire tourner la boucle inutilement 
-                    elif grille_mod[int(ligne.get())-1][i] != 0: #Si la colonne est pleine
-                        if i == 0:
-                            print(f"La {i+1} ere colonne est pleine") #Afficher quelque part sur l écran que la 1ere colonne est pleine
-                        else:
-                            print(f"La {i+1} eme colonne est pleine") #Afficher quelque part sur l écran que la i-eme colonne est pleine
-                        return
-                    else:
-                        for t in range(int(ligne.get())-1,-1,-1): #on regarde du haut vers le bas
-                            if grille_mod[t][i] != 0: #et des qu'un trou est plein
-                                grille_mod[t+1][i] = tour_mod #on remplit celui d'au dessus
-                                milieu_y_mod = diff_milieux_y_mod[t+1] #Placement visuel
-                                break #Break pour eviter de faire tourner la boucle inutilement
-    
-            if tour_mod == "j":
-                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),
-                                      fill = "#ffd933",  outline = "#e7ba00", width = 0.25*rayon_jeton) #Placement visuel sur le canva
-                verif() #Verifie s'il a gagné
-                tour_mod = "r" #Tour suivant 
-                return
-            elif tour_mod == "r":
-                canva_jeu.create_oval((milieu_x_mod-rayon_jeton,milieu_y_mod-rayon_jeton), (milieu_x_mod+rayon_jeton, milieu_y_mod+rayon_jeton),
-                                      fill = "#ff3b30",  outline = "#bb261f", width = 0.25*rayon_jeton)
-                verif()
-                tour_mod = "j" #tour suivant 
-                return
-        mod.bind("<Button-1>", placer_jeton_mod)
-
     M1=tk.Label(sand, text="Configuations", fg="white",  bg= "#6db3fe", font=("System",30))
     wM1 = M1.winfo_reqwidth()
     hM1 = M1.winfo_reqheight()
@@ -602,32 +519,56 @@ def Jeu_sandbox():
     Bplay.place(x=sand_width/1.2-wBplay/2, y=sand_height-1.5*hBplay)
     Mcol = tk.Label(sand, text=" Nombre de colonne :", fg="white",  bg= "#6db3fe", font=("System",22))
     wMcol = Mcol.winfo_reqwidth() 
-    Mcol.place(x=sand_width/6-wMcol/2, y=sand_height/5-50)
+    Mcol.place(x=sand_width/5-wMcol/2, y=sand_height/5-50)
     colonne = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wcolonne = colonne.winfo_reqwidth()
-    colonne.place(x=sand_width/6-wcolonne/2, y=sand_height/5)
+    colonne.place(x=sand_width/5-wcolonne/2, y=sand_height/5)
     Mlig = tk.Label(sand, text="Nombre de ligne :", fg="white",  bg= "#6db3fe", font=("System",22))
     wMlig = Mlig.winfo_reqwidth()
-    Mlig.place(x=sand_width/1.2-wMlig/2, y=sand_height/5-50)
+    Mlig.place(x=sand_width/5-wMlig/2, y=2*sand_height/5-50)
     ligne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wligne = ligne.winfo_reqwidth()
-    ligne.place(x=sand_width/1.2-wligne/2, y=sand_height/5)  
-    LBcolor = tk.Listbox(sand, height=3, width=13, selectbackground= "blue", font=("System",15))
+    ligne.place(x=sand_width/5-wligne/2, y=2*sand_height/5)  
+    alignement = tk.Label(sand,text = "Nombre de jeton à aligner: ", fg="white",  bg= "#6db3fe", font=("System",22))
+    walignement = alignement.winfo_reqwidth()
+    alignement.place(x=sand_width/5 - walignement/2, y=3*sand_height/5-50)
+    SBalignement = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    wSBalignement = SBalignement.winfo_reqwidth()
+    SBalignement.place(x=sand_width/5 - wSBalignement/2, y=3*sand_height/5)
+    manche = tk.Label(sand,text = "Nombre de manche: ", fg="white",  bg= "#6db3fe", font=("System",22))
+    wmanche = manche.winfo_reqwidth()
+    manche.place(x=sand_width/5 - wmanche/2, y=4*sand_height/5-50)
+    SBmanche = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    wSBmanche = SBmanche.winfo_reqwidth()
+    SBmanche.place(x=sand_width/5 - wSBmanche/2, y=4*sand_height/5)
+    
+    
+    
+    LBcolor = tk.Listbox(sand, height=5, width=23, selectbackground= "blue", font=("System",15))
     wLBcolor = LBcolor.winfo_reqwidth()
-    LBcolor.place(x=sand_width/2-wLBcolor/2, y=sand_height/2-50)
-    joueur1 = tk.Label(sand, text="Joueur 1 :",border=0, background="#6db3fe", font=("System",15))
+    LBcolor.place(x=4*sand_width/5-wLBcolor/2, y=2*sand_height/8)
+    sbar = ttk.Scrollbar(sand, command=LBcolor.yview)
+    sbar.place(x=4*sand_width/5 + wLBcolor/2, y=2*sand_height/8, height = LBcolor.winfo_reqheight())
+    LBcolor.config(yscrollcommand=sbar.set)
+    
+    
+    
+    
+    
+    joueur1 = tk.Label(sand, text="Joueur 1 :",border=0, background="#6db3fe", fg = "white", font=("System",20))
     wjoueur1 = joueur1.winfo_reqwidth()
-    joueur1.place(x=sand_width/6-wjoueur1/2, y=sand_height/2)
-    Choix_joueur1 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",15))
+    joueur1.place(x=4*sand_width/5-wjoueur1/2-35, y=4*sand_height/8)
+    Choix_joueur1 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
     wChoix_joueur1 = Choix_joueur1.winfo_reqwidth()
-    Choix_joueur1.place(x=sand_width/6-wChoix_joueur1/1.3, y=sand_height/1.89)
-    joueur2 = tk.Label(sand, text="Joueur 2 :",border=0, background="#6db3fe", font=("System",15))
+    Choix_joueur1.place(x=4*sand_width/5-wChoix_joueur1/2+35, y=4*sand_height/8)
+    joueur2 = tk.Label(sand, text="Joueur 2 :",border=0, background="#6db3fe", font=("System",20), fg = "white")
     wjoueur2 = joueur2.winfo_reqwidth()
-    joueur2.place(x=sand_width/1.2-wjoueur2/2, y=sand_height/2)
-    Choix_joueur2 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",15))
+    joueur2.place(x=4*sand_width/5-wjoueur2/2-35, y=5*sand_height/8)
+    Choix_joueur2 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
     wChoix_joueur2 = Choix_joueur2.winfo_reqwidth()
-    Choix_joueur2.place(x=sand_width/1.2-wChoix_joueur2/2,y=sand_height/1.89)
-
+    Choix_joueur2.place(x=4*sand_width/5-wChoix_joueur2/2+35,y=5*sand_height/8)
+    
+    
     # ------------------- Configuration des listebox ------------------ #
     for item in nom_couleur: #Ajoute les couleurs disponibles a la listebox
         LBcolor.insert(tk.END,item)
@@ -642,7 +583,7 @@ def Jeu_sandbox():
         if Choix_joueur1["text"] == "":
             Choix_joueur1["text"]= LBcolor.get(LBcolor.curselection())
             LBcolor.delete(LBcolor.curselection()) #suppression dans les choix pour pas se faire affronter les memes couleurs
-        else:
+        elif Choix_joueur1["text"] != "" and Choix_joueur2["text"] == "":
             Choix_joueur2["text"] = LBcolor.get(LBcolor.curselection())
             LBcolor.delete(LBcolor.curselection())
         return   
@@ -660,13 +601,13 @@ def Jeu_sandbox():
             LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(Choix_joueur1["text"])])
             Choix_joueur1["text"] = "" 
         return
-
+    
     select = tk.Button(sand,text = "Selectionner", command=print_selec, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
     wselect = select.winfo_reqwidth()
-    select.place(x=sand_width/6-wselect/2, y=sand_height/1.75)
+    select.place(x=4*sand_width/5-wselect/2+52, y=3*sand_height/8)
     retour = tk.Button(sand, text= "Annuler", command=annuler, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
     wretour = retour.winfo_reqwidth()
-    retour.place(x=sand_width/1.2-wretour/2, y=sand_height/1.75)
+    retour.place(x=4*sand_width/5-wretour/2-52, y=3*sand_height/8)
 
     mod.mainloop()
     return
