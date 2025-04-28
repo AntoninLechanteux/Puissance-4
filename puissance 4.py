@@ -583,32 +583,25 @@ def Jeu_sandbox():
     rendu.place(x=sand_width/2-wrendu/2, y=sand_height/2-hrendu/2)
     
     def maj(*args):
-        rendu.delete("all")  # On efface l'ancien dessin
+        rendu.delete("all")  #On efface l'ancien dessin
         nb_col = int(colonne.get())
         nb_lig = int(ligne.get())
-        # Dimensions fixes du Canvas
+        #Dimensions fixes du Canvas
         canvas_width = width_screen / 7
         canvas_height = height_screen / 7
 
-        # Rayon des trous en fonction du nombre de lignes et colonnes
+        #Rayon des trous en fonction du nombre de lignes et colonnes
         rayon_trou = min(canvas_width / nb_col, canvas_height / nb_lig) / 2.5
 
         for i in range(nb_col):
             for j in range(nb_lig):
                 x_center = (i + 0.5) * (canvas_width / nb_col)
                 y_center = (j + 0.5) * (canvas_height / nb_lig)
-                rendu.create_oval(
-                    x_center - rayon_trou,
-                    y_center - rayon_trou,
-                    x_center + rayon_trou,
-                    y_center + rayon_trou,
-                    fill="#3394ff",
-                    outline="#004fab",
-                    width=0.1 * rayon_trou
-                   )
+                rendu.create_oval(x_center - rayon_trou, y_center - rayon_trou, x_center + rayon_trou, y_center + rayon_trou, fill="#3394ff",
+                    outline="#004fab", width=0.1 * rayon_trou)
         return
     
-    # --- Lier les variables aux changements
+    #Lier les variables aux changements
     def maj_spinbox(event):
         sand.after_idle(maj)
 
@@ -617,7 +610,7 @@ def Jeu_sandbox():
 
     ligne.bind("<KeyRelease>", maj_spinbox)
     ligne.bind("<ButtonRelease-1>", maj_spinbox)
-# --- Première mise à jour de l'affichage
+    #Première mise à jour de l'affichage
     maj()
     
     
