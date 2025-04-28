@@ -501,40 +501,54 @@ def Jeu_sandbox():
                 print("les conditions ne sont pas respectées")
         else:
             print("Vous ne pouvez pas aligner autant de jetons dans une grille si petite???")
-            
-    M1=tk.Label(sand, text="Configuations", fg="white",  bg= "#6db3fe", font=("System",30))
+         
+    #Boutons en bas de l'écran
+    M1=tk.Label(sand, text="Configuations", bg="#ff7262", fg="white", font=("System",30), relief="raised", padx=14, pady=15)
     wM1 = M1.winfo_reqwidth()
     hM1 = M1.winfo_reqheight()
-    
     M1.place(x=sand_width/2-wM1/2, y=0.5*hM1)
+    
     Bhome=tk.Button(sand, text="Quitter", font=("System",15),
                  fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=fermer)
     wBhome = Bhome.winfo_reqwidth()
     hBhome = Bhome.winfo_reqheight()
     Bhome.place(x=sand_width/6-wBhome/2, y=sand_height-1.5*hBhome)
+    
     Bplay = tk.Button(sand, text="Jouer",font=("System",15), fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, 
                       command= animation_panel) #Bouton play
     wBplay = Bplay.winfo_reqwidth()
     hBplay = Bplay.winfo_reqheight()
     Bplay.place(x=sand_width/1.2-wBplay/2, y=sand_height-1.5*hBplay)
+    
+    Cita = tk.Label(sand, text='"La stratégie commence ici" - Luca Picciotto',bg="#ff7262", fg="white", font=("System",23,"underline"), relief="raised", padx=10, pady=10)
+    wCita = Cita.winfo_reqwidth()
+    hCita = Cita.winfo_reqheight()
+    Cita.place(x=sand_width/2 - wCita/2, y = sand_height - 1.5*hCita)
+    
+    #Spinbox a gauche de l'écran
     Mcol = tk.Label(sand, text=" Nombre de colonne :", fg="white",  bg= "#6db3fe", font=("System",22))
     wMcol = Mcol.winfo_reqwidth() 
     Mcol.place(x=sand_width/5-wMcol/2, y=sand_height/5-50)
-    colonne = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    colonne = tk.Spinbox(sand, from_= 1, to = 100,
+            validate='all', fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wcolonne = colonne.winfo_reqwidth()
     colonne.place(x=sand_width/5-wcolonne/2, y=sand_height/5)
+    
     Mlig = tk.Label(sand, text="Nombre de ligne :", fg="white",  bg= "#6db3fe", font=("System",22))
     wMlig = Mlig.winfo_reqwidth()
     Mlig.place(x=sand_width/5-wMlig/2, y=2*sand_height/5-50)
-    ligne = tk.Spinbox(sand, from_= 0, to = 100, fg="#3394ff", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    ligne = tk.Spinbox(sand, from_= 1, to = 100,
+            validate='all', fg="#3394ff", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wligne = ligne.winfo_reqwidth()
     ligne.place(x=sand_width/5-wligne/2, y=2*sand_height/5)  
+    
     alignement = tk.Label(sand,text = "Nombre de jeton à aligner: ", fg="white",  bg= "#6db3fe", font=("System",22))
     walignement = alignement.winfo_reqwidth()
     alignement.place(x=sand_width/5 - walignement/2, y=3*sand_height/5-50)
     SBalignement = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wSBalignement = SBalignement.winfo_reqwidth()
     SBalignement.place(x=sand_width/5 - wSBalignement/2, y=3*sand_height/5)
+    
     manche = tk.Label(sand,text = "Nombre de manche: ", fg="white",  bg= "#6db3fe", font=("System",22))
     wmanche = manche.winfo_reqwidth()
     manche.place(x=sand_width/5 - wmanche/2, y=4*sand_height/5-50)
@@ -542,19 +556,13 @@ def Jeu_sandbox():
     wSBmanche = SBmanche.winfo_reqwidth()
     SBmanche.place(x=sand_width/5 - wSBmanche/2, y=4*sand_height/5)
     
-    
-    
+    #Choix des couleurs + affichage 
     LBcolor = tk.Listbox(sand, height=5, width=23, selectbackground= "blue", font=("System",15))
     wLBcolor = LBcolor.winfo_reqwidth()
     LBcolor.place(x=4*sand_width/5-wLBcolor/2, y=2*sand_height/8)
     sbar = ttk.Scrollbar(sand, command=LBcolor.yview)
     sbar.place(x=4*sand_width/5 + wLBcolor/2, y=2*sand_height/8, height = LBcolor.winfo_reqheight())
     LBcolor.config(yscrollcommand=sbar.set)
-    
-    
-    
-    
-    
     joueur1 = tk.Label(sand, text="Joueur 1 :",border=0, background="#6db3fe", fg = "white", font=("System",20))
     wjoueur1 = joueur1.winfo_reqwidth()
     joueur1.place(x=4*sand_width/5-wjoueur1/2-35, y=4*sand_height/8)
@@ -567,6 +575,50 @@ def Jeu_sandbox():
     Choix_joueur2 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
     wChoix_joueur2 = Choix_joueur2.winfo_reqwidth()
     Choix_joueur2.place(x=4*sand_width/5-wChoix_joueur2/2+35,y=5*sand_height/8)
+    
+    #Rendu au centre de la page
+    rendu = tk.Canvas(sand, bg="#005bff", height=height_screen/7, width=width_screen/7)
+    hrendu = rendu.winfo_reqheight()
+    wrendu= rendu.winfo_reqwidth()
+    rendu.place(x=sand_width/2-wrendu/2, y=sand_height/2-hrendu/2)
+    
+    def maj(*args):
+        rendu.delete("all")  # On efface l'ancien dessin
+        nb_col = int(colonne.get())
+        nb_lig = int(ligne.get())
+        # Dimensions fixes du Canvas
+        canvas_width = width_screen / 7
+        canvas_height = height_screen / 7
+
+        # Rayon des trous en fonction du nombre de lignes et colonnes
+        rayon_trou = min(canvas_width / nb_col, canvas_height / nb_lig) / 2.5
+
+        for i in range(nb_col):
+            for j in range(nb_lig):
+                x_center = (i + 0.5) * (canvas_width / nb_col)
+                y_center = (j + 0.5) * (canvas_height / nb_lig)
+                rendu.create_oval(
+                    x_center - rayon_trou,
+                    y_center - rayon_trou,
+                    x_center + rayon_trou,
+                    y_center + rayon_trou,
+                    fill="#3394ff",
+                    outline="#004fab",
+                    width=0.1 * rayon_trou
+                   )
+        return
+    
+    # --- Lier les variables aux changements
+    def maj_spinbox(event):
+        sand.after_idle(maj)
+
+    colonne.bind("<KeyRelease>", maj_spinbox)
+    colonne.bind("<ButtonRelease-1>", maj_spinbox)
+
+    ligne.bind("<KeyRelease>", maj_spinbox)
+    ligne.bind("<ButtonRelease-1>", maj_spinbox)
+# --- Première mise à jour de l'affichage
+    maj()
     
     
     # ------------------- Configuration des listebox ------------------ #
@@ -602,6 +654,7 @@ def Jeu_sandbox():
             Choix_joueur1["text"] = "" 
         return
     
+    #Boutons de selection/suppression des couleurs
     select = tk.Button(sand,text = "Selectionner", command=print_selec, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
     wselect = select.winfo_reqwidth()
     select.place(x=4*sand_width/5-wselect/2+52, y=3*sand_height/8)
