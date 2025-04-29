@@ -91,12 +91,23 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
         game.destroy()
         return
 
+    def annuler():
+        global liste_coups
+        if win == False and liste_coups != []:
+            canva_jeu.create_oval((liste_coups[-1][0] - rayon_trou, liste_coups[-1][1] - rayon_trou),
+                                 (liste_coups[-1][0] + rayon_trou, liste_coups[-1][1] + rayon_trou),
+                                 fill = "#3394ff",outline = "#004fab", width = 0.1 * rayon_trou)
+            (grille[diff_milieux_y.index(liste_coups[-1][1])][diff_milieux_x.index(liste_coups[-1][0])]) = 0
+            liste_coups.pop()
+
+
     global compteur_manche_J1
     global compteur_manche_J2
+    global liste_coups
 
     compteur_manche_J1 = valeur_compteur_manche_J1
     compteur_manche_J2 = valeur_compteur_manche_J2
-
+    liste_coups = []
 
     affichage_score = tk.Canvas(support_game, height=HEIGHT // 2, width=width_screen // 5,
                                 bg="black", highlightbackground='#b10000')
@@ -153,7 +164,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
     bouton_sauvegarder.bind("<Leave>", lambda event : bouton_relache(event,bouton_sauvegarder))
     
     bouton_annuler = tk.Button(support_game, text="Annuler", font=("System", 15), fg="white",
-                                           bg="#ff7262", relief="raised", padx=29)
+                                           bg="#ff7262", relief="raised", padx=29, command=annuler)
     bouton_annuler.place(x=(41 * width_screen // 48) - bouton_annuler.winfo_reqwidth() // 2,
                              y=5.5 * height_screen / 10)
     bouton_annuler.bind("<Enter>", lambda event : bouton_touche(event,bouton_annuler))
@@ -307,6 +318,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
         global couleur_centre
         global couleur_bordure
         global cooldown
+        global liste_coups
 
         coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))  # Détermine la position du trou le plus proche
 
@@ -330,6 +342,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                                 grille[t + 1][i] = tour  # on remplit celui d'au dessus
                                 milieu_y = diff_milieux_y[t + 1]
                                 break
+            liste_coups.append([milieu_x, milieu_y])
 
             
             def animer_jeton(i): #Animation de chute   
