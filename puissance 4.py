@@ -91,13 +91,29 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
         game.destroy()
         return
 
+    def player_switch(): #Après la chute du jeton, l'autre joueur peut jouer
+                global tour
+                global couleur_centre
+                global couleur_bordure
+                global cooldown
+                if win == False:
+                    cooldown=0   
+                tour = valeur_tour[1] if tour == valeur_tour[0] else valeur_tour[0] 
+                couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]
+                couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] 
+                titre_jeu = tk.Label(support_game, text="Bienvenue sur Puissance 4 !", fg=valeur_couleur_centre[valeur_tour.index(tour)], 
+                                     bg="#3394ff",font=("System", 45), padx=0)
+                titre_jeu.place(x=(width_screen - titre_jeu.winfo_reqwidth()) // 2, y=10)
+
     def annuler():
         global liste_coups
+        global tour
         if win == False and liste_coups != []:
             canva_jeu.create_oval((liste_coups[-1][0] - rayon_trou, liste_coups[-1][1] - rayon_trou),
                                  (liste_coups[-1][0] + rayon_trou, liste_coups[-1][1] + rayon_trou),
                                  fill = "#3394ff",outline = "#004fab", width = 0.1 * rayon_trou)
             (grille[diff_milieux_y.index(liste_coups[-1][1])][diff_milieux_x.index(liste_coups[-1][0])]) = 0
+            player_switch()
             liste_coups.pop()
 
 
@@ -358,20 +374,6 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                     game.after(200//ligne, lambda: canva_jeu.delete(jeton))  # Supprime l'ancien cercle
                     game.after(200//ligne, lambda: animer_jeton(diff_milieux_y[diff_milieux_y.index(i)-1]))  # Récursivité qui descend jusqu'à atteindre la limite
                 
-            
-            def player_switch(): #Après la chute du jeton, l'autre joueur peut jouer
-                global tour
-                global couleur_centre
-                global couleur_bordure
-                global cooldown
-                if win == False:
-                    cooldown=0   
-                tour = valeur_tour[1] if tour == valeur_tour[0] else valeur_tour[0] 
-                couleur_centre = valeur_couleur_centre[0] if tour == valeur_tour[0] else valeur_couleur_centre[1]
-                couleur_bordure = valeur_couleur_bordure[0] if tour == valeur_tour[0] else valeur_couleur_bordure[1] 
-                titre_jeu = tk.Label(support_game, text="Bienvenue sur Puissance 4 !", fg=valeur_couleur_centre[valeur_tour.index(tour)], 
-                                     bg="#3394ff",font=("System", 45), padx=0)
-                titre_jeu.place(x=(width_screen - titre_jeu.winfo_reqwidth()) // 2, y=10)
             
             animer_jeton(diff_milieux_y[-1])
             pygame.mixer.music.load("Hit Marker sound effect.mp3")
