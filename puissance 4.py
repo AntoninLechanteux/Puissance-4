@@ -10,6 +10,7 @@ height_screen = GetSystemMetrics(1)
 #----------------------------------------------#
 
 
+
 #----------------------------------------------#
 #------Création de la fenêtre principale-------#
 root=tk.Tk()
@@ -40,6 +41,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
 
     canva_jeu = tk.Canvas(support_game, height=HEIGHT, width=WIDTH, bg="#005bff")
     canva_jeu.place(x=(width_screen - WIDTH) // 8, y=(height_screen - HEIGHT) // 2)
+    
 
     def quitter():
         global compteur_manche_J1
@@ -513,9 +515,13 @@ def Jeu_sandbox():
 
                     mod.after(1000, lancer_jeu)
             else:
-                print("les conditions ne sont pas respectées")
+                Lerror1 = tk.Label(sand,text= "Veuillez faire en sorte que la grille soit jouable.", font=("System",17), bg="#6db3fe", fg="white")
+                WLerror1 = Lerror1.winfo_reqwidth()
+                Lerror1.place(x=4*width_screen/5-WLerror1/2,y=7*height_screen/9)
         else:
-            print("Vous ne pouvez pas aligner autant de jetons dans une grille si petite???")
+            Lerror2 = tk.Label(sand, text = "Vous ne pouvez pas aligner autant de \n jetons dans une si petite grille.", font=("System",17), bg="#6db3fe", fg="white", width=30, relief="solid")
+            WLerror2 = Lerror2.winfo_reqwidth()
+            Lerror2.place(x=4*width_screen/6,y=7*height_screen/8)
          
     #Boutons en bas de l'écran
     M1=tk.Label(sand, text="Configuations", bg="#ff7262", fg="white", font=("System",30), relief="raised", padx=14, pady=15)
@@ -560,14 +566,14 @@ def Jeu_sandbox():
     alignement = tk.Label(sand,text = "Nombre de jeton à aligner: ", fg="white",  bg= "#6db3fe", font=("System",22))
     walignement = alignement.winfo_reqwidth()
     alignement.place(x=sand_width/5 - walignement/2, y=3*sand_height/5-50)
-    SBalignement = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    SBalignement = tk.Spinbox(sand, from_= 1, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wSBalignement = SBalignement.winfo_reqwidth()
     SBalignement.place(x=sand_width/5 - wSBalignement/2, y=3*sand_height/5)
     
     manche = tk.Label(sand,text = "Nombre de manche: ", fg="white",  bg= "#6db3fe", font=("System",22))
     wmanche = manche.winfo_reqwidth()
     manche.place(x=sand_width/5 - wmanche/2, y=4*sand_height/5-50)
-    SBmanche = tk.Spinbox(sand, from_= 0, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    SBmanche = tk.Spinbox(sand, from_= 1, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wSBmanche = SBmanche.winfo_reqwidth()
     SBmanche.place(x=sand_width/5 - wSBmanche/2, y=4*sand_height/5)
     
@@ -596,6 +602,7 @@ def Jeu_sandbox():
     hrendu = rendu.winfo_reqheight()
     wrendu= rendu.winfo_reqwidth()
     rendu.place(x=sand_width/2-wrendu/2, y=sand_height/2-hrendu/2)
+    
     
     def maj(*args):
         rendu.delete("all")  #On efface l'ancien dessin
@@ -826,6 +833,14 @@ B3.place(x=0, y=2*hB1+2*dy)
 B4.place(x=0, y=3*hB1+3*dy)
 M1.place(x=width_screen/2-wM1/2, y=0.2*hM1)
 support_root.place(x=0, y=0)
+
+citations = ['"La défaite est temporaire, le puissance 4 est étrnel."', '"Il ne faut pas mettre tous ses jetons dans le même Puissance 4."', '"S il y a jeton, il y a match."', '"Je pense, donc j aligne."', '"Respire. Pose. Aligne."', '"Laisse la victoire venir à toi."', 
+             '"N aligne pas, atomise."', '"Il est venu, il a vu, il a aligné."', '"Quand il joue, même le vent retient son souffle."','"Tes jetons sont là. Les miens sont partout."']
+
+Lcita = tk.Label(root, text= rd.choice(citations)+ " - Luca", bg="#ff7262", fg="white", font=("System",23,"underline"), relief="raised", padx=10, pady=10)
+WLcita = Lcita.winfo_reqwidth()
+HLcita = Lcita.winfo_reqheight()
+Lcita.place(x=width_screen/2-WLcita/2, y=6*height_screen/7-HLcita/2)
 
 
 #---------------------------------------------------------------#
