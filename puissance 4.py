@@ -466,9 +466,9 @@ def Jeu_sandbox():
     global couleur_centre
     global nom_couleur
     global dpos
-    couleur_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C","#ABA0F9","#A76844","#038A91","#FFEBD8","#676B4A","#FFB8CE","#CE8F8A"]
-    couleur_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F","#7C80FC","#9F5540","#06708E","#FFD5BA","#585944","#FE94B4","#805050"]
-    nom_couleur = ["BLEU","ROUGE","JAUNE","VERT","LAVANDE","MARRON","CANARD","BEIGE","OLIVE","ROSE","TERRACOTTA"]
+    couleur_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C","#ABA0F9","#A76844","#038A91","#FFEBD8","#676B4A","#FFB8CE","#CE8F8A", "#CBEFB6", "#FF5EFA", "#FE9063", "#5D1F31"]
+    couleur_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F","#7C80FC","#9F5540","#06708E","#FFD5BA","#585944","#FE94B4","#805050", "#A0C6A9", "#FF7AD1", "#EA5863", "#4A192E"]
+    nom_couleur = ["BLEU","ROUGE","JAUNE","VERT","LAVANDE","MARRON","CANARD","BEIGE","OLIVE","ROSE","TERRACOTTA","VERT PALE", "ROSE BONBON", "SAUMON", "POURPRE"]
     
 
     end_pos = -sand_width
