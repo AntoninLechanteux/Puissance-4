@@ -834,13 +834,19 @@ B4.place(x=0, y=3*hB1+3*dy)
 M1.place(x=width_screen/2-wM1/2, y=0.2*hM1)
 support_root.place(x=0, y=0)
 
-citations = ['"La défaite est temporaire, le puissance 4 est étrnel."', '"Il ne faut pas mettre tous ses jetons dans le même Puissance 4."', '"S il y a jeton, il y a match."', '"Je pense, donc j aligne."', '"Respire. Pose. Aligne."', '"Laisse la victoire venir à toi."', 
+
+citations = ['"La défaite est temporaire, le puissance 4 est éternel."', '"Ne jamais mettre tous ses jetons dans la même grille."', '"Si il y a jeton, il y a match."', '"Je pense, donc j aligne."', '"Respire. Pose. Aligne."', '"Laisse la victoire venir à toi."', 
              '"N aligne pas, atomise."', '"Il est venu, il a vu, il a aligné."', '"Quand il joue, même le vent retient son souffle."','"Tes jetons sont là. Les miens sont partout."']
 
-Lcita = tk.Label(root, text= rd.choice(citations)+ " - Luca", bg="#ff7262", fg="white", font=("System",23,"underline"), relief="raised", padx=10, pady=10)
-WLcita = Lcita.winfo_reqwidth()
-HLcita = Lcita.winfo_reqheight()
-Lcita.place(x=width_screen/2-WLcita/2, y=6*height_screen/7-HLcita/2)
+Lcita = tk.Label(root, text= rd.choice(citations)+ " - Luca", bg="#ff7262", fg="white",
+                 font=("System",18,"underline"), relief="raised", padx=2, pady=10)
+
+def changer_citation(event, self):
+    self.config(text = rd.choice(citations)+ " - Luca")
+    Lcita.place(x=width_screen/2-Lcita.winfo_reqwidth()/2, y=6*height_screen/7-Lcita.winfo_reqheight()/2)
+
+Lcita.bind("<Button-1>",lambda event : changer_citation(event,Lcita))
+Lcita.place(x=width_screen/2-Lcita.winfo_reqwidth()/2, y=6*height_screen/7-Lcita.winfo_reqheight()/2)
 
 
 #---------------------------------------------------------------#
