@@ -873,7 +873,6 @@ def animation_clic(event, self, counter):
         self.create_oval((40,40),(160,160), fill="#ffd933", outline = "#e7ba00", width = 18)
     elif counter % 2 == 0 :
         self.create_oval((40,40),(160,160), fill="#ff3b30", outline = "#bb261f", width = 18)
-        jeton_gauche_1_counter += 1
 def animation_relache_jg1(event, self, counter):
     global jeton_gauche_1_counter
     jeton_gauche_1_counter += 1
@@ -946,5 +945,3 @@ jeton_droite_2.bind('<ButtonRelease-1>', lambda event : animation_relache_jd2(ev
 ##-------------------------------------------------------##
 #---------------------------------------------------------#
 root.mainloop()
-
-
