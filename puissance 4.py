@@ -462,13 +462,7 @@ def Jeu_sandbox():
     sand_width = width_screen
     sand = tk.LabelFrame(mod, height=sand_height, width=sand_width, bg="#6db3fe", relief="ridge")
     sand.place(x=0, y=0)
-    global couleur_bordure
-    global couleur_centre
-    global nom_couleur
     global dpos
-    couleur_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C","#ABA0F9","#A76844","#038A91","#FFEBD8","#676B4A","#FFB8CE","#CE8F8A", "#CBEFB6", "#FF5EFA", "#FE9063", "#5D1F31"]
-    couleur_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F","#7C80FC","#9F5540","#06708E","#FFD5BA","#585944","#FE94B4","#805050", "#A0C6A9", "#FF7AD1", "#EA5863", "#4A192E"]
-    nom_couleur = ["BLEU","ROUGE","JAUNE","VERT","LAVANDE","MARRON","CANARD","BEIGE","OLIVE","ROSE","TERRACOTTA","VERT PALE", "ROSE BONBON", "SAUMON", "POURPRE"]
     
 
     end_pos = -sand_width
@@ -497,10 +491,10 @@ def Jeu_sandbox():
                         manches = int(SBmanche.get())
                         joueur1 = Choix_joueur1["text"]
                         joueur2 = Choix_joueur2["text"]
-                        couleur_centre_j1 = couleur_centre[nom_couleur.index(joueur1)]
-                        couleur_centre_j2 = couleur_centre[nom_couleur.index(joueur2)]
-                        couleur_bordure_j1 = couleur_bordure[nom_couleur.index(joueur1)]
-                        couleur_bordure_j2 = couleur_bordure[nom_couleur.index(joueur2)]
+                        couleur_centre_j1 = couleurs_centre[nom_couleur.index(joueur1)]
+                        couleur_centre_j2 = couleurs_centre[nom_couleur.index(joueur2)]
+                        couleur_bordure_j1 = couleurs_bordure[nom_couleur.index(joueur1)]
+                        couleur_bordure_j2 = couleurs_bordure[nom_couleur.index(joueur2)]
 
                         mod.destroy()
 
@@ -642,7 +636,7 @@ def Jeu_sandbox():
     
     def color():
         for i in range(len(nom_couleur)):
-            LBcolor.itemconfigure(i, background=couleur_centre[i])
+            LBcolor.itemconfigure(i, background=couleurs_centre[i])
     
     color()
     
@@ -658,14 +652,14 @@ def Jeu_sandbox():
     def annuler():  #réinsertion des couleurs choisies dans la liste des couleurs dispo et suppression des couleurs choisies
         if (Choix_joueur1["text"] != "" and Choix_joueur2["text"] != ""):
             LBcolor.insert(tk.END,Choix_joueur1["text"])
-            LBcolor.itemconfigure(len(nom_couleur)-2,background=couleur_centre[nom_couleur.index(Choix_joueur1["text"])])
+            LBcolor.itemconfigure(len(nom_couleur)-2,background=couleurs_centre[nom_couleur.index(Choix_joueur1["text"])])
             Choix_joueur1["text"] = ""
             LBcolor.insert(tk.END,Choix_joueur2["text"]) 
-            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(Choix_joueur2["text"])])
+            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleurs_centre[nom_couleur.index(Choix_joueur2["text"])])
             Choix_joueur2["text"] = ""
         elif Choix_joueur1["text"] != "":
             LBcolor.insert(tk.END,Choix_joueur1["text"])
-            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleur_centre[nom_couleur.index(Choix_joueur1["text"])])
+            LBcolor.itemconfigure(len(nom_couleur)-1,background=couleurs_centre[nom_couleur.index(Choix_joueur1["text"])])
             Choix_joueur1["text"] = "" 
         return
     
@@ -757,21 +751,21 @@ def rules():
     jeton_droite_2.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25  )
     frame_gauche.place(x=0, y=height_screen/2-hframe_gauche/2)
     frame_droite.place(x=width_screen-wframe_droite, y=height_screen/2-hframe_droite/2)
-    Tg=tk.Label(frame_gauche, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
-    Td=tk.Label(frame_droite, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
+    Tg=tk.Label(frame_gauche, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 17), fg="White", bg="#3394ff")
+    Td=tk.Label(frame_droite, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System",17), fg="White", bg="#3394ff")
     hT = Tg.winfo_reqheight()
     wT = Tg.winfo_reqwidth()
     Tg.place(x=WIDTH/2-wT/2, y=HEIGHT/2-hT/2)
     Td.place(x=WIDTH/2-wT/2, y=HEIGHT/2-hT/2)
 
-    jeton_gauche_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_1, jeton_gauche_1_counter))
-    jeton_gauche_1.bind('<ButtonRelease-1>', lambda event : animation_relache_jg1(event, jeton_gauche_1, jeton_gauche_1_counter))
-    jeton_gauche_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_2, jeton_gauche_2_counter))
-    jeton_gauche_2.bind('<ButtonRelease-1>', lambda event : animation_relache_jg2(event, jeton_gauche_2, jeton_gauche_2_counter))
-    jeton_droite_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_1, jeton_droite_1_counter))
-    jeton_droite_1.bind('<ButtonRelease-1>', lambda event : animation_relache_jd1(event, jeton_droite_1, jeton_droite_1_counter))
-    jeton_droite_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_2, jeton_droite_2_counter))
-    jeton_droite_2.bind('<ButtonRelease-1>', lambda event : animation_relache_jd2(event, jeton_droite_2, jeton_droite_2_counter))
+    jeton_gauche_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_1))
+    jeton_gauche_1.bind('<ButtonRelease-1>', lambda event : animation_relache(event, jeton_gauche_1))
+    jeton_gauche_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_2))
+    jeton_gauche_2.bind('<ButtonRelease-1>', lambda event : animation_relache(event, jeton_gauche_2))
+    jeton_droite_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_1))
+    jeton_droite_1.bind('<ButtonRelease-1>', lambda event : animation_relache(event, jeton_droite_1))
+    jeton_droite_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_2))
+    jeton_droite_2.bind('<ButtonRelease-1>', lambda event : animation_relache(event, jeton_droite_2))
         
     def animation2():
         M4=tk.Label(support_rules, text='A VOUS DE JOUER !!', font=("System", 35), fg="white", bg="#3394ff", width=20)
@@ -835,11 +829,14 @@ M1.place(x=width_screen/2-wM1/2, y=0.2*hM1)
 support_root.place(x=0, y=0)
 
 
-citations = ['"La défaite est temporaire, le puissance 4 est éternel."', '"Ne jamais mettre tous ses jetons dans la même grille."', '"Si il y a jeton, il y a match."', '"Je pense, donc j aligne."', '"Respire. Pose. Aligne."', '"Laisse la victoire venir à toi."', 
-             '"N aligne pas, atomise."', '"Il est venu, il a vu, il a aligné."', '"Quand il joue, même le vent retient son souffle."','"Tes jetons sont là. Les miens sont partout."']
+citations = ['"La défaite est temporaire, le puissance 4 est éternel."', '"Ne jamais mettre tous ses jetons dans la même grille."',
+             '"Si il y a jeton, il y a match."', '"Je pense, donc j aligne."', '"Respire. Pose. Aligne."', 
+             '"Laisse la victoire venir à toi."', '"Un jeton de perdu, 4 de retouvés"', '"Un jeton peut en cacher un autre"',
+             '"N aligne pas, atomise."', '"Il est venu, il a vu, il a aligné."', '"Quand il joue, même le vent retient son souffle."',
+             '"Tes jetons sont là. Les miens sont partout."','"Main hésitante, jeton vagabond"']
 
-Lcita = tk.Label(root, text= rd.choice(citations)+ " - Luca", bg="#ff7262", fg="white",
-                 font=("System",18,"underline"), relief="raised", padx=2, pady=10)
+Lcita = tk.Label(root, text= rd.choice(citations)+ " - Luca", bg="#3394ff", fg="white",
+                 font=("System",18,"underline"), padx=2, pady=10)
 
 def changer_citation(event, self):
     self.config(text = rd.choice(citations)+ " - Luca")
@@ -867,81 +864,67 @@ B4.bind("<Leave>", lambda event : bouton_relache(event,B4))
 ##------------------------------------------------------------##
 
 ##-------------------animation jeton coté---------------------##
-def animation_clic(event, self, counter):
-    self.create_oval((25,25),(175,175), fill="#3394ff", outline = "#3394ff", width = 25)
-    if counter % 2 == 1 :
-        self.create_oval((40,40),(160,160), fill="#ffd933", outline = "#e7ba00", width = 18)
-    elif counter % 2 == 0 :
-        self.create_oval((40,40),(160,160), fill="#ff3b30", outline = "#bb261f", width = 18)
-def animation_relache_jg1(event, self, counter):
-    global jeton_gauche_1_counter
-    jeton_gauche_1_counter += 1
-    if counter % 2 == 0 :
-        self.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25)
-    elif counter % 2 == 1 :
-        self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
-def animation_relache_jg2(event, self, counter):
-    global jeton_gauche_2_counter
-    jeton_gauche_2_counter += 1
-    if counter % 2 == 0 :
-        self.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25)
-    elif counter % 2 == 1 :
-        self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
-def animation_relache_jd1(event, self, counter):
-    global jeton_droite_1_counter
-    jeton_droite_1_counter += 1
-    if counter % 2 == 0 :
-        self.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25)
-    elif counter % 2 == 1 :
-        self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
-def animation_relache_jd2(event, self, counter):
-    global jeton_droite_2_counter
-    jeton_droite_2_counter += 1
-    if counter % 2 == 0 :
-        self.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25)
-    elif counter % 2 == 1 :
-        self.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25)
+global couleur_bordure
+global couleur_centre
+global nom_couleur
 
 frame_gauche = tk.Frame(support_root,height=HEIGHT, width=WIDTH, bg ="#3394ff")
 frame_droite = tk.Frame(support_root,height=HEIGHT, width=WIDTH, bg ="#3394ff")
 wframe = frame_gauche.winfo_reqwidth()
 hframe = frame_gauche.winfo_reqheight()
+frame_gauche.place(x=0, y=height_screen/2-hframe/2)
+frame_droite.place(x=width_screen-wframe, y=height_screen/2-hframe/2)
+
+
+couleurs_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C","#ABA0F9","#A76844","#038A91","#FFEBD8","#676B4A","#FFB8CE","#CE8F8A", "#CBEFB6", "#FF5EFA", "#FE9063", "#5D1F31"]
+couleurs_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F","#7C80FC","#9F5540","#06708E","#FFD5BA","#585944","#FE94B4","#805050", "#A0C6A9", "#FF7AD1", "#EA5863", "#4A192E"]
+nom_couleur = ["BLEU","ROUGE","JAUNE","VERT","LAVANDE","MARRON","CANARD","BEIGE","OLIVE","ROSE","TERRACOTTA","VERT PALE", "ROSE BONBON", "SAUMON", "POURPRE"]
+
 jeton_gauche_1 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-jeton_gauche_1_counter = 1
 jeton_gauche_2 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-jeton_gauche_2_counter = 0
 jeton_droite_1 = tk.Canvas(frame_droite, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-jeton_droite_1_counter = 0
 jeton_droite_2 = tk.Canvas(frame_droite, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-jeton_droite_2_counter = 1
+
+jeton_gauche_1.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
+jeton_gauche_2.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25  )
+jeton_droite_1.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
+jeton_droite_2.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25  )
 
 wjeton = jeton_gauche_1.winfo_reqwidth()
 hjeton = jeton_gauche_1.winfo_reqheight()
 jeton_gauche_1.place(x=WIDTH/2-wjeton/2, y=0)
 jeton_gauche_2.place(x=WIDTH/2-wjeton/2, y=HEIGHT-hjeton)
-jeton_gauche_1.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25 )
-jeton_gauche_2.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25  )
 jeton_droite_1.place(x=WIDTH/2-wjeton/2, y=0)
 jeton_droite_2.place(x=WIDTH/2-wjeton/2, y=HEIGHT-hjeton)
-jeton_droite_1.create_oval((25,25),(175,175), fill="#ff3b30", outline = "#bb261f", width = 25 )
-jeton_droite_2.create_oval((25,25),(175,175), fill="#ffd933", outline = "#e7ba00", width = 25  )
-frame_gauche.place(x=0, y=height_screen/2-hframe/2)
-frame_droite.place(x=width_screen-wframe, y=height_screen/2-hframe/2)
-Tg=tk.Label(frame_gauche, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
-Td=tk.Label(frame_droite, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 20), fg="White", bg="#3394ff")
+
+def animation_clic(event, self):
+    overlapping = self.find_overlapping(event.x , event.y , event.x+1, event.y+1)
+    if len(overlapping) != 0:
+        self.coords(overlapping,(40,40),(160,160))
+def animation_relache(event, self):
+    overlapping = self.find_overlapping(event.x , event.y , event.x+1, event.y+1)
+    if len(overlapping) != 0:
+        i = rd.randint(0, len(couleurs_bordure)-1)
+        self.coords(overlapping,(25,25),(175,175))
+        self.itemconfigure(overlapping[0],fill=couleurs_centre[i], outline=couleurs_bordure[i])
+
+jeton_gauche_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_1))
+jeton_gauche_1.bind('<ButtonRelease-1>', lambda event : animation_relache(event, jeton_gauche_1))
+jeton_gauche_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_2))
+jeton_gauche_2.bind('<ButtonRelease-1>', lambda event : animation_relache(event, jeton_gauche_2))
+jeton_droite_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_1))
+jeton_droite_1.bind('<ButtonRelease-1>', lambda event : animation_relache(event, jeton_droite_1))
+jeton_droite_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_2))
+jeton_droite_2.bind('<ButtonRelease-1>', lambda event : animation_relache(event, jeton_droite_2))
+
+##-------------------------------------------------------##
+Tg=tk.Label(frame_gauche, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 17), fg="White", bg="#3394ff")
+Td=tk.Label(frame_droite, text="P\nU\nI\nS\nS\nA\nN\nC\nE\n-\n4", font=("System", 17), fg="White", bg="#3394ff")
 wT = Tg.winfo_reqwidth()
 hT= Tg.winfo_reqheight()
 Tg.place(x=WIDTH/2-wT/2, y=HEIGHT/2-hT/2)
 Td.place(x=WIDTH/2-wT/2, y=HEIGHT/2-hT/2)
 
-jeton_gauche_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_1, jeton_gauche_1_counter))
-jeton_gauche_1.bind('<ButtonRelease-1>', lambda event : animation_relache_jg1(event, jeton_gauche_1, jeton_gauche_1_counter))
-jeton_gauche_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_gauche_2, jeton_gauche_2_counter))
-jeton_gauche_2.bind('<ButtonRelease-1>', lambda event : animation_relache_jg2(event, jeton_gauche_2, jeton_gauche_2_counter))
-jeton_droite_1.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_1, jeton_droite_1_counter))
-jeton_droite_1.bind('<ButtonRelease-1>', lambda event : animation_relache_jd1(event, jeton_droite_1, jeton_droite_1_counter))
-jeton_droite_2.bind('<ButtonPress-1>',lambda event : animation_clic(event, jeton_droite_2, jeton_droite_2_counter))
-jeton_droite_2.bind('<ButtonRelease-1>', lambda event : animation_relache_jd2(event, jeton_droite_2, jeton_droite_2_counter))
-##-------------------------------------------------------##
+
 #---------------------------------------------------------#
 root.mainloop()
