@@ -303,6 +303,13 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                 if i[j] != 0:
                     if all(i[j+k] == i[j] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
                         win = True
+                        jetons_clignotement =[]
+                        for k in range(valeur_alignement):
+                            overlapping = canva_jeu.find_overlapping(diff_milieux_x[j+k], diff_milieux_y[grille.index(i)],
+                                                                 diff_milieux_x[j+k] + 1, diff_milieux_y[grille.index(i)] + 1)
+                            jetons_clignotement.append(overlapping[0])
+                        root.after(300, lambda : clignotement_jetons(6, jetons_clignotement))
+                        
                           
     def verif_colonne(): #Fonction qui verifie si 4 jetons sont alignés en colonne
         global win
@@ -311,6 +318,12 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                 if grille[i][j] != 0:    
                     if all(grille[i][j] == grille[i+k][j] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
                             win = True
+                            jetons_clignotement =[]
+                            for k in range(valeur_alignement):
+                                overlapping = canva_jeu.find_overlapping(diff_milieux_x[j], diff_milieux_y[i+k],
+                                                                    diff_milieux_x[j] + 1, diff_milieux_y[i+k] + 1)
+                                jetons_clignotement.append(overlapping[0])
+                            root.after(300, lambda : clignotement_jetons(6, jetons_clignotement))
                         
     def verif_diag_gauche_droite(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la gauche en haut vers la droite en bas
             global win
@@ -318,7 +331,13 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                 for j in range(valeur_colonne - (valeur_alignement - 1)):#Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
                     if grille[i][j] != 0:    
                             if all(grille[i][j] == grille[i-k][j+k] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
-                                    win = True
+                                win = True
+                                jetons_clignotement =[]
+                                for k in range(valeur_alignement):
+                                    overlapping = canva_jeu.find_overlapping(diff_milieux_x[j+k], diff_milieux_y[i-k],
+                                                                             diff_milieux_x[j+k] + 1, diff_milieux_y[i-k] + 1)
+                                    jetons_clignotement.append(overlapping[0])
+                                root.after(300, lambda : clignotement_jetons(6, jetons_clignotement))
                     
     def verif_diag_droite_gauche(): #fonction qui verifie si 4 jetons sont alignés en diagonale de la droite en haut vers la gauche en bas
             global win
@@ -326,7 +345,13 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                 for j in range(valeur_alignement - 1, valeur_colonne):#Vérifie l'alignement jusqu'au dernier jeton pertinent à contrôler
                     if grille[i][j] != 0:    
                             if all(grille[i][j] == grille[i-k][j-k] for k in range(1,valeur_alignement)):# Vérifie si les jetons d'après prennent la même valeur
-                                    win = True
+                                win = True
+                                jetons_clignotement =[]
+                                for k in range(valeur_alignement):
+                                    overlapping = canva_jeu.find_overlapping(diff_milieux_x[j-k], diff_milieux_y[i-k],
+                                                                             diff_milieux_x[j-k] + 1, diff_milieux_y[i-k] + 1)
+                                    jetons_clignotement.append(overlapping[0])
+                                root.after(300, lambda : clignotement_jetons(6, jetons_clignotement))
 
     
     #----------------------------------------------#
@@ -367,8 +392,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                 if i == milieu_y:#Repasse le contour en bleu si il était en surbrillance avant de poser le jeton
                     jeton_2 = jeton = canva_jeu.find_closest(milieu_x, milieu_y)
                     canva_jeu.itemconfigure(jeton_2, outline = '#004fab')
-                    if (compteur_manche_J1 < valeur_manche) and (compteur_manche_J2 < valeur_manche):
-                        root.after(100,player_switch)
+                    root.after(100,player_switch)
 
                 jeton = canva_jeu.create_oval((milieu_x - rayon_jeton, i - rayon_jeton),(milieu_x + rayon_jeton, i + rayon_jeton),fill=couleur_centre,
                                               outline=couleur_bordure,width=0.25 * rayon_jeton)
@@ -389,6 +413,15 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
 
     #----------------------------------------------#
     #----------Effets graphiques grille------------#
+    def clignotement_jetons(i, jetons_clignotement):
+        if i >0:
+            for jeton in jetons_clignotement:
+                if i % 2 == 0:
+                    canva_jeu.itemconfigure(jeton, outline = 'white')
+                elif i % 2 == 1:
+                    canva_jeu.itemconfigure(jeton, outline= '#004fab')
+            root.after(200, lambda : clignotement_jetons(i-1, jetons_clignotement))
+
     def surbrillance_contour(event):  # Cercles blancs pour indiquer dans quelle colonne on va jouer
         global grille_bleue  # Evite de superposer des cercles bleus à l'infini
         global grille_blanche # Evite de superposer des cercles blancs à l'infini
@@ -731,13 +764,9 @@ def rules():
     wframe_droite = frame_droite.winfo_reqwidth()
     hframe_droite = frame_droite.winfo_reqheight()
     jeton_gauche_1 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-    jeton_gauche_1_counter = 1
     jeton_gauche_2 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-    jeton_gauche_2_counter = 0
     jeton_droite_1 = tk.Canvas(frame_droite, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-    jeton_droite_1_counter = 0
     jeton_droite_2 = tk.Canvas(frame_droite, height=200, width=200, bg ='#3394ff', highlightthickness=0)
-    jeton_droite_2_counter = 1
 
     hjeton = jeton_gauche_1.winfo_reqheight()
     wjeton = jeton_gauche_1.winfo_reqwidth()
