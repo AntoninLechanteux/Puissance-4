@@ -262,6 +262,18 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
         verif_diag_gauche_droite()
         verif_diag_droite_gauche()
 
+        if all(grille[i][j] != 0 for i in range(len(grille)) for j in range(len(grille[0]))) and win == False: 
+                texte_fin_de_partie = tk.Label(support_game, text= 'Il y a égalité', font=("System", 35),
+                                                fg='white', bg='#3394ff')
+                texte_fin_de_partie.place(x=(width_screen - texte_fin_de_partie.winfo_reqwidth())//2,
+                                            y=8.7*height_screen//10)
+                root.after(2000,relancer_partie)
+                root.after(2000, lambda : Jeu_normal(sauvegarde_manche['valeur_ligne'], sauvegarde_manche['valeur_colonne'],
+                                                    sauvegarde_manche['valeur_alignement'], sauvegarde_manche['valeur_manche'],
+                                                    sauvegarde_manche['valeur_compteur_manche_J1'],sauvegarde_manche['valeur_compteur_manche_J2'], sauvegarde_manche['valeur_premier_joueur'],
+                                                    sauvegarde_manche['valeur_tour'],sauvegarde_manche['valeur_couleur_centre'], 
+                                                    sauvegarde_manche['valeur_couleur_bordure'],sauvegarde_manche['valeur_grille']))
+
         if win == True:
             if tour == premier_joueur :
                 compteur_manche_J1 += 1  
@@ -282,7 +294,9 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
                                                     sauvegarde_manche['valeur_couleur_bordure'],sauvegarde_manche['valeur_grille']))
                 
             elif (compteur_manche_J1 == valeur_manche or compteur_manche_J2 == valeur_manche)  :
-                sauvegarde = {}
+                if 'sauvegarde' in globals():
+                    if sauvegarde['valeur_grille'] == grille: #Empêche de relancer une partie déja gagnée
+                        sauvegarde = {}
                 score_J1 = tk.Label(support_game, text=compteur_manche_J1, font=("System",45), fg = '#b10000', bg ='black')
                 score_J1.place(x = (41*width_screen//48) - affichage_score.winfo_reqwidth()//2 + (affichage_score.winfo_reqwidth()//2-score_J1.winfo_reqwidth())//2,
                                y =(height_screen-HEIGHT)//2 + affichage_score.winfo_reqheight()//1.65)
@@ -474,7 +488,6 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
 
     game.mainloop()
     return
-
 #----------------------------------------------#
 
 
@@ -499,11 +512,14 @@ def Jeu_sandbox():
     width_supp = 3*(width_screen)/5
     hcolor_supp = height_supp
     wcolor_supp = sand_width-width_supp-150
-    support_previsualisation = tk.LabelFrame(sand, height=height_supp, width=width_supp, bg="#6db3fe", relief="ridge")
+    support_previsualisation = tk.LabelFrame(sand, height=height_supp, width=width_supp, bg="#6db3fe", relief="groove")
     support_previsualisation.place(x=50, y=100)
-    support_couleur = tk.LabelFrame(sand, height=hcolor_supp, width=wcolor_supp, bg="#6db3fe", relief="ridge")
+    support_couleur = tk.LabelFrame(sand, height=hcolor_supp, width=wcolor_supp, bg="#6db3fe", relief="groove")
     support_couleur.place(x=width_supp+100, y=100)
     global dpos
+    global Lerror1
+    global Lerror2
+    global Lerror3
     
 
     end_pos = -sand_width
@@ -514,52 +530,79 @@ def Jeu_sandbox():
     pad_x = 60
     delta_y = 60
     
+    #Definition des emplacements les parametres choisis rendent la partie injouable 
+    Lerror1 = tk.Label(sand,text= "", font=("System",11), bg="#6db3fe", fg="white")
+    Lerror1.place(x=10000,y=10000)
+    
+    Lerror2 = tk.Label(sand, text="", font=("System",11), bg="#6db3fe", fg="white")
+    Lerror2.place(x=10000, y=10000)
+    
+    Lerror3 = tk.Label(sand, text = "", font=("System",11), bg="#6db3fe", fg="white", width=30)
+    Lerror3.place(x=10000,y=10000)
+    
+    
     def animation_panel():
-        if (int(SBalignement.get()) <= int(colonne.get())) or (int(SBalignement.get()) <= int(ligne.get())):
-            if (int(colonne.get()) != 0) and (int(ligne.get())!= 0) and (Choix_joueur1["text"]!="") and (Choix_joueur2["text"]!="") and (int(SBalignement.get())!= 0) and (int(SBmanche.get())!= 0):
-                global dpos
-                sand.place(x=start_pos, y=0)
-                if dpos < abs(end_pos):
-                    sand.place(x=start_pos-dpos, y=0)
-                    dpos += 1
-                    root.after(dt, animation_panel)
-                else:
-                    sand.place(x=end_pos, y=0)
-                    dpos = 0
-
-                    def lancer_jeu():
-                        # Récupération des données avant destruction de mod
-                        lignes = int(ligne.get())
-                        colonnes = int(colonne.get())
-                        alignement = int(SBalignement.get())
-                        manches = int(SBmanche.get())
-                        joueur1 = Choix_joueur1["text"]
-                        joueur2 = Choix_joueur2["text"]
-                        couleur_centre_j1 = couleurs_centre[nom_couleur.index(joueur1)]
-                        couleur_centre_j2 = couleurs_centre[nom_couleur.index(joueur2)]
-                        couleur_bordure_j1 = couleurs_bordure[nom_couleur.index(joueur1)]
-                        couleur_bordure_j2 = couleurs_bordure[nom_couleur.index(joueur2)]
-
-                        mod.destroy()
-
-                        # Maintenant qu'on a toutes les infos, on peut lancer Jeu_normal
-                        Jeu_normal(
-                            lignes, colonnes, alignement, manches, 0, 0, "",
-                            [joueur1, joueur2],
-                            [couleur_centre_j1, couleur_centre_j2],
-                            [couleur_bordure_j1, couleur_bordure_j2],
-                            [])
-                        
-
-                    mod.after(1000, lancer_jeu)
-            else:
-                Lerror1 = tk.Label(sand,text= "Veuillez faire en sorte que la grille soit jouable.", font=("System",17), bg="#6db3fe", fg="white")
-                WLerror1 = Lerror1.winfo_reqwidth()
-                Lerror1.place(x=4*width_screen/5-WLerror1/2,y=7*height_screen/9)
+        global Lerror1
+        global Lerror2
+        global Lerror3
+        Lerror1.place(x=10000,y=10000)
+        Lerror2.place(x=10000,y=10000)
+        Lerror3.place(x=10000,y=10000)
+        if (int(colonne.get()) == 0) or (int(ligne.get()) == 0) or (Choix_joueur1["text"]=="") or (Choix_joueur2["text"]=="") or (int(SBalignement.get())== 0) and (int(SBmanche.get())== 0):
+            Lerror1["text"] = "Un parametre est nul, veuillez modifier sa valeur"
+            Lerror1.place(x=width_supp+ 100 + (wcolor_supp -Lerror1.winfo_reqwidth())//2,y=7*height_screen/9)
         else:
-            Lerror2 = tk.Label(sand, text = "Vous ne pouvez pas aligner autant de \n jetons dans une si petite grille.", font=("System",17), bg="#6db3fe", fg="white", width=30, relief="solid")
-            WLerror2 = Lerror2.winfo_reqwidth()
-            Lerror2.place(x=4*width_screen/6,y=7*height_screen/8)
+            Lerror1["text"] = ""
+            Lerror1.place(x=10000,y=10000)
+            if int(colonne.get()) < int(SBalignement.get()) and int(ligne.get()) < int(SBalignement.get()):
+                Lerror2["text"] = "Vous ne pouvez pas aligner autant de \n jetons dans une si petite grille." 
+                Lerror2.place(x=width_supp + 100 + (wcolor_supp -Lerror2.winfo_reqwidth())//2,y=7*height_screen/9)
+            else:
+                Lerror2["text"] = ""
+                Lerror2.place(x = 10000, y=10000)
+                if (int(SBalignement.get()) > int(colonne.get())) or (int(SBalignement.get()) > int(ligne.get())):
+                    Lerror3["text"] = "Cette grille est injouable, \n veuillez ajuster sa taille."
+                    Lerror3.place(x=width_supp + 100 + (wcolor_supp -Lerror3.winfo_reqwidth())//2,y=7*height_screen/9)
+                else:
+                    Lerror3["text"] = ""
+                    Lerror3.place(x=10000,y=10000)
+                    global dpos
+                    sand.place(x=start_pos, y=0)
+                    if dpos < abs(end_pos):
+                        sand.place(x=start_pos-dpos, y=0)
+                        dpos += 1
+                        root.after(dt, animation_panel)
+                    else:
+                        sand.place(x=end_pos, y=0)
+                        dpos = 0
+
+                        def lancer_jeu():
+                            # Récupération des données avant destruction de mod
+                            lignes = int(ligne.get())
+                            colonnes = int(colonne.get())
+                            alignement = int(SBalignement.get())
+                            manches = int(SBmanche.get())
+                            joueur1 = Choix_joueur1["text"]
+                            joueur2 = Choix_joueur2["text"]
+                            couleur_centre_j1 = couleurs_centre[nom_couleur.index(joueur1)]
+                            couleur_centre_j2 = couleurs_centre[nom_couleur.index(joueur2)]
+                            couleur_bordure_j1 = couleurs_bordure[nom_couleur.index(joueur1)]
+                            couleur_bordure_j2 = couleurs_bordure[nom_couleur.index(joueur2)]
+
+                            mod.destroy()
+
+                            # Maintenant qu'on a toutes les infos, on peut lancer Jeu_normal
+                            Jeu_normal(
+                                lignes, colonnes, alignement, manches, 0, 0, "",
+                                [joueur1, joueur2],
+                                [couleur_centre_j1, couleur_centre_j2],
+                                [couleur_bordure_j1, couleur_bordure_j2],
+                                [])
+
+
+                        mod.after(1, lancer_jeu)
+
+            
          
     #Boutons en bas de l'écran
     M1=tk.Label(sand, text="Configuations", bg="#ff7262", fg="white", font=("System",25), relief="raised", padx=14, pady=10)
@@ -568,13 +611,17 @@ def Jeu_sandbox():
     M1.place(x=sand_width/2-wM1/2, y=0.25*hM1)
     
     Bhome=tk.Button(sand, text="Quitter", font=("System",15),
-                 fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=fermer)
+                 fg="white", bg="#ff7262", relief="raised", padx=10, pady=5, command=fermer)
+    Bhome.bind("<Enter>", lambda event : bouton_touche(event,Bhome))
+    Bhome.bind("<Leave>", lambda event : bouton_relache(event,Bhome))
     wBhome = Bhome.winfo_reqwidth()
     hBhome = Bhome.winfo_reqheight()
     Bhome.place(x=sand_width/6-wBhome/2, y=sand_height-1.5*hBhome)
     
-    Bplay = tk.Button(sand, text="Jouer",font=("System",15), fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, 
+    Bplay = tk.Button(sand, text="Jouer",font=("System",15), fg="white", bg="#ff7262", relief="raised", padx=10, pady=5, 
                       command= animation_panel) #Bouton play
+    Bplay.bind("<Enter>", lambda event : bouton_touche(event,Bplay))
+    Bplay.bind("<Leave>", lambda event : bouton_relache(event,Bplay))
     wBplay = Bplay.winfo_reqwidth()
     hBplay = Bplay.winfo_reqheight()
     Bplay.place(x=sand_width/1.2-wBplay/2, y=sand_height-1.5*hBplay)
@@ -585,34 +632,33 @@ def Jeu_sandbox():
     Cita.place(x=sand_width/2 - wCita/2, y = sand_height - 1.25*hCita)
     
     #Spinbox a gauche de l'écran
-    Mcol = tk.Label(support_previsualisation, text=" Nombre de colonne:", fg="white",  bg= "#6db3fe", font=("System",20))
+    Mcol = tk.Label(support_previsualisation, text=" Nombre de colonnes:", fg="white",  bg= "#6db3fe", font=("System",20))
     wMcol = Mcol.winfo_reqwidth() 
-    hMcol = Mcol.winfo_reqheight()
     Mcol.place(x=pad_x, y=pad_y)
-    colonne = tk.Spinbox(support_previsualisation, from_= 1, to = 100,
+    colonne = tk.Spinbox(support_previsualisation, from_= 3, to = 100,
             validate='all', fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     hcolonne = colonne.winfo_reqheight()
     wcolonne = colonne.winfo_reqwidth()
     colonne.place(x= pad_x +wcolonne, y=2*pad_y+hcolonne)
     
-    Mlig = tk.Label(support_previsualisation, text="Nombre de ligne:", fg="white",  bg= "#6db3fe", font=("System",20))
+    Mlig = tk.Label(support_previsualisation, text="Nombre de lignes:", fg="white",  bg= "#6db3fe", font=("System",20))
     wMlig = Mlig.winfo_reqwidth()
     Mlig.place(x=width_supp-(2*pad_x+wMlig), y=pad_y)
-    ligne = tk.Spinbox(support_previsualisation, from_= 1, to = 100,
+    ligne = tk.Spinbox(support_previsualisation, from_= 3, to = 100,
             validate='all', fg="#3394ff", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wligne = ligne.winfo_reqwidth()
     hligne = ligne.winfo_reqheight()
     ligne.place(x=(width_supp-2*(wligne+pad_x)), y=2*pad_y+hligne)  
     
-    alignement = tk.Label(support_previsualisation,text = "Nombre de jeton à aligner:", fg="white",  bg= "#6db3fe", font=("System",20))
+    alignement = tk.Label(support_previsualisation,text = "Jetons à aligner:", fg="white",  bg= "#6db3fe", font=("System",20))
     walignement = alignement.winfo_reqwidth()
     alignement.place(x=pad_x-(walignement-wMcol)/2, y=2*pad_y+hcolonne+delta_y)
-    SBalignement = tk.Spinbox(support_previsualisation, from_= 1, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    SBalignement = tk.Spinbox(support_previsualisation, from_= 3, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wSBalignement = SBalignement.winfo_reqwidth()
     hSBalignement = SBalignement.winfo_reqheight()
     SBalignement.place(x=pad_x +wSBalignement, y=2*pad_y+hcolonne+2*delta_y+hSBalignement)
     
-    manche = tk.Label(support_previsualisation,text = "Nombre de manche:", fg="white",  bg= "#6db3fe", font=("System",20))
+    manche = tk.Label(support_previsualisation,text = "Nombre de manches:", fg="white",  bg= "#6db3fe", font=("System",20))
     wmanche = manche.winfo_reqwidth()
     manche.place(x=width_supp-2*(wmanche/2+pad_x)+(wmanche-wMlig)/2, y=2*pad_y+hligne+delta_y)
     SBmanche = tk.Spinbox(support_previsualisation, from_= 1, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
@@ -635,7 +681,6 @@ def Jeu_sandbox():
     joueur1.place(x=(wcolor_supp-wLBcolor-wjoueur1/2)/2, y=6*pad_y)
     
     Choix_joueur1 = tk.Label(support_couleur, text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
-    wChoix_joueur1 = Choix_joueur1.winfo_reqwidth()
     Choix_joueur1.place(x=(wcolor_supp-wLBcolor+wjoueur1/2+3*pad_x)/2, y=6*pad_y)
     
     joueur2 = tk.Label(support_couleur, text="Joueur 2 :",border=0, background="#6db3fe", font=("System",20), fg = "white")
@@ -643,17 +688,15 @@ def Jeu_sandbox():
     joueur2.place(x=(wcolor_supp-wLBcolor-wjoueur2/2)/2, y=9*pad_y)
     
     Choix_joueur2 = tk.Label(support_couleur, text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
-    wChoix_joueur2 = Choix_joueur2.winfo_reqwidth()
     Choix_joueur2.place(x=(wcolor_supp-wLBcolor+wjoueur2/2+3*pad_x)/2,y=9*pad_y)
     
     #Rendu au centre de la page
     Lrendu = tk.Label(support_previsualisation, text="Prévisualisation de la grille:", fg="white",  bg= "#6db3fe", font=("System", 20, "underline"))
     wLrendu = Lrendu.winfo_reqwidth()
-    Lrendu.place(x=(width_supp-wLrendu)/2, y=height_supp/2)
+    Lrendu.place(x=(width_supp-wLrendu)/2, y=3*height_supp//5)
     rendu = tk.Canvas(support_previsualisation, bg="#005bff", height=height_screen/7, width=width_screen/7)
-    hrendu = rendu.winfo_reqheight()
     wrendu= rendu.winfo_reqwidth()
-    rendu.place(x=(width_supp-wrendu)/2, y=height_supp-2*hrendu)
+    rendu.place(x=(width_supp-wrendu)/2, y=3*height_supp//5 + 70)
     
     
     def maj(*args):
@@ -722,34 +765,22 @@ def Jeu_sandbox():
         return
     
     #Boutons de selection/suppression des couleurs
-    select = tk.Button(support_couleur, text = "Selectionner", command=print_selec, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
-    wselect = select.winfo_reqwidth()
+    select = tk.Button(support_couleur, text = "Selectionner", command=print_selec, font=("System", 15), fg="white", bg="#ff7262", relief="raised")
+    select.bind("<Enter>", lambda event : bouton_touche(event,select))
+    select.bind("<Leave>", lambda event : bouton_relache(event,select))
     select.place(x=(wcolor_supp-wLBcolor)/2, y=4*pad_y )
-    retour = tk.Button(support_couleur, text= "Annuler", command=annuler, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
+    retour = tk.Button(support_couleur, text= "Annuler", command=annuler, font=("System", 15), fg="white", bg="#ff7262", relief="raised")
+    retour.bind("<Enter>", lambda event : bouton_touche(event,retour))
+    retour.bind("<Leave>", lambda event : bouton_relache(event,retour))
     wretour = retour.winfo_reqwidth()
     retour.place(x=(wcolor_supp+wLBcolor)/2+wsbar-wretour, y=4*pad_y)
 
     mod.mainloop()
     return
+#------------------------------------------------------#
 
-def settings():
-    def fermer():
-        option.destroy()
-        return
-    option=tk.Tk()
-    option.columnconfigure(0, weight=1)
-    option.columnconfigure(1, weight=1)
-    option.columnconfigure(2, weight=1)
-    option.rowconfigure(0, weight=1)
-    option.rowconfigure(1, weight=1)
-    option.rowconfigure(2, weight=1)
-    option.rowconfigure(3, weight=1)
-    option.rowconfigure(4, weight=1)
-    option.title("option du jeu")
-    option.attributes("-fullscreen", True)
-    B6=tk.Button(option, text="Valider et quitter", font=("haelvetica",15),
-                 fg="black", bg="lightgrey", relief="ridge", padx=10, pady=5, command=fermer)
-    B6.pack(side=tk.BOTTOM)
+
+#------------------------------------------------------#
 #-----------------Affichage des règles-----------------#
 index = 0
 text = ""
@@ -760,8 +791,9 @@ def rules():
     global index,text
     HEIGHT=0.9*height_screen
     WIDTH=200
-    regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement,\n verticalement ou diagonalement. \n \n Le jeu se joue à deux joueurs, chacun ayant une couleur de jeton différente. \n \n" \
-    " Le premier joueur à aligner 4 jetons de sa couleur gagne la partie. \n \n Pour placer un jeton, il suffit de cliquer sur la case \ndans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné 4 jetons ou lorsque la grille est pleine. "
+    regles = "Le but du jeu est d'aligner 4 jetons de sa couleur horizontalement,\n verticalement ou diagonalement.\n \n \
+              Le jeu se joue à deux joueurs, chacun ayant une couleur de \n jeton différente." " Le premier joueur à aligner 4 jetons \n de sa couleur gagne la partie. \n \n \
+              Pour placer un jeton, il suffit de cliquer sur la case \ndans laquelle vous souhaitez le placer. \n \n Le jeu se termine lorsqu'un joueur a aligné \n 4 jetons ou lorsque la grille est pleine. "
     rules=tk.Tk()
     rules.title("Règles du jeu")
     rules.attributes("-fullscreen", True)
@@ -773,12 +805,14 @@ def rules():
     wM2 = M2.winfo_reqwidth()
     hM2 = M2.winfo_reqheight()
     M2.place(x=width_screen/2-wM2/2, y=0.2*hM2)
-    M3=tk.Label(support_rules, text=regles, font=("System", 20), fg="white", bg="#3394ff", width=65)
+    M3=tk.Label(support_rules, text=regles, font=("System", 18), fg="white", bg="#3394ff", width=65)
     wM3 = M3.winfo_reqwidth()
     hM3 = M3.winfo_reqheight()
     M3.place(x=width_screen/2-wM3/2, y=height_screen/4-hM3/2) 
     B5=tk.Button(support_rules, text="Quitter", font=("System",15), fg="white", 
-                 bg="#ff7262", relief="ridge", command=fermer, padx=10, pady=5)
+                 bg="#ff7262", relief="raised", command=fermer, padx=10, pady=5)
+    B5.bind("<Enter>", lambda event : bouton_touche(event,B5))
+    B5.bind("<Leave>", lambda event : bouton_relache(event,B5))
     wB5 = B5.winfo_reqwidth()
     hB5 = B5.winfo_reqheight()
     B5.place(x=width_screen/2-wB5/2, y=height_screen-1.5*hB5)
@@ -839,13 +873,16 @@ def rules():
             text = text + regles[index] + " I"
             M3.config(text=text)
             index += 1
-            rules.after(50, animation1)
+            rules.after(25, animation1)
     M3.place(x=width_screen/2-wM3/2, y=height_screen/2-hM3/1.5)
     rules.after(20, animation1)
     rules.after(29000, animation2)
     return
-#----------------------------------------------------------#
-#---------------creation des widget menu-------------------#
+#------------------------------------------------------#
+
+
+#-------------------------------------------------------#
+#--------------Creation des widget menu-----------------#
 HEIGHT=0.9*height_screen
 WIDTH=200
 support_root = tk.Frame(root, bg="#3394ff", width = width_screen, height= width_screen)
@@ -898,6 +935,7 @@ def changer_citation(event, self):
 
 Lcita.bind("<Button-1>",lambda event : changer_citation(event,Lcita))
 Lcita.place(x=width_screen/2-Lcita.winfo_reqwidth()/2, y=6*height_screen/7-Lcita.winfo_reqheight()/2)
+#---------------------------------------------------------------#
 
 
 #---------------------------------------------------------------#
@@ -930,9 +968,12 @@ frame_gauche.place(x=0, y=height_screen/2-hframe/2)
 frame_droite.place(x=width_screen-wframe, y=height_screen/2-hframe/2)
 
 
-couleurs_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C","#ABA0F9","#A76844","#038A91","#FFEBD8","#676B4A","#FFB8CE","#CE8F8A", "#CBEFB6", "#FF5EFA", "#FE9063", "#5D1F31"]
-couleurs_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F","#7C80FC","#9F5540","#06708E","#FFD5BA","#585944","#FE94B4","#805050", "#A0C6A9", "#FF7AD1", "#EA5863", "#4A192E"]
-nom_couleur = ["BLEU","ROUGE","JAUNE","VERT","LAVANDE","MARRON","CANARD","BEIGE","OLIVE","ROSE","TERRACOTTA","VERT PALE", "ROSE BONBON", "SAUMON", "POURPRE"]
+couleurs_centre = ["#04BBFF","#ff3b30","#ffd933","#67944C","#ABA0F9","#A76844","#038A91",
+                   "#FFEBD8","#676B4A","#FFB8CE","#CE8F8A", "#CBEFB6", "#FF5EFA", "#FE9063", "#5D1F31"]
+couleurs_bordure = ["#0594D0","#bb261f","#e7ba00","#37633F","#7C80FC","#9F5540","#06708E",
+                    "#FFD5BA","#585944","#FE94B4","#805050", "#A0C6A9", "#FF7AD1", "#EA5863", "#4A192E"]
+nom_couleur = ["BLEU","ROUGE","JAUNE","VERT","LAVANDE","MARRON","CANARD","BEIGE","OLIVE",
+                "ROSE","TERRACOTTA","VERT PALE", "ROSE BONBON", "SAUMON", "POURPRE"]
 
 jeton_gauche_1 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
 jeton_gauche_2 = tk.Canvas(frame_gauche, height=200, width=200, bg ='#3394ff', highlightthickness=0)
