@@ -495,13 +495,24 @@ def Jeu_sandbox():
     sand_width = width_screen
     sand = tk.LabelFrame(mod, height=sand_height, width=sand_width, bg="#6db3fe", relief="ridge")
     sand.place(x=0, y=0)
+    height_supp = height_screen-200
+    width_supp = 3*(width_screen)/5
+    hcolor_supp = height_supp
+    wcolor_supp = sand_width-width_supp-150
+    support_previsualisation = tk.LabelFrame(sand, height=height_supp, width=width_supp, bg="#6db3fe", relief="ridge")
+    support_previsualisation.place(x=50, y=100)
+    support_couleur = tk.LabelFrame(sand, height=hcolor_supp, width=wcolor_supp, bg="#6db3fe", relief="ridge")
+    support_couleur.place(x=width_supp+100, y=100)
     global dpos
     
 
     end_pos = -sand_width
     start_pos = 0
     dpos = 0
-    dt = 3
+    dt = 1
+    pad_y = 40
+    pad_x = 60
+    delta_y = 60
     
     def animation_panel():
         if (int(SBalignement.get()) <= int(colonne.get())) or (int(SBalignement.get()) <= int(ligne.get())):
@@ -551,10 +562,10 @@ def Jeu_sandbox():
             Lerror2.place(x=4*width_screen/6,y=7*height_screen/8)
          
     #Boutons en bas de l'écran
-    M1=tk.Label(sand, text="Configuations", bg="#ff7262", fg="white", font=("System",30), relief="raised", padx=14, pady=15)
+    M1=tk.Label(sand, text="Configuations", bg="#ff7262", fg="white", font=("System",25), relief="raised", padx=14, pady=10)
     wM1 = M1.winfo_reqwidth()
     hM1 = M1.winfo_reqheight()
-    M1.place(x=sand_width/2-wM1/2, y=0.5*hM1)
+    M1.place(x=sand_width/2-wM1/2, y=0.25*hM1)
     
     Bhome=tk.Button(sand, text="Quitter", font=("System",15),
                  fg="white", bg="#ff7262", relief="ridge", padx=10, pady=5, command=fermer)
@@ -568,67 +579,81 @@ def Jeu_sandbox():
     hBplay = Bplay.winfo_reqheight()
     Bplay.place(x=sand_width/1.2-wBplay/2, y=sand_height-1.5*hBplay)
     
-    Cita = tk.Label(sand, text='"La stratégie commence ici" - Luca Picciotto',bg="#ff7262", fg="white", font=("System",23,"underline"), relief="raised", padx=10, pady=10)
+    Cita = tk.Label(sand, text='"La stratégie commence ici" - Luca Picciotto',bg="#6db3fe", fg="white", font=("System",20,"underline"), padx=10, pady=10)
     wCita = Cita.winfo_reqwidth()
     hCita = Cita.winfo_reqheight()
-    Cita.place(x=sand_width/2 - wCita/2, y = sand_height - 1.5*hCita)
+    Cita.place(x=sand_width/2 - wCita/2, y = sand_height - 1.25*hCita)
     
     #Spinbox a gauche de l'écran
-    Mcol = tk.Label(sand, text=" Nombre de colonne :", fg="white",  bg= "#6db3fe", font=("System",22))
+    Mcol = tk.Label(support_previsualisation, text=" Nombre de colonne:", fg="white",  bg= "#6db3fe", font=("System",20))
     wMcol = Mcol.winfo_reqwidth() 
-    Mcol.place(x=sand_width/5-wMcol/2, y=sand_height/5-50)
-    colonne = tk.Spinbox(sand, from_= 1, to = 100,
+    hMcol = Mcol.winfo_reqheight()
+    Mcol.place(x=pad_x, y=pad_y)
+    colonne = tk.Spinbox(support_previsualisation, from_= 1, to = 100,
             validate='all', fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    hcolonne = colonne.winfo_reqheight()
     wcolonne = colonne.winfo_reqwidth()
-    colonne.place(x=sand_width/5-wcolonne/2, y=sand_height/5)
+    colonne.place(x= pad_x +wcolonne, y=2*pad_y+hcolonne)
     
-    Mlig = tk.Label(sand, text="Nombre de ligne :", fg="white",  bg= "#6db3fe", font=("System",22))
+    Mlig = tk.Label(support_previsualisation, text="Nombre de ligne:", fg="white",  bg= "#6db3fe", font=("System",20))
     wMlig = Mlig.winfo_reqwidth()
-    Mlig.place(x=sand_width/5-wMlig/2, y=2*sand_height/5-50)
-    ligne = tk.Spinbox(sand, from_= 1, to = 100,
+    Mlig.place(x=width_supp-(2*pad_x+wMlig), y=pad_y)
+    ligne = tk.Spinbox(support_previsualisation, from_= 1, to = 100,
             validate='all', fg="#3394ff", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wligne = ligne.winfo_reqwidth()
-    ligne.place(x=sand_width/5-wligne/2, y=2*sand_height/5)  
+    hligne = ligne.winfo_reqheight()
+    ligne.place(x=(width_supp-2*(wligne+pad_x)), y=2*pad_y+hligne)  
     
-    alignement = tk.Label(sand,text = "Nombre de jeton à aligner: ", fg="white",  bg= "#6db3fe", font=("System",22))
+    alignement = tk.Label(support_previsualisation,text = "Nombre de jeton à aligner:", fg="white",  bg= "#6db3fe", font=("System",20))
     walignement = alignement.winfo_reqwidth()
-    alignement.place(x=sand_width/5 - walignement/2, y=3*sand_height/5-50)
-    SBalignement = tk.Spinbox(sand, from_= 1, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    alignement.place(x=pad_x-(walignement-wMcol)/2, y=2*pad_y+hcolonne+delta_y)
+    SBalignement = tk.Spinbox(support_previsualisation, from_= 1, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wSBalignement = SBalignement.winfo_reqwidth()
-    SBalignement.place(x=sand_width/5 - wSBalignement/2, y=3*sand_height/5)
+    hSBalignement = SBalignement.winfo_reqheight()
+    SBalignement.place(x=pad_x +wSBalignement, y=2*pad_y+hcolonne+2*delta_y+hSBalignement)
     
-    manche = tk.Label(sand,text = "Nombre de manche: ", fg="white",  bg= "#6db3fe", font=("System",22))
+    manche = tk.Label(support_previsualisation,text = "Nombre de manche:", fg="white",  bg= "#6db3fe", font=("System",20))
     wmanche = manche.winfo_reqwidth()
-    manche.place(x=sand_width/5 - wmanche/2, y=4*sand_height/5-50)
-    SBmanche = tk.Spinbox(sand, from_= 1, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
+    manche.place(x=width_supp-2*(wmanche/2+pad_x)+(wmanche-wMlig)/2, y=2*pad_y+hligne+delta_y)
+    SBmanche = tk.Spinbox(support_previsualisation, from_= 1, to = 100, fg="#6db3fe", width=8, borderwidth=3, relief="sunken", font=("System", 15))
     wSBmanche = SBmanche.winfo_reqwidth()
-    SBmanche.place(x=sand_width/5 - wSBmanche/2, y=4*sand_height/5)
+    hSBmanche = SBmanche.winfo_reqheight()
+    SBmanche.place(x=width_supp-2*(wSBmanche+pad_x), y=2*pad_y+hligne+hSBmanche+2*delta_y)
     
     #Choix des couleurs + affichage 
-    LBcolor = tk.Listbox(sand, height=5, width=23, selectbackground= "blue", font=("System",15))
+    LBcolor = tk.Listbox(support_couleur, height=5, width=23, selectbackground= "blue", font=("System",15))
     wLBcolor = LBcolor.winfo_reqwidth()
-    LBcolor.place(x=4*sand_width/5-wLBcolor/2, y=2*sand_height/8)
-    sbar = ttk.Scrollbar(sand, command=LBcolor.yview)
-    sbar.place(x=4*sand_width/5 + wLBcolor/2, y=2*sand_height/8, height = LBcolor.winfo_reqheight())
+    LBcolor.place(x=(wcolor_supp-wLBcolor)/2, y=pad_y)
+    
+    sbar = ttk.Scrollbar(support_couleur, command=LBcolor.yview)
+    wsbar = sbar.winfo_reqwidth()
+    sbar.place(x=(wcolor_supp+wLBcolor)/2, y=pad_y, height = LBcolor.winfo_reqheight())
     LBcolor.config(yscrollcommand=sbar.set)
-    joueur1 = tk.Label(sand, text="Joueur 1 :",border=0, background="#6db3fe", fg = "white", font=("System",20))
+    
+    joueur1 = tk.Label(support_couleur, text="Joueur 1 :",border=0, background="#6db3fe", fg = "white", font=("System",20))
     wjoueur1 = joueur1.winfo_reqwidth()
-    joueur1.place(x=4*sand_width/5-wjoueur1/2-35, y=4*sand_height/8)
-    Choix_joueur1 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
+    joueur1.place(x=(wcolor_supp-wLBcolor-wjoueur1/2)/2, y=6*pad_y)
+    
+    Choix_joueur1 = tk.Label(support_couleur, text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
     wChoix_joueur1 = Choix_joueur1.winfo_reqwidth()
-    Choix_joueur1.place(x=4*sand_width/5-wChoix_joueur1/2+35, y=4*sand_height/8)
-    joueur2 = tk.Label(sand, text="Joueur 2 :",border=0, background="#6db3fe", font=("System",20), fg = "white")
+    Choix_joueur1.place(x=(wcolor_supp-wLBcolor+wjoueur1/2+3*pad_x)/2, y=6*pad_y)
+    
+    joueur2 = tk.Label(support_couleur, text="Joueur 2 :",border=0, background="#6db3fe", font=("System",20), fg = "white")
     wjoueur2 = joueur2.winfo_reqwidth()
-    joueur2.place(x=4*sand_width/5-wjoueur2/2-35, y=5*sand_height/8)
-    Choix_joueur2 = tk.Label(sand,text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
+    joueur2.place(x=(wcolor_supp-wLBcolor-wjoueur2/2)/2, y=9*pad_y)
+    
+    Choix_joueur2 = tk.Label(support_couleur, text = "",border=0, background="#6db3fe", font=("System",20), fg = "white")
     wChoix_joueur2 = Choix_joueur2.winfo_reqwidth()
-    Choix_joueur2.place(x=4*sand_width/5-wChoix_joueur2/2+35,y=5*sand_height/8)
+    Choix_joueur2.place(x=(wcolor_supp-wLBcolor+wjoueur2/2+3*pad_x)/2,y=9*pad_y)
     
     #Rendu au centre de la page
-    rendu = tk.Canvas(sand, bg="#005bff", height=height_screen/7, width=width_screen/7)
+    Lrendu = tk.Label(support_previsualisation, text="Prévisualisation de la grille:", fg="white",  bg= "#6db3fe", font=("System", 20, "underline"))
+    wLrendu = Lrendu.winfo_reqwidth()
+    Lrendu.place(x=(width_supp-wLrendu)/2, y=height_supp/2)
+    rendu = tk.Canvas(support_previsualisation, bg="#005bff", height=height_screen/7, width=width_screen/7)
     hrendu = rendu.winfo_reqheight()
     wrendu= rendu.winfo_reqwidth()
-    rendu.place(x=sand_width/2-wrendu/2, y=sand_height/2-hrendu/2)
+    rendu.place(x=(width_supp-wrendu)/2, y=height_supp-2*hrendu)
     
     
     def maj(*args):
@@ -697,12 +722,12 @@ def Jeu_sandbox():
         return
     
     #Boutons de selection/suppression des couleurs
-    select = tk.Button(sand,text = "Selectionner", command=print_selec, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
+    select = tk.Button(support_couleur, text = "Selectionner", command=print_selec, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
     wselect = select.winfo_reqwidth()
-    select.place(x=4*sand_width/5-wselect/2+52, y=3*sand_height/8)
-    retour = tk.Button(sand, text= "Annuler", command=annuler, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
+    select.place(x=(wcolor_supp-wLBcolor)/2, y=4*pad_y )
+    retour = tk.Button(support_couleur, text= "Annuler", command=annuler, font=("System", 15), fg="white", bg="#ff7262", relief="ridge")
     wretour = retour.winfo_reqwidth()
-    retour.place(x=4*sand_width/5-wretour/2-52, y=3*sand_height/8)
+    retour.place(x=(wcolor_supp+wLBcolor)/2+wsbar-wretour, y=4*pad_y)
 
     mod.mainloop()
     return
