@@ -66,11 +66,14 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
             sauvegarde['valeur_couleur_centre'] = valeur_couleur_centre
             sauvegarde['valeur_couleur_bordure'] = valeur_couleur_bordure
             sauvegarde["valeur_grille"] = grille.copy()
+            return
         else:
             texte_fin_de_partie = tk.Label(support_game, text= 'La partie est déjà terminée', font=("System", 35),
                                                     fg='white', bg='#3394ff')
             texte_fin_de_partie.place(x=(width_screen - texte_fin_de_partie.winfo_reqwidth())//2,
                                       y=8.7*height_screen//10)
+            return
+        
 
     def sauvegarde_manche_fct():
         global sauvegarde_manche
@@ -221,7 +224,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
     global couleur_bordure
     global premier_joueur
 
-    if valeur_compteur_manche_J1 == 0 and valeur_compteur_manche_J2 == 0:  # Vérifie si le tour est prédéfini par la sauvegarde pour restituer ou non l'ordre de jeu de la partie
+    if valeur_compteur_manche_J1 == 0 and valeur_compteur_manche_J2 == 0 and all(grille[i][j] == 0 for i in range(len(grille)) for j in range(len(grille[0]))):  # Vérifie si le tour est prédéfini par la sauvegarde pour restituer ou non l'ordre de jeu de la partie
         tour = rd.choice(valeur_tour)
         premier_joueur = tour  # Pour la gestion des scores
     else :
@@ -261,6 +264,7 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
         verif_colonne()
         verif_diag_gauche_droite()
         verif_diag_droite_gauche()
+        
 
         if all(grille[i][j] != 0 for i in range(len(grille)) for j in range(len(grille[0]))) and win == False: 
                 texte_fin_de_partie = tk.Label(support_game, text= 'Il y a égalité', font=("System", 35),
@@ -376,13 +380,13 @@ def Jeu_normal(valeur_ligne, valeur_colonne, valeur_alignement, valeur_manche,
         global couleur_bordure
         global cooldown
         global liste_coups
-
-        coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))  # Détermine la position du trou le plus proche
-
-        (milieu_x, milieu_y) = ((coords_trou[0] + coords_trou[2]) // 2,
-                                (coords_trou[1] + coords_trou[3]) // 2)  # Trouve le centre du trou le plus proche
+        
 
         if cooldown == 0 and cursor_grid == True:
+            coords_trou = canva_jeu.coords(canva_jeu.find_closest(event.x, event.y))  # Détermine la position du trou le plus proche
+
+            (milieu_x, milieu_y) = ((coords_trou[0] + coords_trou[2]) // 2,
+                                    (coords_trou[1] + coords_trou[3]) // 2)  # Trouve le centre du trou le plus proche
             cooldown = 1
             for i in range(colonne):  # Pour chaque colonne
                 if diff_milieux_x[i] <= milieu_x < diff_milieux_x[i + 1]:  # Si la coordonnée x se trouve dans la ieme colonne, on entre dans la boucle
@@ -889,7 +893,7 @@ support_root = tk.Frame(root, bg="#3394ff", width = width_screen, height= width_
 support_button = tk.Frame(support_root, bg="#3394ff")
 
 B1=tk.Button(support_button, text="PARTIE NORMALE", font=('system', 20), bg="#ff7262",
-             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=6, valeur_colonne=7,valeur_alignement = 4, valeur_manche = 2, 
+             fg="white", relief="raised", padx=5, pady=15, command= (lambda : Jeu_normal(valeur_ligne=6, valeur_colonne=7,valeur_alignement = 4, valeur_manche = 1, 
                                                                                         valeur_compteur_manche_J1 = 0,valeur_compteur_manche_J2 = 0,valeur_premier_joueur = '',
                                                                                         valeur_tour=['Jaune','Rouge'], valeur_couleur_centre=['#ffd933', '#ff3b30'],
                                                                                         valeur_couleur_bordure=['#e7ba00', '#bb261f'],valeur_grille=[])))
